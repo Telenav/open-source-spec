@@ -1,0 +1,35 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i BasePlugin_GetPhantomNodes_flowchart.mmd -o BasePlugin_GetPhantomNodes_flowchart.mmd.png -w 3840 -H 2160
+
+%%```mermaid
+
+
+graph TD
+
+Title[<u>GetGraphTile    FlowChart</u>]
+Title-->Start
+style Title fill:#FFF,stroke:#FFF
+linkStyle 0 stroke:#FFF,stroke-width:0;
+
+Start("Start") --> IsGraphIdValid{"IsGraphIdValid? "}
+IsGraphIdValid -- Y --> TileCacheCheck{"Is Tile in the Cache"}
+    TileCacheCheck -- Y --> RturnTilePtr["GraphTile*"]
+    TileCacheCheck -- N --> EnableTileExtract{"Is TileExtract be initilized <p></p> TileExtract means valhalla_tiles.tar"}
+        EnableTileExtract -- Y --> FindTileInTileExtract{"Is File exists in TileExtract"}
+            FindTileInTileExtract -- Y --> LoadAndConstructTile["Construct graphtile object(graphtile.cc, GraphTile::Initialize) <p></p> Directly covert file handler to internal data structure"]
+            LoadAndConstructTile --> UpdateCache["UpdateCache"]
+            UpdateCache --> RturnTilePtr["GraphTile*"]
+            FindTileInTileExtract -- N --> ReturnNullResults["Return nullptr"]
+        EnableTileExtract -- N --> LoadTileFromDisk{"Try to load file from tile folder"}
+            LoadTileFromDisk -- Y --> RturnTilePtr["GraphTile*"]
+            LoadTileFromDisk -- N --> StreamingFromCloud["Streaming from cloud"]
+                StreamingFromCloud -- Y --> RturnTilePtr["GraphTile*"]
+                StreamingFromCloud -- N --> ReturnNullResults["Return nullptr"]
+
+IsGraphIdValid -- N --> ReturnNullResults["Return nullptr"]
+
+RturnTilePtr --> End("End")
+ReturnNullResults --> End("End")
+
+%%```

@@ -1,0 +1,16 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i od_flow_chart.mmd -o od_flow_chart.mmd.png
+
+%%```mermaid
+graph TD
+
+Start("Start") --> GetPhantomNodes["BasePlugin::GetPhantomNodes() <p></p>- include/engine/plugins/plugin_base.hpp"]
+
+subgraph OD Finder
+GetPhantomNodes --> SnapPhantomNodes["BasePlugin::SnapPhantomNodes() <p></p>- include/engine/plugins/plugin_base.hpp"]
+end
+
+SnapPhantomNodes --> End("End")
+
+%%```

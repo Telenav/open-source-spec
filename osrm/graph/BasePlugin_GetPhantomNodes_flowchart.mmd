@@ -1,0 +1,68 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i BasePlugin_GetPhantomNodes_flowchart.mmd -o BasePlugin_GetPhantomNodes_flowchart.mmd.png -w 3840 -H 2160
+
+%%```mermaid
+
+
+graph TD
+
+Title[<u>BasePlugin_GetPhantomNodes Called by ViaRoutePlugin_HandleRequest    Flow Chart</u>]
+Title-->Start
+style Title fill:#FFF,stroke:#FFF
+linkStyle 0 stroke:#FFF,stroke-width:0;
+
+Start("Start") --> IterateCoordinates{"Iterate Coordinates <p></p> - can get one coordinate? "}
+IterateCoordinates -- Y --> HintCheck{"Is hint exist for this coordinate? "}
+IterateCoordinates -- N --> ReturnResults["Return results"]
+ReturnResults --> End("End")
+
+HintCheck -- Y --> UseHintForThisCoordinate["Use Hint for this coordinate directly <p></p>- hints: hint for the service to derive the position(s) in the road network more efficiently, <p></p>   optional per coordinate"]
+UseHintForThisCoordinate --> IterateCoordinates
+HintCheck -- N --> NearestPhantomNodeWithAlternativeFromBigComponent["Call NearestPhantomNodeWithAlternativeFromBigComponent() to find nearest segment <p></p> - call different overload func by optional parameters bearings(i.e. heading), radius <p></p> include/engine/geospatial_query.hpp"]
+
+NearestPhantomNodeWithAlternativeFromBigComponent --> IterateCoordinates
+NearestPhantomNodeWithAlternativeFromBigComponent -. call .-> RTreeNearest["include/util/static_rtree.hpp: Nearest(input_coordinate, filter_func, terminate_func) <p></p> - with lambda filter_func/terminate_func passed in"]
+
+
+subgraph NearestPhantomNodeWithAlternativeFromBigComponent Func Flow Chart
+RTreeNearest --> ReturnResultsForThisCoordinate["Return 0~2 results for this coordinate"]
+end
+
+RTreeNearest -. call .-> WGS84ToWebMercator["Project Coordinate From WGS84 to WebMercator"]
+
+subgraph RTree Nearest Flow Chart
+WGS84ToWebMercator --> ConstructPriorityQueue["Construt Traversal Priority Queue <p></p> - use distance between node_rectangle and coordinate as the key<p></p> - nearest on the top "]
+ConstructPriorityQueue --> WhetherPriorityQueueIterable{"If traversal priority queue not empty? "}
+WhetherPriorityQueueIterable -- Y --> PopTopQueryNode["Pop Query Node From The Top"]
+WhetherPriorityQueueIterable -- N --> ReturnNearestResults["Exit Loop and return results"]
+
+PopTopQueryNode --> WhetherCurrentQueryNodeIsNotSegment{"Current query node is NOT segment?"}
+WhetherCurrentQueryNodeIsNotSegment -- Is NOT Segment --> WhetherCurrentQueryNodeIsLeaf{"Current query node is Leaf?"}
+WhetherCurrentQueryNodeIsLeaf -- Y --> ExploreLeafNode["ExploreLeafNode()"]
+WhetherCurrentQueryNodeIsLeaf -- N --> ExploreTreeNode["ExploreTreeNode()"]
+ExploreLeafNode --> WhetherPriorityQueueIterable
+ExploreTreeNode --> WhetherPriorityQueueIterable
+
+WhetherCurrentQueryNodeIsNotSegment -- Is Segment --> ConstructCandidate["Construct Candidate Segment"]
+ConstructCandidate --> IsTerminatable{"Can terminate? <p></p> - call passed in `terminate_func` to judge <p></p> - basic condition: valid result && has_big_component<p></p>- additional condition: max_distance"}
+IsTerminatable -- Y --> ReturnNearestResults
+IsTerminatable -- N --> FilterCurrentCandidate["call passed in `filter_func` to judge"]
+FilterCurrentCandidate --> IfCurrentCandidateNotValid{"Both Forward/Backward of current candidate are not valid? "}
+IfCurrentCandidateNotValid -- Both NOT Valid --> WhetherPriorityQueueIterable
+IfCurrentCandidateNotValid -- At Least One Direction is Valid --> SaveCandidate["Save Current Candidate"]
+SaveCandidate --> WhetherPriorityQueueIterable
+
+end
+
+FilterCurrentCandidate -. call .-> InitUseSegment["auto use_segment = <p></p>(!has_small_component || (!has_big_component && !IsTinyComponent(segment)));<p></p>- use_segment will be the initial value for bi-directions"]
+
+subgraph Anonymous Filter Func Flow Chart
+InitUseSegment --> HasValidEdge["Check whether segment invalid due to (traffic speed == 0)<p></p>- actually check weight calcuated by data pre-processing <p></p>include/engine/geospatial_query.hpp: HasValidEdge(segment)"]
+HasValidEdge --> CheckSegmentExclude["include/engine/geospatial_query.hpp: CheckSegmentExclude()"]
+CheckSegmentExclude --> CheckApproach["Only Pickup valid driving side segment if set Approach <p></p>include/engine/geospatial_query.hpp: CheckApproach()"]
+CheckApproach --> UpdateHasSmallBigComponent["Update has_big_component, has_small_component if candidate useful"]
+UpdateHasSmallBigComponent --> ReturnCandidateUseDirections["Return Candidate Check Result <p></p>(Whether Forward,Backward useful?)"]
+end
+
+%%```

@@ -1,0 +1,21 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i strongly_connected_component_sample.mmd -o strongly_connected_component_sample.mmd.svg
+
+%%```mermaid
+graph LR
+
+subgraph Strongly Connected Component 
+A(("A")) --> B(("B"))
+B --> C(("C"))
+C --> A
+end
+
+C --> D(("D"))
+
+subgraph Strongly Connected Component
+D --> E(("E"))
+E --> D
+end
+
+%%```

@@ -1,0 +1,77 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i routing_algorithms_shortestpathsearch_callgraph.mmd -o routing_algorithms_shortestpathsearch_callgraph.mmd.png -w 3840 -H 2160
+
+%%```mermaid
+
+graph TD
+
+Title[<u>RoutingAlgorithms&lt; Algorithm&gt; ::ShortestPathSearch Call Graph</u>]
+Title-->Start
+style Title fill:#FFF,stroke:#FFF
+linkStyle 0 stroke:#FFF,stroke-width:0;
+
+
+Start("Start") --> RoutingAlgorithms_ShortestPathSearch_Template["RoutingAlgorithms&lt; Algorithm&gt; ::ShortestPathSearch() <p></p> - include/engine/routing_algorithms.hpp "]
+
+RoutingAlgorithms_ShortestPathSearch_Template -. call .-> routing_algorithms_shortestpathsearch["routing_algorithms::shortestPathSearch()<p></p>- include/engine/routing_algorithms/shortest_path_impl.hpp"]
+
+routing_algorithms_shortestpathsearch -. call .-> initializeHeap["routing_algorithms::initializeHeap() <p></p>- include/engine/routing_algorithms/shortest_path_impl.hpp"]
+
+subgraph routing_algorithms ShortestPathSearch Flow Chart
+initializeHeap --> foreach_node_pair{"foreach node_pair"}
+foreach_node_pair -- valid node_pair --> allow_uturn{"allow_turn?"}
+allow_uturn -- allow --> routing_algorithms_searchWithUTurn["routing_algorithms::searchWithUTurn() <p></p>- include/engine/routing_algorithms/shortest_path_impl.hpp"]
+allow_uturn -- not allow --> routing_algorithms_search["routing_algorithms::search() <p></p>- include/engine/routing_algorithms/shortest_path_impl.hpp"]
+
+routing_algorithms_searchWithUTurn --> foreach_node_pair
+routing_algorithms_search --> foreach_node_pair
+
+foreach_node_pair -- foreach done --> routing_algorithms_unpackLegs["routing_algorithms::unpackLegs()<p></p>- include/engine/routing_algorithms/shortest_path_impl.hpp"]
+
+end
+
+routing_algorithms_search -. call if MLD .-> routing_algorithms_mld_search["routing_algorithms::mld::search()<p></p>- include/engine/routing_algorithms/routing_mld_base.hpp"]
+routing_algorithms_search -. call if CH .-> routing_algorithms_ch_search["routing_algorithms::ch::search()<p></p>- include/engine/routing_algorithms/routing_ch_base.hpp"]
+
+routing_algorithms_mld_search -. call .-> mld_search_while{"while <p></p>forward_heap.Size() + reverse_heap.Size() > 0 <p></p>&& forward_heap_min + reverse_heap_min < weight"}
+
+subgraph MLD Search Flow Chart
+mld_search_while -- true --> mld_routing_step["routing_algorithms::mld::routingStep()<p></p> both forward/reverse <p></p>- include/engine/routing_algorithms/routing_mld_base.hpp"]
+mld_routing_step --> mld_search_while
+
+mld_search_while -- false --> mld_retrievePackedPathFromHeap["routing_algorithms::mld::retrievePackedPathFromHeap()"]
+mld_retrievePackedPathFromHeap --> mld_unpackPath["MLD Unpack Path"]
+end
+
+mld_routing_step -. call .-> mld_routing_step_pop_min["node = forward_heap.DeleteMin()<p></p>weight = forward_heap.GetKey(node)"]
+mld_routing_step_pop_min --> mld_routing_step_was_reverse_inserted{"reverse_heap.WasInserted(node)"}
+
+subgraph MLD Check Meet
+mld_routing_step_was_reverse_inserted -- yes --> mld_routing_step_record_meet["reverse_weight = reverse_heap.GetKey(node);<p></p>path_weight = weight + reverse_weight;<p></p>if path_weight < path_upper_bound; path_upper_bound=path_weight"]
+end
+mld_routing_step_record_meet --> mld_relaxOutgoingEdges["routing_algorithms::mld::relaxOutgoingEdges()<p></p> both forward/reverse <p></p>- include/engine/routing_algorithms/routing_mld_base.hpp"]
+mld_routing_step_was_reverse_inserted -- no --> mld_relaxOutgoingEdges
+
+routing_algorithms_ch_search -. call .-> ch_search_while{"while <p></p>0 < (forward_heap.Size() + reverse_heap.Size()) "}
+
+subgraph CH Search Flow Chart
+ch_search_while -- true --> ch_routing_step["routing_algorithms::ch::routingStep()<p></p> both forward/reverse <p></p>- include/engine/routing_algorithms/routing_base_ch.hpp"]
+ch_routing_step --> ch_search_while
+
+ch_search_while -- false --> ch_retrievePackedPathFromHeap["routing_algorithms::ch::retrievePackedPathFromHeap()"]
+end
+
+ch_routing_step -. call .-> ch_routing_step_pop_min["node = forward_heap.DeleteMin()<p></p>weight = forward_heap.GetKey(node)"]
+ch_routing_step_pop_min --> ch_routing_step_was_reverse_inserted{"reverse_heap.WasInserted(node)"}
+
+subgraph CH Check Meet
+ch_routing_step_was_reverse_inserted -- yes --> ch_routing_step_record_meet["path_weight = reverse_heap.GetKey(node) + weight;<p></p>if path_weight < upper_bound; upper_bound=path_weight"]
+end
+ch_routing_step_record_meet --> ch_relaxOutgoingEdges["routing_algorithms::ch::relaxOutgoingEdges()<p></p> both forward/reverse <p></p>- include/engine/routing_algorithms/routing_base_ch.hpp"]
+ch_routing_step_was_reverse_inserted -- no --> ch_relaxOutgoingEdges
+
+
+routing_algorithms_unpackLegs --> End("End")
+
+%%```

@@ -1,0 +1,36 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i osrm-routed_startup_callgraph.mmd -o osrm-routed_startup_callgraph.mmd.png -w 3840 -H 2160
+
+graph TD
+
+Main["src/tools/routed.cpp: main()"] -. call .-> generateServerProgramOptions["src/tools/routed.cpp: generateServerProgramOptions()"]
+
+subgraph Main Function Flow Chart
+    generateServerProgramOptions --> ServiceHandler["include/server/server_handler.hpp: ServiceHandler::ServiceHandler()<p></p>    - Initialize `OSRM routing_machine` by `config`: include/osrm/osrm.hpp: OSRM()<p></p>  - All services(route, table, nearest, trip, match, tile) will be handled by the same `OSRM routing_machine`"]
+
+    ServiceHandler --> CreateServer["include/server/server.hpp: Server::CreateServer()<p></p> - Create server instance (listen socket)<p></p> - async_accpet then invoke `HandleAccept()` after accept"]
+
+    CreateServer --> RegisterServiceHandler["include/server/request_hander.hpp: RegisterServiceHandler()"]
+    RegisterServiceHandler --> Run["include/server/server.hpp: Server::Run() by mulitple threads <p></p> - based on boost::asio"]
+    Run --> Sigwait["sigwait for terminate signals"]
+    Sigwait --> Stop["include/server/server.hpp: Server::Stop() <p></p> - stop io_service"]
+    Stop --> Exit["- Join threads <p></p> - Free resources"]
+end
+
+ServiceHandler -. call .-> OSRM_routing_machine["include/osrm/osrm.hpp: OSRM()<p></p> - Create CH or MLD engine, initialize by EngineConfig"]
+CreateServer -. call .-> Connection["include/server/connection.hpp: Connection()<p></p> - Create a peer connection object, read, handle, write "]
+
+subgraph OSRM routing_machine Initialization Flow Chart
+
+OSRM_routing_machine -. call .-> Engine["include/engine/engine.hpp: Engine()<p></p> - Create all plugins: route, table, nearest, tile, match, trip.<p></p> - create `facade_provider` by Algorithm"]
+Engine -. call .-> ViaRoutePlugin["include/engine/plugins/viaroute.hpp: ViaRoutePlugin()<p></p> - viaroute.hpp: HandleRequest() is the real routing calculate function"]
+Engine -. call .-> TablePlugin["include/engine/plugins/table.hpp: TablePlugin()<p></p> - table.hpp: HandleRequest() is the real table calculate function <p></p> e.g. many-to-many routing"]
+
+ViaRoutePlugin --> DataFacadeProvider["include/engine/datafacade_provider.hpp: ImmutableProvider()"]
+TablePlugin --> DataFacadeProvider
+
+DataFacadeProvider -. call .-> ProcessMemoryAllocator["include/engine/datafacade/process_memory_allocator.hpp: ProcessMemoryAllocator() <p></p> - Construct `Storage` in memory and load mapdata into it <p></p> (will see obviously memory increase in this step) "]
+
+end
+

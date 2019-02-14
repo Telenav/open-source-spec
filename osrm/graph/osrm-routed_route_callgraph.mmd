@@ -1,0 +1,52 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i osrm-routed_route_callgraph.mmd -o osrm-routed_route_callgraph.mmd.png -w 3840 -H 2160
+
+graph TD
+
+Start("Start<p></p>(a new request coming)") --> HandleRequest["src/server/request_handler.cpp: RequestHandler::HandleRequest()"]
+
+HandleRequest -. call .-> DecodeAndParseURL["Decode And Parse URL<p></p>- include/util/string_util.hpp: util::URIDecode()<p></p>- src/server/api/url_parser.cpp: api::parseURL()"]
+
+subgraph RequestHandler HandleRequest Flow Chart
+
+DecodeAndParseURL --> ServiceHandler::RunQuery["src/server/server_handler.cpp: ServiceHandler::RunQuery()"]
+
+end 
+
+ServiceHandler::RunQuery -. call .-> FindActualService["Find Actual Service by URL path, e.g. route<p></p>- service_map.find()"]
+
+subgraph ServiceHandler RunQuery Flow Chart
+
+FindActualService -- nearest --> NearestServiceRunQuery["src/server/service/nearest_service.cpp:<p></p>   NearestService::RunQuery()"]
+FindActualService -- route --> RouteServiceRunQuery["src/server/service/route_service.cpp:<p></p>   RouteService::RunQuery()"]
+FindActualService -- match --> MatchServiceRunQuery["src/server/service/match_service.cpp:<p></p>  MatchService::RunQuery()"]
+FindActualService -- table --> TableServiceRunQuery["src/server/service/table_service.cpp:<p></p>   TableService::RunQuery()"]
+FindActualService -- trip --> TripServiceRunQuery["src/server/service/trip_service.cpp:<p></p>   TripService::RunQuery()"]
+FindActualService -- tile --> TileServiceRunQuery["src/server/service/tile_service.cpp:<p></p>   TileService::RunQuery()"]
+
+end 
+
+subgraph RouteService RunQuery Flow Chart
+RouteServiceRunQuery -. call .-> ParseRouteParameters["Parse Route Parameters <p></p> - include/server/api/parameters_parser.hpp: parseParameters() <p></p>- include/engine/api/route_parameters.hpp: RouteParameters()"]
+ParseRouteParameters --> OSRMRoute["src/osrm/osrm.cpp: OSRM::Route()"]
+end
+
+
+subgraph NearestService RunQuery Flow Chart
+NearestServiceRunQuery -. call .-> PraseNearestParameters["Parse Nearest Parameters <p></p>  - include/server/api/parameters_parser.hpp: parseParameters() <p></p>- include/engine/api/nearest_parameters.hpp: NearestParameters()"]
+PraseNearestParameters --> OSRMNearest["src/osrm/osrm.cpp: OSRM::Nearest()"]
+end
+
+subgraph TableService RunQuery Flow Chart
+TableServiceRunQuery -. call .-> PraseTableParameters["Parse Table Parameters <p></p>  - include/server/api/parameters_parser.hpp: parseParameters() <p></p>- include/engine/api/table_parameters.hpp: TableParameters()"]
+PraseTableParameters --> OSRMTable["src/osrm/osrm.cpp: OSRM::Table()"]
+end
+
+OSRMRoute -. call .-> EngineRoute["include/engine/engine.hpp: Route()"]
+OSRMNearest -. call .-> EngineNearest["include/engine/engine.hpp: Nearest()"]
+OSRMTable -. call .-> EngineTable["include/engine/engine.hpp: Table()"]
+
+EngineRoute -. call .-> RoutePluginHandleRequest["src/engine/plugins/viaroute.cpp: ViaRoutePlugin::HandleRequest()<p></p>- Real route calculation function"]
+EngineNearest -. call .-> NearestPluginHandleRequest["src/engine/plugins/nearest.cpp: NearestPlugin::HandleRequest()<p></p>- Real nearest calculation function"]
+EngineTable -. call .-> TablePluginHandleRequest["src/engine/plugins/table.cpp: TablePlugin::HandleRequest()<p></p>- Real table calculation function <p></p> e.g. many-to-many routing"]

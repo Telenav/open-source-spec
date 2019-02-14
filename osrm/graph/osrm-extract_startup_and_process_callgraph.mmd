@@ -1,0 +1,41 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i osrm-extract_startup_and_process_callgraph.mmd -o osrm-extract_startup_and_process_callgraph.mmd.png -w 3840 -H 2160
+
+graph TD
+
+Main["src/tools/extract.cpp: main()"] -. call .-> parseArguments["src/tools/extract.cpp: parseArguments()"]
+
+subgraph Main Function Flow Chart
+    parseArguments --> osrm_extract["src/osrm/extractor.cpp: osrm::extract()<p></p>    - Runs extraction process"]
+end
+
+osrm_extract -. call .-> Sol2ScriptingEnvironment["include/extractor/scripting_environment_lua.hpp: <p></p> Sol2ScriptingEnvironment::Sol2ScriptingEnvironment() <p></p> - initialize Lua running environment"]
+
+subgraph osrm extract Flow Chart
+Sol2ScriptingEnvironment --> ExtractorConstructor["include/extractor/extractor.hpp: <p></p> Extractor::Extractor() <p></p> - construct extractor object, mainly extractor configurations"]
+ExtractorConstructor --> ExtractorRun["include/extractor/extractor.hpp: <p></p> Extractor::run() <p></p> - run extract process"]
+end
+
+ExtractorRun -. call .-> ParseOSMData["src/extractor/extractor.cpp: Extractor::ParseOSMData() <p></p> - load .osm.xxx file with Lua profiles, output `.osrm,.osrm.names,.osrm.properties` file"]
+
+subgraph extract process Flow Chart
+
+ParseOSMData --> NodeBasedGraphFactory["include/extractor/node_based_graph_factory.hpp: NodeBasedGraphFactory::NodeBasedGraphFactory() <p></p> - loads the `*.osrm` file and transforms the data within into the node-based graph to represent the OSM network. <p></p> - includes geometry compression, annotation data optimisation and many other aspects"]
+NodeBasedGraphFactory --> FilesReadNames["include/extractor/files.hpp: files::readNames() <p></p> - read names table from `.osrm.names` file"]
+FilesReadNames --> guidanceFindSegregatedNodes["include/guidance/segregated_intersection_classification.hpp: guidance::findSegregatedNodes() <p></p> - Find all segregated edges, e.g. edges that can be skipped in turn instructions. <p><p> - The main cases are: <p></p>   -- middle edges between two osm ways in one logic road (U-turn) <p></p> -- staggered intersections (X-cross) <p></p> -- square/circle intersections"]
+guidanceFindSegregatedNodes --> FilesWriteNodesNBGNodes["include/extractor/files.hpp: files::writeNodes() <p></p> - write NodeBasedGraph graph nodes to `.osrm.nbg_nodes` file "]
+FilesWriteNodesNBGNodes --> ReleaseOsmNodes["include/extractor/node_based_graph_factory.hpp: NodeBasedGraphFactory::ReleaseOsmNodes() <p></p> - release memory of OSM nodes (done with OSM nodes) "]
+ReleaseOsmNodes --> FilesWriteCompressedNodeBasedGraph["include/extractor/files.hpp: files::writeCompressedNodeBasedGraph() <p></p> - write NodeBasedGraph to `.osrm.cnbg` file "]
+FilesWriteCompressedNodeBasedGraph --> ExtractorBuildEdgeExpandedGraph["src/extractor/extractor.cpp: Extractor::BuildEdgeExpandedGraph() <p></p> - Building an edge-expanded graph from node-based input and turn restrictions <p></p> - will write files: <p></p> -- .osrm.turn_weight_penalties <p></p> -- .osrm.turn_duration_penalties <p></p> -- .osrm.turn_penalties_index <p></p> -- .osrm.cnbg_to_ebg <p></p> -- .osrm.restrictions <p></p> -- .osrm.maneuver_overrides "]
+ExtractorBuildEdgeExpandedGraph --> ExtractorProcessGuidanceTurns["src/extractor/extractor.cpp: Extractor::ProcessGuidanceTurns() <p></p> - will write files: <p></p> -- .osrm.icd <p></p> -- .osrm.tld <p></p> -- .osrm.tls <p></p> -- .osrm.edges "]
+ExtractorProcessGuidanceTurns --> FilesWriteSegmentData["include/extractor/files.hpp: files::writeSegmentData() <p></p> - write `.osrm.geometry` file "]
+FilesWriteSegmentData --> FilesWriteEdgeBasedNodeWeightsDurations["include/extractor/files.hpp: files::writeEdgeBasedNodeWeightsDurations() <p></p> - write `.osrm.enw` file "]
+FilesWriteEdgeBasedNodeWeightsDurations --> FindComponents["src/extractor/extractor.cpp: Extractor::FindComponents()"]
+FindComponents --> BuildRTree["src/extractor/extractor.cpp: Extractor::BuildRTree()"]
+BuildRTree --> FilesWriteNodeData["include/extractor/files.hpp: files::writeNodeData() <p></p> - write `.osrm.ebg_nodes` file "]
+FilesWriteNodeData --> FilesWriteEdgeBasedGraph["include/extractor/files.hpp: files::writeEdgeBasedGraph() <p></p> - write `.osrm.ebg` file "]
+
+end
+
+FilesWriteEdgeBasedGraph --> End("End")

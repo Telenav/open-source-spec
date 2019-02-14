@@ -1,0 +1,15 @@
+sequenceDiagram
+    Main->> GraphReader: Init reader
+    GraphReader->> GraphReader: get_extract_instance(path/valhalla_tiles.tar)
+    GraphReader->> TileExtractor: construct
+    TileExtractor ->> Tar: construct parent class
+    Note right of Tar: create mmap for valhalla_tiles.tar
+    loop files in valhalla_tiles.tar
+           Tar --> Tar: Get pointer, header info of each file
+    end
+    Note right of Tar: Record as contents{pointer, etc}
+
+    loop content in contents
+           TileExtractor --> TileExtractor: mapping tile id with content
+    end
+    

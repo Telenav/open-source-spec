@@ -1,0 +1,47 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i viaroute_handlerequest_flowchart.mmd -o viaroute_handlerequest_flowchart.mmd.png -w 1920 -H 1080
+
+%%```mermaid
+
+graph TD
+
+Title[<u>ViaRoutePlugin::HandleRequest Flow Chart</u>]
+Title-->Start
+style Title fill:#FFF,stroke:#FFF
+linkStyle 0 stroke:#FFF,stroke-width:0;
+
+
+Start("Start") --> Validation{"Check Whether Routable? <p></p>- algorithms valid?<p></p>- coordinates/alternatives count valid? <p></p>- coordinates valid?"}
+
+Validation -- N --> FailEnd["Return Fail Response"]
+FailEnd --> End("End")
+
+Validation -- Y --> GetFacade["Get Reference of Mapdata Provider<p></p>- include/engine/routing_algorithms.hpp: RoutingAlgorithms::GetFacade()"]
+
+GetFacade --> GetPhantomNodes{"BasePlugin::GetPhantomNodes()<p></p>- include/engine/plugins/plugin_base.hpp"}
+
+subgraph OD
+GetPhantomNodes -- Succeed --> SnapPhantomNodes["include/engine/plugins/plugin_base.hpp: BasePlugin::SnapPhantomNodes()"]
+end
+
+GetPhantomNodes -- Failed --> FailEnd 
+
+GetPhantomNodes -. call .-> FacadeNearestPhantomNodeWithAlternativeFromBigComponent["include/engine/datafacade/contiguous_interalmem_datafacade.hpp:<p></p> NearestPhantomNodeWithAlternativeFromBigComponent() overload+4 <p></p> optional parameter raidus,bearings"]
+
+subgraph BasePlugin GetPhantomNodes Call Graph
+FacadeNearestPhantomNodeWithAlternativeFromBigComponent -. call .-> GeospatialNearestPhantomNodeWithAlternativeFromBigComponent["include/engine/geospatial_query.hpp:<p></p> NearestPhantomNodeWithAlternativeFromBigComponent() overload+4 <p></p> optional parameter raidus,bearings"]
+GeospatialNearestPhantomNodeWithAlternativeFromBigComponent -. call .-> Nearest["include/util/static_rtree.hpp: Nearest(input_coordinate, filter_func, terminate_func)"]
+end
+
+SnapPhantomNodes --> ConstructRouteAPI["Construct RouteAPI <p></p> - include/engine/api/route_api.hpp: RouteAPI::RouteAPI()"]
+ConstructRouteAPI --> DeclareInternalManyRoutesResult["Declare InternalManyRoutesResult <p></p> - include/engine/internal_route_result.hpp: InternalManyRoutesResult()"]
+
+DeclareInternalManyRoutesResult --> RouteSearch["Route Search <p></p> include/engine/routing_algorithms.hpp: <p></p>- AlternativePathSearch() <p></p>- Or DirectShortestPathSearch() <p></p>- Or ShortestPathSearch()"]
+
+RouteSearch -- Succeed --> MakeResponse["Make Route Repsonse <p></p> - include/engine/api/route_api.hpp: RouteAPI::MakeResponse()"]
+RouteSearch -- Failed --> FailEnd
+
+MakeResponse --> End
+
+%%```
