@@ -48,7 +48,6 @@ As above, `4-ary heap` of `QueryHeap` is very similar with `binary heap` of `std
    
 ## References
 - [class QueryHeap](https://github.com/Project-OSRM/osrm-backend/blob/72e03f9af9824cbb1d26cba878f242eb0feae584/include/util/query_heap.hpp#L195)
-- [class SearchGraph](https://bitbucket.telenav.com/projects/NAV/repos/navcore/browse/routingcore/src/Direction/Routing/route_search_graph.h)
 - [d-ary heap](https://en.wikipedia.org/wiki/D-ary_heap)
 - [Heap](https://en.wikipedia.org/wiki/Heap_(data_structure))
 - [Heapsort](https://en.wikipedia.org/wiki/Heapsort)
