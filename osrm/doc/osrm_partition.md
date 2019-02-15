@@ -11,6 +11,6 @@ OSM ways and nodes information.
 
 #2. Multiple level partitioned graph which is recorded in Cells
 
-Here is a simple case to go though OSRM partition's logic.  For more details please go to here.
+Here is a [simple case](./partition/osrm_partition_simple_case.md) to go though OSRM partition's logic.  For more details please go to [here](./partition/osrm_partition_detail.md).
 
 
