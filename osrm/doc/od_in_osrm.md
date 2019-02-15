@@ -134,15 +134,15 @@ Two functions (`BasePlugin::GetPhantomNodes()` and `BasePlugin::SnapPhantomNodes
 - At most 2 candidates will be got for each coordinate. At least 1 of them is big component candidate.     
     - Remain Question: it seems only 1 small + 1 big component candidate case can output 2 candidates? won't return 2 big component candidates?     
 
-## OD In OSRM vs. OD in Telenav(NGx based)
-|             | OD In OSRM         | OD In Telenav (NGx based)  |
-|-------------|--------------------|----------------------------|
-|Data Structure| RTree | looks like a kd-tree, but actually not a tree (stored as arrays); just split tiles by fc first, then by tile size |
-|Search Efficiency | search in a tree, from root to leaf, O(log(n)) | search by raidus, need to filter the whole list to get valid candidates |
-|Work in Preprocessing or Route Service| most of work done in data preprocessing, simple work in service| do all work in service|
-|Exit Condition Idea| `has_big_component` | found valid candidates in current radius, check 3 steps connectivity |
-|Candidate Count | Only 0~2 candidate per coordiate | save all valid candidates in radius |
-|Doc | |[OD Finding Strategy](https://spaces.telenav.com:8443/display/map/OD+Finding+Strategy), [OD Finding Implementation](https://spaces.telenav.com:8443/display/map/OD+Finding+Implementation)|
+## Summary
+|             | OD In OSRM         |
+|-------------|--------------------|
+|Data Structure| RTree |
+|Search Efficiency | search in a tree, from root to leaf, O(log(n)) |
+|Work in Preprocessing or Route Service|most of work done in data preprocessing, simple work in service	|
+|Exit Condition Idea| `has_big_component` |
+|Candidate Count | Only 0~2 candidate per coordiate |
+
 
 ## TODO from data side
 - Research how OSRM preprocess data for `OD`:    
@@ -155,6 +155,4 @@ Two functions (`BasePlugin::GetPhantomNodes()` and `BasePlugin::SnapPhantomNodes
 - [osrm Hosted Documentation](http://project-osrm.org/docs/v5.15.2/api)
 - [libosrm API Documentation](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/libosrm.md)
 - [osrm Toolchain File Overview](https://github.com/Project-OSRM/osrm-backend/wiki/Toolchain-file-overview)
-- [Telenav NGx Based OD Finding Strategy](https://spaces.telenav.com:8443/display/map/OD+Finding+Strategy)
-- [Telenav NGx Based OD Finding Implementation](https://spaces.telenav.com:8443/display/map/OD+Finding+Implementation)
 - [Mapbox Blog Post: Robust navigation with smart nearest neighbor search](https://blog.mapbox.com/robust-navigation-with-smart-nearest-neighbor-search-dbc1f6218be8)
