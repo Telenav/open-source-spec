@@ -7,7 +7,7 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 ## Research from engine side
 ### Topics
 - [OD In OSRM](./doc/od_in_osrm.md)
-- [QueryHeap - PriorityQueue and VisitedTable In OSRM](./doc/queryheap_in_osrm.md)
+- [QueryHeap In OSRM](./doc/queryheap_in_osrm.md)
 - [Understanding OSRM Graph Representation](./doc/understanding_osrm_graph_representation.md)    
 - [Bidirectional Dijkstra In OSRM](./doc/bidirectional_dijkstra_in_osrm.md)     
 - [OSRM Profile](./doc/osrm-profile.md)

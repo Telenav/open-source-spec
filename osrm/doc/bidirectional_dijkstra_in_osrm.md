@@ -7,7 +7,7 @@ Both of them will query shortest path by Bidirectional Dijkstra. Below we'll dis
 
 - Prerequisites     
     - [Understanding OSRM Graph Representation](./understanding_osrm_graph_representation.md)    
-    - [QueryHeap - PriorityQueue and VisitedTable In OSRM](./queryheap_in_osrm.md)    
+    - [QueryHeap In OSRM](./queryheap_in_osrm.md)    
 
 ## Bidirectional Dijkstra Shortest Path Search Call Graph
 ![routing_algorithms_shortestpathsearch_callgraph](../graph/routing_algorithms_shortestpathsearch_callgraph.mmd.png)
