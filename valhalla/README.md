@@ -3,8 +3,7 @@
 Valhalla is the open source navigation engine used by Tesla, primary developers are coming from MapZen/MapBox. 
 
 - [Getting Start with Valhalla in Telenav](./doc/valhalla-gettingstart.md) 
-- [Open Source Routing Engine](http://spaces.telenav.com:8080/display/map/Opensource+Routing+Engine) 
-- [Valhalla vs OSRM](https://spaces.telenav.com:8443/display/map/Valhalla+vs+OSRM)
+- [OSRM vs Valhalla](../osrm/doc/osrm-vs-valhalla.md)    
 
 ## Topics
 - [Graph Tiles](./doc/valhalla-tile-general.md)

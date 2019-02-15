@@ -1,31 +1,13 @@
-# QueryHeap - PriorityQueue and VisitedTable In OSRM
-[OSRM](https://github.com/Project-OSRM/osrm-backend) uses a single data structure [QueryHeap](https://github.com/Project-OSRM/osrm-backend/blob/72e03f9af9824cbb1d26cba878f242eb0feae584/include/util/query_heap.hpp#L195) to represent both what we call `priority_queue` and `visited_table`. The idea of [QueryHeap](https://github.com/Project-OSRM/osrm-backend/blob/72e03f9af9824cbb1d26cba878f242eb0feae584/include/util/query_heap.hpp#L195) is similar with `class SearchGraph` of `routingcore`, but different implementation.    
+# QueryHeap In OSRM
 
-## QueryHeap In OSRM vs. SearchGraph In routingcore
-### Action Interfaces
-| Action Interfaces | QueryHeap In OSRM | SearchGraph In routingcore |
-|-------------|---------------------|--------------------------------|
-|Insert|`Insert()`|`PQ_Add()`/`Hashmap_Add()`|
-|Find | `WasInserted()` | `Hashmap_Find()` |
-|Pop | `DeleteMin()` | `PQ_Pop()` |
+## QueryHeap In OSRM 
 
-### Similar Members Between QueryHeap And SearchGraph
-There're 3 members in [QueryHeap](https://github.com/Project-OSRM/osrm-backend/blob/72e03f9af9824cbb1d26cba878f242eb0feae584/include/util/query_heap.hpp#L195):     
-```c++
-    // [Jay] inserted_nodes will store one HeapNode during each `Insert()` action. 
-    //  The insert location (always at the end) will be the internal_index for each Node. 
-    //  similar with: `ReuseableVector<RouteItem, 15> m_visitedTable` of `SearchGraph`
-    std::vector<HeapNode> inserted_nodes;
+| Action Interfaces | QueryHeap In OSRM |
+|-------------|---------------------|
+|Insert|`Insert()`|
+|Find | `WasInserted()` |
+|Pop | `DeleteMin()` |
 
-    // [Jay] Priority Queue (boost::heap::d_ary_heap actually)
-    //  similar with: `std::priority_queue<QUEUE_ITEM> m_qRoute` of `SearchGraph`
-    HeapContainer heap;
-
-    // [Jay] NodeID -> internal_index Map
-    //  Default will be an array storage, but most of time it will be a `std::unordered_map`
-    //  similar with: `HASHMAP<uint64_t, uint32_t> m_mSegmentId2RelaxIdx` of `SearchGraph`
-    IndexStorage node_index;
-```     
 The `Insert()` operation can tell us how it works deeply:    
 ```c++
     void Insert(NodeID node, Weight weight, const Data &data)
@@ -38,16 +20,6 @@ The `Insert()` operation can tell us how it works deeply:
     }
 
 ```
-### Different Member Between QueryHeap And SearchGraph
-There still has another key member `HASHMAP<uint32_t, uint16_t> m_mEdge2Shadow` in `SearchGraph`, to handle the case enter the same edge from different source paths.     
-- Why it necessary in our code is:   
-    - When we settled an edge for more than 1 time, we recorded all of them with different costs, the smallest cost will be used first by `PriorityQueue`.     
-    - But when it's un-navigable(e.g. meet restriction), we have to prune it, then pick up next one for relax.    
-- How OSRM solve this problem?        
-    - OSRM has already handled restriction during pre-processing, so that only necessary to focus on the minimum cost during Query. (Refer to [Understanding OSRM Graph Representation](./understanding_osrm_graph_representation.md) for more details.)    
-    - If meet newer path to an same edge with smaller cost, just update previous one in `QueryHeap`.    
-
-
 
 ## std::priority_queue vs. boost::heap::d_ary_heap
 [Dijkstra](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm) based algorithms require a `Priority Queue` structure to iterate by ascending ordered weight(i.e. cost). Most of implementations will use the standard one: `std::priority_queue`, but [OSRM](https://github.com/Project-OSRM/osrm-backend) use `boost::heap::d_ary_heap`(`4-ary`) instead.    
@@ -71,13 +43,11 @@ As above, `4-ary heap` of `QueryHeap` is very similar with `binary heap` of `std
 
 
 ### TODO
-- have a try with `4-ary heap` in `routingcore`
 - there's another choice [Fibonacci Heap](https://en.wikipedia.org/wiki/Fibonacci_heap) may lead to better performance for [Dijkstra](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm), worthing to have a try.  Time complexity is `O(M + Nlog(N)`(with N =|V| and M = |A|)
 - If arc lengths are integers bounded by C, [multilevel buckets](https://pubsonline.informs.org/doi/abs/10.1287/opre.27.1.161) could achieve `O(M + nlogC/loglogC)`
    
 ## References
 - [class QueryHeap](https://github.com/Project-OSRM/osrm-backend/blob/72e03f9af9824cbb1d26cba878f242eb0feae584/include/util/query_heap.hpp#L195)
-- [class SearchGraph](https://bitbucket.telenav.com/projects/NAV/repos/navcore/browse/routingcore/src/Direction/Routing/route_search_graph.h)
 - [d-ary heap](https://en.wikipedia.org/wiki/D-ary_heap)
 - [Heap](https://en.wikipedia.org/wiki/Heap_(data_structure))
 - [Heapsort](https://en.wikipedia.org/wiki/Heapsort)

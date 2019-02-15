@@ -2,16 +2,18 @@
 We're going to research deeply in OSRM([Open Source Routing Machine](https://github.com/Project-OSRM/osrm-backend)). Here will be some study resources, experiences, etc.    
 
 - [Getting Start with OSRM in Telenav](./doc/GettingStart.md)    
-- [Open Source Routing Engine](http://spaces.telenav.com:8080/display/map/Opensource+Routing+Engine) 
 - [OSRM vs Valhalla](./doc/osrm-vs-valhalla.md)    
 
 ## Research from engine side
 ### Topics
 - [OD In OSRM](./doc/od_in_osrm.md)
-- [QueryHeap - PriorityQueue and VisitedTable In OSRM](./doc/queryheap_in_osrm.md)
+- [QueryHeap In OSRM](./doc/queryheap_in_osrm.md)
 - [Understanding OSRM Graph Representation](./doc/understanding_osrm_graph_representation.md)    
 - [Bidirectional Dijkstra In OSRM](./doc/bidirectional_dijkstra_in_osrm.md)     
 - [OSRM Profile](./doc/osrm-profile.md)
+- [OSRM Customization](./doc/osrm_customization.md)
+- [OSRM Partition](./doc/osrm_partition.md)
+- [OSRM Traffic Update](./doc/osrm_traffic_update.md)
 
 ### Graphs for source code
 - [osrm-routed Startup Call Graph](./graph/osrm-routed_startup_callgraph.mmd.png)
