@@ -19,7 +19,7 @@ struct Coordinate
 }
 ```
 
-More context could be found here [code](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/src/partitioner/partitioner.cpp#L45)
+More context could be found [here](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/src/partitioner/partitioner.cpp#L45)
 
 
 ## Generate Graph
@@ -78,7 +78,7 @@ Most of partition logic happened in the constructor of [RecursiveBisection](http
 [PrePartitionWithSCC](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/src/partitioner/recursive_bisection_state.cpp#L91) is the function calculate strong connected component, and you could find the implementation of algorithm [here](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/include/extractor/tarjan_scc.hpp#L62)<br/>
 
 ### Find most suitable bisection
-[Inertial flow] is the algorithm used for graph partition, which is the most important part of [CRP](../../../routing_basic/doc/crp.md) and [MLD](../bidirectional_dijkstra_in_osrm.md).  [This blog](https://daniel-j-h.github.io/post/selection-algorithms-for-partitioning/) describe the logic pretty clear, and its coming from author of this part's code. <br/>
+[Inertial flow]() is the algorithm used for graph partition, which is the most important part of [CRP](../../../routing_basic/doc/crp.md) and [MLD](../bidirectional_dijkstra_in_osrm.md).  [This blog](https://daniel-j-h.github.io/post/selection-algorithms-for-partitioning/) describe the logic pretty clear, and its coming from author for this part's code. <br/>
 
 ```C++
 // entrance point
@@ -97,7 +97,7 @@ DinicMaxFlow::MinCut bestMinCut(const BisectionGraphView &view,
 
 bestMinCut will try with different set of source/sink nodes and find best cut on each of them, then pick the one with minimum cost for bestMinCut.<br/>
 For selecting different source/sink nodes, you could go to function [makeSpatialOrder](), and function [reorderFirstLast]() is the one you should not missed.<br/>
-After source/sink nodes be selected, OSRM use [Dinic algorithm](https://en.wikipedia.org/wiki/Dinic%27s_algorithm) to calculate [max flow min cut](../../../routing_basic/doc/max_flow_min_cut.md).  You could find implementation [here]() and you could follow the steps of function listed below<br/>
+After source/sink nodes be selected, OSRM use [Dinic algorithm](https://en.wikipedia.org/wiki/Dinic%27s_algorithm) to calculate [max flow min cut](../../../routing_basic/doc/max_flow_min_cut.md).  Implementation is [here](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/src/partitioner/dinic_max_flow.cpp#L39) and you could follow the steps of function listed below<br/>
 ```C++
 DinicMaxFlow::ComputeLevelGraph
 

@@ -2,7 +2,7 @@
 
 ## Graph example
 
-<img src="../../graph/osrm_partition_graph_example.png" alt="osrm_partition_graph_example" width="300"/>
+<img src="../../graph/osrm_partition_graph_example.png" alt="osrm_partition_graph_example" width="400"/>
 <br/>
 
 ```
@@ -59,7 +59,7 @@ edges = {{0, 1},
          {6, 7},
          {7, 3},
          {7, 6},
-         {9, 8} // 9 & 4 is a separate component
+         {9, 8} // 9 & 8 is a separate component
         }
 ```
 If user want to query for connectivity of node 5, then will get edge range {10, 11, 12} which indicates {5, 1}, {5, 4}, {5, 6} <br/>
@@ -76,19 +76,19 @@ For more information please go to [detail page](./osrm_partition_detail.md#bisec
 
 
 ### Find strong connected components
-Node 9 and 4 don't have any connectivity with other edges.  For the upper graph we could dived data into two components: <br/>
+Node 9 and 8 don't have any connectivity with other edges.  For the upper graph we could dived data into two components: <br/>
 Component 1: nodes {0, 1, 2, 3, 4, 5, 6, 7} <br/>
 Component 2: nodes {8, 9} <br/>
-Each component is also a graph and represented by BisectionGraphView. 
+Each component is also a graph and represented by [BisectionGraphView](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/include/partitioner/bisection_graph_view.hpp#L23). 
 
 For more information please go to [detail page](./osrm_partition_detail.md#find-strong-connected-components) <br/>
 
 ### Find most suitable bisection
 Component 2 is very simple, here we take component 1 as an example. <br/>
-For first cut, the best partition is cut between node 5 & 6 to break the graph into two parts
-For second cut(if we want to have each component contains 2 nodes), the best partition is the first partition based on the algorithm.  Because {{4, 0}, {1, 5}} and {{4, 5}, {0, 1}} has the same cut result. <br/>
+For first cut, the best partition is cut between node 5 & 6 to break the graph into two parts<br/>
+For second cut(if we want to have each sub-partition contains 2 nodes) there could be multiple choices which have the same result, due to that {{4, 0}, {1, 5}} and {{4, 5}, {0, 1}} could generte the same cut, the best partition is the first candidate found by the algorithm.   <br/>
 Based on the algorithm of inertial flow, the cut will try with different angles start from 0 degree, the cut result would be {0, 4} and {1, 5} for the left and {2, 6} and {3, 7} for the right.<br/>
-The beauty of using bisection is we could use 0 or 1 to identify each cut.  Take nodes {0, 1, 2, 3, 4, 5, 6, 7} as an example, after first cut {0, 1, 4, 5} will be assigned with 0, {2, 3, 6, 7} will be assigned with 1.  For the second cut in {0, 1, 4, 5}, {0, 4} will be assigned with 0 and {1, 5 } will be assigned with 1. <br/> 
+The beauty of using bisection is we could use 0 or 1 to identify differernt cut.  Take nodes {0, 1, 2, 3, 4, 5, 6, 7} as an example, after first cut {0, 1, 4, 5} will be assigned with 0, {2, 3, 6, 7} will be assigned with 1.  For the second cut in {0, 1, 4, 5}, {0, 4} will be assigned with 0 and {1, 5 } will be assigned with 1. <br/> 
 Bisection result for each steps could be represented as below:
  ```
        0      |      1 
@@ -99,7 +99,7 @@ Bisection result for each steps could be represented as below:
  ```
 {0b00, 0b01, 0b10, 0b11, 0b00, 0b01, 0b10, 0b11}
  ```
-Take node 6 as example, the first cut the value is 1 and second cut the value is 0, so we use binary 0b10 to represent which.<br/>
+Take node 6 as example, the first cut the value is 1 and second cut the value is 0, so we use binary 0b10 to record partition result.<br/>
 
 For more information please go to [detail page](./osrm_partition_detail.md#find-most-suitable-bisection) <br/>
 
@@ -124,12 +124,12 @@ There is no such case for the upper graph. <br/>
 For more information please go to [detail page](./osrm_partition_detail.md#remove-unconnected-boundary-edges) <br/>
 
 ## Renumber graph
-Renumber will re-organize the nodes sequence and build a mapping table its original location.<br/>
-It will move nodes in the same cell together, such as {0, 4} and {3, 7}.
+Renumber will re-organize the nodes sequence and build a mapping table to its original location.<br/>
+It will first move nodes in the same cell together, such as {0, 4} and {3, 7}.
 ```
 {0, 4, 1, 5, 2, 6, 3, 7}
 ```
-Then it will try to make boarder nodes(such as 6) which on the highest level to have a very low ID, nodes that are never boarder nodes are sorted to the end of array
+Then it will try to make boarder nodes(such as 6) which on the highest level to have a very low ID, nodes that are never boarder nodes are sorted to the end of array<br/>
 The boarder level of different node is
 ```
 {1, 1, 1, 1, 1, 2, 2, 1}
@@ -142,7 +142,7 @@ And the final mapping table is
 ```
 {2, 4, 5, 6, 3, 0, 1, 7}
 ```
-For node 0, its final position is index 2 which means its the 3rd element in the array.  Based on these adjust node sequence we could adjust node and edge's sequence.<br/>
+For node 0, its final position is index 2 which means its the 3rd element in the array.  Then nodes and edges in the graph will be arraged follow this sequence.<br/>
 For more information please go to [detail page](./osrm_partition_detail.md#renumber-graph) <br/>
 
 ## Output
