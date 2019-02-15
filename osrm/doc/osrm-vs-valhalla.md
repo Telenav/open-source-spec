@@ -4,8 +4,6 @@
   - [From programmer's perspective](#from-programmers-perspective)
   - [From product manager's perspective](#from-product-managers-perspective)
   - [From QA's perspective](#from-qas-perspective)
-  - [Discussions](#discussions)
-  - [Key Words](#key-words)
 
 # OSRM vs Valhalla
 
@@ -67,16 +65,3 @@ Both of engines provide sufficient unit test to guarantee code quality, and also
 
 
 
-## Discussions
-
-- [Modern Route Algorithm(CRP)](../../routing_basic/resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
-
-- [Map Matching(Hidden Markov Model and Viterbi)](../../valhalla/resource/presentations/valhalla_mm_11202018.pptx)
-
-- [Graph Preprocessing Strategy](../../routing_basic/resource/presentations/route_preprocessing_overview_11302017.pptx)
-
-- [OSM Data Processing with OSMIUM](../../osmium/resource/slides/osmium_20181201.pptx)
-
-
-## Key Words
-[OSRM Beginner's Guide](./GettingStart.md) - [Valhalla Beginner's Guide](../../valhalla/doc/valhalla-gettingstart.md) - [CRP](../../routing_basic/doc/crp.md) - [OD Finding](./od_in_osrm.md) - [Graph representation](./understanding_osrm_graph_representation.md) - [Fixed boundary Tile](../../valhalla/doc/valhalla-tile-general.md) - [Map Matching](../../valhalla/doc/valhalla-mapmatching.md) - [Bidirectional-dijkstra](./bidirectional_dijkstra_in_osrm.md) - [Fibonacci Heap](./queryheap_in_osrm.md) - [Graph Partition](../../routing_basic/doc/graph_partition.md) - [Max Flow Min Cut](../../routing_basic/doc/max_flow_min_cut.md) 

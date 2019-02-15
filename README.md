@@ -1,16 +1,26 @@
 # Open Source Spec
 
-This repository contains Telenav's experience on using several open source projects.
+This repository records Telenav's experience on using several open source projects.
 
+## Projects
 
-## [OSRM](./osrm/README.md)
+### [OSRM](./osrm/README.md)
 Open Source Routing Machine
 
-## [Valhalla](./valhalla/README.md)
+### [Valhalla](./valhalla/README.md)
 Open source Routing Library/Service
 
-## [OSMIUM](./osmium/README.md)
+### [OSMIUM](./osmium/README.md)
  A fast and flexible C++ library for working with OpenStreetMap data
 
+## Discussions
+- [Modern Route Algorithm(CRP)](./routing_basic/resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
+- [Map Matching(Hidden Markov Model and Viterbi)](./valhalla/resource/presentations/valhalla_mm_11202018.pptx)
+- [Graph Preprocessing Strategy](./routing_basic/resource/presentations/route_preprocessing_overview_11302017.pptx)
+- [OSM Data Processing with OSMIUM](./osmium/resource/slides/osmium_20181201.pptx)
+
+
+## Pages
+[OSRM-vs-Valhalla](./osrm/doc/osrm-vs-valhalla.md) - [OSRM Beginner's Guide](./osrm/doc/GettingStart.md) - [Valhalla Beginner's Guide](./valhalla/doc/valhalla-gettingstart.md) - [CRP](./routing_basic/doc/crp.md) - [OSRM OD Finding](./osrm/doc/od_in_osrm.md) - [OSRM Graph representation](./osrm/doc/understanding_osrm_graph_representation.md) - [OSRM Partition](./osrm/doc/osrm_partition.md) - [OSRM customization](./osrm/doc/osrm_customization.md) -[OSRM traffic](./osrm/doc/osrm_traffic_update.md) - [Valhalla Fixed boundary Tile](./valhalla/doc/valhalla-tile-general.md) - [Map Matching](./valhalla/doc/valhalla-mapmatching.md) - [Bidirectional-dijkstra](./osrm/doc/bidirectional_dijkstra_in_osrm.md) - [Fibonacci Heap](./osrm/doc/queryheap_in_osrm.md) - [Graph Partition](./routing_basic/doc/graph_partition.md) - [Max Flow Min Cut](./routing_basic/doc/max_flow_min_cut.md) 
 
 
