@@ -11,6 +11,9 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 - [Understanding OSRM Graph Representation](./doc/understanding_osrm_graph_representation.md)    
 - [Bidirectional Dijkstra In OSRM](./doc/bidirectional_dijkstra_in_osrm.md)     
 - [OSRM Profile](./doc/osrm-profile.md)
+- [OSRM Customization](./doc/osrm_customization.md)
+- [OSRM Partition](./doc/osrm_partition.md)
+- [OSRM Traffic Update](./doc/osrm_traffic_update.md)
 
 ### Graphs for source code
 - [osrm-routed Startup Call Graph](./graph/osrm-routed_startup_callgraph.mmd.png)
