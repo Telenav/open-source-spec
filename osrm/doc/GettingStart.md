@@ -107,5 +107,4 @@ The document [OSRM Processing Flow](https://github.com/Project-OSRM/osrm-backend
 
 ### osrm-routed   
 This is a demo HTTP server on top of `libosrm` library, the core routing service engine. More detailed refer to [Running the Engine via a HTTP Server (osrm-routed)](https://github.com/Project-OSRM/osrm-backend/wiki/Running-OSRM#running-the-engine-via-a-http-server-osrm-routed).    
-I will focus on understanding this part for now, especially the `libosrm` library. 
 
