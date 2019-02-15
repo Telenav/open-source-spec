@@ -96,16 +96,16 @@ DinicMaxFlow::MinCut bestMinCut(const BisectionGraphView &view,
 ```
 
 bestMinCut will try with different set of source/sink nodes and find best cut on each of them, then pick the one with minimum cost for bestMinCut.<br/>
-For selecting different source/sink nodes, you could go to function [makeSpatialOrder](), and function [reorderFirstLast]() is the one you should not missed.<br/>
+For selecting different source/sink nodes, you could go to function [makeSpatialOrder](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/src/partitioner/inertial_flow.cpp#L39), and function [reorderFirstLast](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/include/partitioner/reorder_first_last.hpp#L21) is the one you should not missed.<br/>
 After source/sink nodes be selected, OSRM use [Dinic algorithm](https://en.wikipedia.org/wiki/Dinic%27s_algorithm) to calculate [max flow min cut](../../../routing_basic/doc/max_flow_min_cut.md).  Implementation is [here](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/src/partitioner/dinic_max_flow.cpp#L39) and you could follow the steps of function listed below<br/>
 ```C++
-DinicMaxFlow::ComputeLevelGraph
+    DinicMaxFlow::ComputeLevelGraph
 
-DinicMaxFlow::BlockingFlow
+    DinicMaxFlow::BlockingFlow
 
-DinicMaxFlow::GetAugmentingPath
+    DinicMaxFlow::GetAugmentingPath
 
-DinicMaxFlow::MakeCut
+    DinicMaxFlow::MakeCut
 
 ```
 

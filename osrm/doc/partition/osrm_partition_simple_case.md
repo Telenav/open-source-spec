@@ -53,7 +53,7 @@ edges = {{0, 1},
          {4, 5},
          {5, 1},
          {5, 4},
-         {5, 6}, // 6 & 7 connects two components
+         {5, 6}, // 6 & 5 connects two components
          {6, 2},
          {6, 5},
          {6, 7},
