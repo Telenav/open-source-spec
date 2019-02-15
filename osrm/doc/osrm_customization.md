@@ -1,4 +1,4 @@
-# OSRM Customization
+# OSRM Customization
 
 Customize is the step to apply real time cost for the graph.  In OSRM, customization means update live traffic to each of graph partitions and then calculate cost between each of entry/exists node pairs.  Real time route query will dramatically be speed up due to those processing.  For more backgrounds, you could go to [CRP](../../routing_basic/doc/crp.md) page.
 
@@ -15,7 +15,7 @@ A simulate partition to divide them into two groups: green {0, 1} and yellow {2,
 
 
 ##### Graph construction
-OSRM::MultiLevelGraph is construct by partition rules and sorted edges. 
+OSRM::MultiLevelGraph is construct by partition rules and sorted edges. 
 ```C++
 auto graph = makeGraph(mlp, edges);
 ```
