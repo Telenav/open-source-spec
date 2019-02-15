@@ -1,6 +1,10 @@
 # OSRM Partition Simple Case
 
 ## Graph example
+
+<img src="../../graph/osrm_partition_graph_example.png" alt="osrm_partition_graph_example" width="300"/>
+<br/>
+
 ```
 nodes = {0,1,2,3,4,5,6,7,8,9}
 edges = {{0, 1},
@@ -24,8 +28,12 @@ edges = {{0, 1},
          {9, 8} // 9 & 8 is a separate component
         }
 ```
+<br/>
 
-For more OSRM partition's input, please go to [details](./osrm_partition_detail.md) <br/>
+
+
+
+For more information please go to [detail page](./osrm_partition_detail.md#partition-input) <br/>
 
 ## Generate Graph
 
@@ -56,13 +64,15 @@ edges = {{0, 1},
 ```
 If user want to query for connectivity of node 5, then will get edge range {10, 11, 12} which indicates {5, 1}, {5, 4}, {5, 6} <br/>
 
-For more details, please go to [details](./osrm_partition_detail.md) <br/>
+For more information please go to [detail page](./osrm_partition_detail.md#generate-graph) <br/>
 
 ## Bisect Graph
 Bisection graph will partition the graph from top down.  First will treat graph as whole piece then try to find best cut to break it as two part, then continue the same logic for these two parts separately.   <br/>
 
 The picture below shows bisection result of US map for first few steps: <br/>
-<img src="../../references/pictures/inertial_flow_us_cut.png" alt="function_class_candidate" width="200"/>
+<img src="../../references/pictures/inertial_flow_us_cut.png" alt="inertial_flow_us_cut" width="200"/>
+
+For more information please go to [detail page](./osrm_partition_detail.md#bisect-graph)<br/>
 
 
 ### Find strong connected components
@@ -71,7 +81,7 @@ Component 1: nodes {0, 1, 2, 3, 4, 5, 6, 7} <br/>
 Component 2: nodes {8, 9} <br/>
 Each component is also a graph and represented by BisectionGraphView. 
 
-For more details, please go to [details](./osrm_partition_detail.md) <br/>
+For more information please go to [detail page](./osrm_partition_detail.md#find-strong-connected-components) <br/>
 
 ### Find most suitable bisection
 Component 2 is very simple, here we take component 1 as an example. <br/>
@@ -90,7 +100,8 @@ Bisection result for each steps could be represented as below:
 {0b00, 0b01, 0b10, 0b11, 0b00, 0b01, 0b10, 0b11}
  ```
 Take node 6 as example, the first cut the value is 1 and second cut the value is 0, so we use binary 0b10 to represent which.<br/>
-For more details, please go to [details](./osrm_partition_detail.md) <br/>
+
+For more information please go to [detail page](./osrm_partition_detail.md#find-most-suitable-bisection) <br/>
 
 
 ## Convert bisection result to partition
@@ -105,11 +116,12 @@ The structure of MultiLevelPartition could be construct based on the those array
 ```
 MultiLevelPartition mlp{{l1, l2, l3}, {4, 2, 1}};
 ```
-For more details, please go to [details](./osrm_partition_detail.md) <br/>
+For more information please go to [detail page](./osrm_partition_detail.md#convert-bisection-result-to-partition) <br/>
 
 ## Remove unconnected boundary edges
 Remove unconnected boundary edges is the step to adjust partition result.  For the node has no connectivity with the cells it belonging to, then will move which to the cell which it do have connectivity.
-There is no such case for the upper graph.  For more details, please go to [details](./osrm_partition_detail.md) <br/>
+There is no such case for the upper graph. <br/>
+For more information please go to [detail page](./osrm_partition_detail.md#remove-unconnected-boundary-edges) <br/>
 
 ## Renumber graph
 Renumber will re-organize the nodes sequence and build a mapping table its original location.<br/>
@@ -130,8 +142,8 @@ And the final mapping table is
 ```
 {2, 4, 5, 6, 3, 0, 1, 7}
 ```
-For node 0, its final position is index 3.  Based on these adjust node sequence we could adjust node and edge's sequence.
-
+For node 0, its final position is index 2 which means its the 3rd element in the array.  Based on these adjust node sequence we could adjust node and edge's sequence.<br/>
+For more information please go to [detail page](./osrm_partition_detail.md#renumber-graph) <br/>
 
 ## Output
 
