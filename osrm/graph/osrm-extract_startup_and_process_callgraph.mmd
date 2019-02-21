@@ -73,6 +73,11 @@ NodeBasedGraphFactoryCompress -. call .-> GraphCompressorCompress["GraphCompress
 GraphCompressorCompress -.- Sol2ScriptingEnvironmentProcessTurn["Sol2ScriptingEnvironment::ProcessTurn() will be called inside, <p></p>which will call `process_turn()` from `Lua` script"]
 style Sol2ScriptingEnvironmentProcessTurn fill:#f9f,stroke-dasharray: 5, 5
 
+
+ExtractorBuildEdgeExpandedGraph -. call .-> EdgeBasedGraphFactory["Construct EdgeBasedGraphFactory, <p></p> then call `EdgeBasedGraphFactory::Run()` to generate edge based graph"]
+EdgeBasedGraphFactory -.- Sol2ScriptingEnvironmentProcessTurn
+
+
 FilesWriteEdgeBasedGraph --> End("End")
 
 
