@@ -4,6 +4,13 @@
 
 graph TD
 
+Title[<u>osrm-extract startup and process Call Graph</u>]
+Title-->Start
+style Title fill:#FFF,stroke:#FFF
+linkStyle 0 stroke:#FFF,stroke-width:0;
+
+Start("Start") --> Main
+
 Main["src/tools/extract.cpp: main()"] -. call .-> parseArguments["src/tools/extract.cpp: parseArguments()"]
 
 subgraph Main Function Flow Chart
