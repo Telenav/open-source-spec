@@ -10,12 +10,16 @@ subgraph Main Function Flow Chart
     parseArguments --> osrm_extract["src/osrm/extractor.cpp: osrm::extract()<p></p>    - Runs extraction process"]
 end
 
-osrm_extract -. call .-> Sol2ScriptingEnvironment["include/extractor/scripting_environment_lua.hpp: <p></p> Sol2ScriptingEnvironment::Sol2ScriptingEnvironment() <p></p> - initialize Lua running environment"]
+osrm_extract -. call .-> Sol2ScriptingEnvironment["include/extractor/scripting_environment_lua.hpp: <p></p> Sol2ScriptingEnvironment::Sol2ScriptingEnvironment() <p></p> - construct Lua running environment object(not initialized yet)"]
 
 subgraph osrm extract Flow Chart
 Sol2ScriptingEnvironment --> ExtractorConstructor["include/extractor/extractor.hpp: <p></p> Extractor::Extractor() <p></p> - construct extractor object, mainly extractor configurations"]
 ExtractorConstructor --> ExtractorRun["include/extractor/extractor.hpp: <p></p> Extractor::run() <p></p> - run extract process"]
 end
+
+Sol2ScriptingEnvironment -.- Sol2ScriptingEnvironmentInitializationNote["The Sol2ScriptingEnvironment object will be initialized by first call of it's method, <p></p> internally the `InitContext()` will be called. <p></p> Each thread will have one individual context when parallel use it."]
+style Sol2ScriptingEnvironmentInitializationNote fill:#f9f,stroke-dasharray: 5, 5
+
 
 ExtractorRun -. call .-> ParseOSMData["src/extractor/extractor.cpp: Extractor::ParseOSMData() <p></p> - load .osm.xxx file with Lua profiles, output `.osrm,.osrm.names,.osrm.properties` file"]
 
@@ -37,5 +41,25 @@ BuildRTree --> FilesWriteNodeData["include/extractor/files.hpp: files::writeNode
 FilesWriteNodeData --> FilesWriteEdgeBasedGraph["include/extractor/files.hpp: files::writeEdgeBasedGraph() <p></p> - write `.osrm.ebg` file "]
 
 end
+
+ParseOSMData -. call .-> ParsingRelationsPipelineBufferReader["buffer_reader() <p></p> - by `osmium::io::Reader` "]
+subgraph Parsing Relations Parallel Pipeline
+ParsingRelationsPipelineBufferReader -.-> ParsingRelationsPipelineBufferRelationCache["buffer_relation_cache()"]
+ParsingRelationsPipelineBufferRelationCache -.-> ParsingRelationsPipelineBufferStorageRelation["buffer_storage_relation()"]
+end
+
+ParsingRelationsPipelineBufferStorageRelation -.-> ParsingNodesWaysPipelineBufferReader["buffer_reader() <p></p> - by `osmium::io::Reader` "]
+subgraph Parsing Nodes Ways Parallel Pipeline
+ParsingNodesWaysPipelineBufferReader -.-> ParsingNodesWaysPipelineBufferTransformer["buffer_transformer()"]
+ParsingNodesWaysPipelineBufferTransformer -.-> ParsingRelationsPipelineBufferStorage["buffer_storage()"]
+end
+
+ParsingNodesWaysPipelineBufferTransformer -.- Sol2ScriptingEnvironmentProcessElements["Sol2ScriptingEnvironment::ProcessElements() will be called inside, <p></p> which will call `process_node()/process_way()` from `Lua` script"]
+style Sol2ScriptingEnvironmentProcessElements fill:#f9f,stroke-dasharray: 5, 5
+
+ParsingRelationsPipelineBufferStorage -.-> ExtractionContainersPrepareData["`ExtractionContainers::PrepareData()` <p></p>- Processes the collected data and serializes it."]
+ExtractionContainersPrepareData -.- Sol2ScriptingEnvironmentProcessSegment["Sol2ScriptingEnvironment::ProcessSegment() will be called inside, <p></p>which will call `process_segment()` from `Lua` script<p></p>- Noted that this function is NOT defined in `car.lua` for now"]
+style Sol2ScriptingEnvironmentProcessSegment fill:#f9f,stroke-dasharray: 5, 5
+
 
 FilesWriteEdgeBasedGraph --> End("End")
