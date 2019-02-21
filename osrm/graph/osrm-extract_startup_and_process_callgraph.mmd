@@ -62,4 +62,17 @@ ExtractionContainersPrepareData -.- Sol2ScriptingEnvironmentProcessSegment["Sol2
 style Sol2ScriptingEnvironmentProcessSegment fill:#f9f,stroke-dasharray: 5, 5
 
 
+subgraph NodeBasedGraphFactory Constructor
+NodeBasedGraphFactory -. call .-> NodeBasedGraphFactoryLoadDataFromFile["NodeBasedGraphFactory::LoadDataFromFile() <p></p> Get the information from the *.osrm file <p></p>and prepare the graph creation process"]
+NodeBasedGraphFactoryLoadDataFromFile --> NodeBasedGraphFactoryCompress["NodeBasedGraphFactory::Compress() <p></p>Compress the node-based graph into a compact representation of itself."]
+NodeBasedGraphFactoryCompress --> NodeBasedGraphFactoryCompressGeometry["NodeBasedGraphFactory::CompressGeometry()"]
+NodeBasedGraphFactoryCompressGeometry --> NodeBasedGraphFactoryCompressAnnotationData["NodeBasedGraphFactory::CompressAnnotationData()"]
+end
+
+NodeBasedGraphFactoryCompress -. call .-> GraphCompressorCompress["GraphCompressor::Compress()"]
+GraphCompressorCompress -.- Sol2ScriptingEnvironmentProcessTurn["Sol2ScriptingEnvironment::ProcessTurn() will be called inside, <p></p>which will call `process_turn()` from `Lua` script"]
+style Sol2ScriptingEnvironmentProcessTurn fill:#f9f,stroke-dasharray: 5, 5
+
 FilesWriteEdgeBasedGraph --> End("End")
+
+
