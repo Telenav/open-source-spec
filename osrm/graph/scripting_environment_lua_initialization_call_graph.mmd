@@ -1,0 +1,45 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i scripting_environment_lua_initialization_call_graph.mmd -o scripting_environment_lua_initialization_call_graph.mmd.png -w 3840 -H 2160
+
+graph TD
+
+Title[<u>ScriptingEnvironmentLua Initialization Call Graph</u>]
+Title-->Start
+style Title fill:#FFF,stroke:#FFF
+linkStyle 0 stroke:#FFF,stroke-width:0;
+
+Start("Start") --> CallOneScriptingEnvironmentLuaMethod["call a public method of `ScriptingEnvironmentLua` <p></p> e.g. `Sol2ScriptingEnvironment::GetProfileProperties()`"]
+CallOneScriptingEnvironmentLuaMethod -. call .-> Sol2ScriptingEnvironmentGetSol2Context["get lua scripting context by `Sol2ScriptingEnvironment::GetSol2Context()`"]
+Sol2ScriptingEnvironmentGetSol2Context -. call .-> IfNotInitializedInCurrentThread{"if context was not initialized in current thread"}
+IfNotInitializedInCurrentThread -- yes --> Sol2ScriptingEnvironmentInitContext["`Sol2ScriptingEnvironment::InitContext()`"]
+
+Sol2ScriptingEnvironmentInitContext -. call .-> InitContextRegisterHelperFunctionsIntoLua["register C++ implemented helper functions into Lua <p></p>- `durationIsValid()`<p></p>- `parseDuration()`<p></p>- `trimLaneString()`<p></p>- `applyAccessTokens()`<p></p>`- canonicalizeStringList()`"]
+
+subgraph Sol2ScriptingEnvironment InitContext Flow Chart
+InitContextRegisterHelperFunctionsIntoLua --> InitContextDefineNewEnumsIntoLua["register C++ implemented enums into Lua<p></p>- `mode`(`TravelMode`) <p></p>- `road_priority_class`(`RoadPriorityClass`) <p></p>- `item_type`(`osmium::item_type`, i.e. `node/way/relation`)"]
+InitContextDefineNewEnumsIntoLua --> InitContextDefineNewTypesIntoLua["register C++ implemented types into Lua <p></p>- `raster`(`RasterContainer`) <p></p>- `ProfileProperties` <p></p>- `vector`(`std::vector`) <p></p>- `Location`(`osmium::Location`) <p></p>- `Way`(`osmium::Way`) <p></p>- `Node`(`osmium::Node`) <p></p>- `ResultNode`(`ExtractionNode`) <p></p>- `RoadClassification` <p></p>- `ResultWay`(`ExtractionWay`) <p></p>- `OsmIDTyped`(`ExtractionRelation::OsmIDTyped`) <p></p>- `ExtractionRelation` <p></p>- `ExtractionRelationContainer` <p></p>- `ExtractionSegment` <p></p>- `NodeRef`(`osmium::NodeRef`) <p></p>- `EdgeSource`(`InternalExtractorEdge`) <p></p>- `EdgeTarget`(`QueryNode`) <p></p>- `Coordinate`(`util::Coordinate`) <p></p>- `RasterDatum`"]
+InitContextDefineNewTypesIntoLua --> InitContextLoadLuaFile("Load Lua functions into C++, i.e. Load Lua File <p></p>- `setup()` <p></p> - `process_node()` <p></p>- `process_way()` <p></p>- `process_turn()` <p></p>- `process_segment()`(NOT defined in car.lua)")
+
+end
+
+InitContextLoadLuaFile --> InitContextInitializeLuaProfileAPIVersionBasedContextMoreTypes["register additional C++ implemented types into Lua <p></p>   - `ExtractionTurnLeg`<p></p>    - `ExtractionTurn`"]
+
+subgraph Initialize Lua Profile api_version Based Context
+InitContextInitializeLuaProfileAPIVersionBasedContextMoreTypes --> InitContextInitializeLuaProfileAPIVersionBasedContextMoreEnums["register additional C++ implemented enums into Lua <p></p> - `constants`(e.g. `precision`,`max_turn_weight`)"]
+InitContextInitializeLuaProfileAPIVersionBasedContextMoreEnums --> InitContextInitializeLuaProfileAPIVersionBasedContextCallSetupFunction["call `setup()` Lua function"]
+InitContextInitializeLuaProfileAPIVersionBasedContextCallSetupFunction --> InitContextInitializeLuaProfileAPIVersionBasedContextReadPriorities["read properties from `profile.properties` table"]
+
+end
+
+InitContextLoadLuaFile -.- ProcessNodeWayComments["`process_node()/process_way()` will be called by `Sol2ScriptingEnvironment::ProcessElements()`, <p></p> which will be called in OSM Nodes/Ways parsing pipeline. <p></p> refer to 'osrm-extract_startup_and_process_callgraph.mmd.png' for more details."]
+style ProcessNodeWayComments fill:#f9f,stroke-dasharray: 5, 5
+InitContextLoadLuaFile -.- ProcessTurnComments["`process_turn()` will be called by `Sol2ScriptingEnvironment::ProcessTurn()`, <p></p> which will be called during compressing NodeBasedGraph and constructing EdgeBasedGraph. <p></p> refer to 'osrm-extract_startup_and_process_callgraph.mmd.png' for more details."]
+style ProcessTurnComments fill:#f9f,stroke-dasharray: 5, 5
+InitContextLoadLuaFile -.- ProcessSegmentComments["`process_segment()` will be called by `Sol2ScriptingEnvironment::ProcessSegment()`, <p></p> which will be called in OSM relations parsing pipeline. <p></p> refer to 'osrm-extract_startup_and_process_callgraph.mmd.png' for more details."]
+style ProcessSegmentComments fill:#f9f,stroke-dasharray: 5, 5
+
+
+Sol2ScriptingEnvironmentInitContext --> End("End")
+
+
