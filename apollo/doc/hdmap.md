@@ -16,7 +16,7 @@ HDMap provide rich information at "lane" level compare with SDMap at "road" leve
 
 <img src="../resource/pictures/apollo_hdmap_sdmap_diff.png" alt="apollo_hdmap_sdmap_diff" width="300"/>
 
-## What's inside Apollo HDMap
+## Apollo HDMap
 
 Apollo uses [OpenDRIVE format](http://www.opendrive.org) in industry and defines API for HDMap, here is the map element defined in Apollo:
 
