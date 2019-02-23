@@ -5,7 +5,7 @@ The main idea of Valhalla's MapMatching is coming from this paper [Hidden Markov
 
 
 ## Main Logic
-<img src="../resource/pictures/valhalla-mapmatching-logic.png" alt="single_cell" width="500"/>
+<img src="../resource/pictures/valhalla-mapmatching-logic.png" alt="valhalla-mapmatching-logic" width="500"/>
 
 
 ## Reference
