@@ -14,6 +14,9 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 - [OSRM Customization](./doc/osrm_customization.md)
 - [OSRM Partition](./doc/osrm_partition.md)
 - [OSRM Traffic Update](./doc/osrm_traffic_update.md)
+- [Interaction Between C++ and Lua In OSRM](./doc/interaction_between_cpp_and_lua_in_osrm.md)
+
+
 
 ### Graphs for source code
 - [osrm-routed Startup Call Graph](./graph/osrm-routed_startup_callgraph.mmd.png)
