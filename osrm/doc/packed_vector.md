@@ -75,4 +75,4 @@ If you use array like {1,1,1,1,2,2,2} to call push_back, you still could get cor
 ## Reference
 - [boost::any](http://cpp.sh/5savy)
 - [boost::iterator_range](http://cpp.sh/23msm)
-
+- [boost range for humans](https://greek0.net/boost-range/)
