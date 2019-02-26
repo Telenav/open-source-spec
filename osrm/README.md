@@ -4,7 +4,7 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 - [Getting Start with OSRM in Telenav](./doc/GettingStart.md)    
 - [OSRM vs Valhalla](./doc/osrm-vs-valhalla.md)    
 
-## Research from engine side
+
 ### Topics
 - [OD In OSRM](./doc/od_in_osrm.md)
 - [QueryHeap In OSRM](./doc/queryheap_in_osrm.md)
