@@ -18,7 +18,7 @@ Refer to [OSRM Profiles - Understanding speed, weight and rate](https://github.c
 ## Process Speed/Rate In Lua Profiles
 It's a good idea to read [OSRM Profiles](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/profiles.md) first. It explains why need profiles and how does it work. Meanwhile, it also describes structure and elements details of profiles.    
 A profile describes whether or not it's possible to route along a particular type of way, whether we can pass a particular node, and how quickly we'll be traveling when we do.     
-A profile provided functions to process for OSM node/way/turn, refer to [Interaction Between C++ and Lua In OSRM - Lua Functions Brief](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/interaction_between_cpp_and_lua_in_osrm.md#lua-functions-brief) for what are the functions and what they actually do.     
+A profile provided functions to process for OSM node/way/turn, refer to [Interaction Between C++ and Lua In OSRM](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/interaction_between_cpp_and_lua_in_osrm.md) for what are these functions, what they actually do and where they're invoked.     
 
 
 ### process_way
