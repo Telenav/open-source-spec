@@ -62,8 +62,9 @@ Let's look inside `speed`/`rate` related sub-functions of `process_way()` one-by
             - otherwise use the pre-defined `route_speed` to calculate `weight`/`duration` later, similar with normal ways.     
 
 
-
-[WayHandlers.ferries in way_handlers.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/way_handlers.lua#L120)
+- Codes     
+    - [WayHandlers.ferries in way_handlers.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/way_handlers.lua#L120)
+    - [route_speeds definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L191)
 ```lua
 -- handling ferries and piers
 function WayHandlers.ferries(profile,way,result,data)
@@ -83,7 +84,6 @@ function WayHandlers.ferries(profile,way,result,data)
     end
 end
 ```
-[route_speeds definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L191)
 ```lua
     route_speeds = {
       ferry = 5,
@@ -101,7 +101,9 @@ end
             - firstly will try to get value of [Key:duration](https://wiki.openstreetmap.org/wiki/Key:duration) as `duration` directly, since it's **highly recommended** for indicating how long the route takes ('00:05' is 5 minutes, '1:15' an hour fifteen, or '48:00' two days).    
             - otherwise use the pre-defined `bridge_speeds` to calculate `weight`/`duration` later, similar with normal ways.     
 
-[WayHandlers.movables in way_handlers.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/way_handlers.lua#L138)
+- Codes      
+    - [WayHandlers.movables in way_handlers.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/way_handlers.lua#L138)
+    - [bridge_speeds definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L196)
 ```lua
 -- handling movable bridges
 function WayHandlers.movables(profile,way,result,data)
@@ -125,9 +127,94 @@ function WayHandlers.movables(profile,way,result,data)
   end
 end
 ```
-[bridge_speeds definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L196)
 ```lua
     bridge_speeds = {
       movable = 5
     },
 ```
+
+#### WayHandlers.speed
+- Referenced OSM keys/values:    
+    - [Key:highway](https://wiki.openstreetmap.org/wiki/Key:highway)
+        - If value of [Key:highway](https://wiki.openstreetmap.org/wiki/Key:highway) exist in pre-defined `speeds`, prefer to use it.    
+        - otherwise use `default_speed` instead if routable.    
+- Codes    
+    - [WayHandlers.speed in way_handlers.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/way_handlers.lua#L271)
+    - [Tags.get_constant_by_key_value in tags.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/tags.lua#L123)
+    - [Tags.get_forward_backward_by_set in tags.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/tags.lua#L49)
+    - [speed definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L140)
+    - [access_tag_whitelist definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L67)
+    - [access_tag_blacklist definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L77)
+    - [default_speed definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L33)
+    - [access_tags_hierarchy definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L101)
+```lua
+-- handle speed (excluding maxspeed)
+function WayHandlers.speed(profile,way,result,data)
+  if result.forward_speed ~= -1 then
+    return        -- abort if already set, eg. by a route
+  end
+
+  local key,value,speed = Tags.get_constant_by_key_value(way,profile.speeds)
+
+  if speed then
+    -- set speed by way type
+    result.forward_speed = speed
+    result.backward_speed = speed
+  else
+    -- Set the avg speed on ways that are marked accessible
+    if profile.access_tag_whitelist[data.forward_access] then
+      result.forward_speed = profile.default_speed
+    elseif data.forward_access and not profile.access_tag_blacklist[data.forward_access] then
+      result.forward_speed = profile.default_speed -- fallback to the avg speed if access tag is not blacklisted
+    elseif not data.forward_access and data.backward_access then
+       result.forward_mode = mode.inaccessible
+    end
+
+    if profile.access_tag_whitelist[data.backward_access] then
+      result.backward_speed = profile.default_speed
+    elseif data.backward_access and not profile.access_tag_blacklist[data.backward_access] then
+      result.backward_speed = profile.default_speed -- fallback to the avg speed if access tag is not blacklisted
+    elseif not data.backward_access and data.forward_access then
+       result.backward_mode = mode.inaccessible
+    end
+  end
+
+  if result.forward_speed == -1 and result.backward_speed == -1 and result.duration <= 0 then
+    return false
+  end
+end
+```
+```lua
+    -- [Jay] i.e. static speeds if no better choice
+    speeds = Sequence {
+      highway = {
+        motorway        = 90,
+        motorway_link   = 45,
+        trunk           = 85,
+        trunk_link      = 40,
+        primary         = 65,
+        primary_link    = 30,
+        secondary       = 55,
+        secondary_link  = 25,
+        tertiary        = 40,
+        tertiary_link   = 20,
+        unclassified    = 25,
+        residential     = 25,
+        living_street   = 10,
+        service         = 15
+      }
+    },
+```
+```lua
+    -- [Jay] default_speed for routable ways which value of Key:highway is not exist in speeds
+    default_speed             = 10,
+```
+
+
+
+
+
+
+
+
+
