@@ -16,14 +16,14 @@ This document will try to explain how does [OSRM](https://github.com/Telenav/osr
 
 Refer to [OSRM Profiles - Understanding speed, weight and rate](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/profiles.md#understanding-speed-weight-and-rate) for more explaination of these concepts.    
 
-## Process Speed/Rate In Lua Profiles
+## Process Speed/Rate in Lua Profiles
 It's a good idea to read [OSRM Profiles](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/profiles.md) first. It explains why need profiles and how does it work. Meanwhile, it also describes structure and elements details of profiles.    
 A profile describes whether or not it's possible to route along a particular type of way, whether we can pass a particular node, and how quickly we'll be traveling when we do.     
 A profile provided functions to process for OSM node/way/turn, refer to [Interaction Between C++ and Lua In OSRM](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/interaction_between_cpp_and_lua_in_osrm.md) for what are these functions, what they actually do and where they're invoked.     
 
 
 ### process_way
-Most of handles in the `Lua` function `process_way()` are dealing with whether a way routable. Also, some of them are related on `speed`/`rate` processing.      
+Most of handles in the `Lua` function [`process_way()`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L356) are dealing with whether a way routable. Also, some of them are related on `speed`/`rate` processing.      
 In below codes, the values of several OSM keys [Key:highway](https://wiki.openstreetmap.org/wiki/Key:highway), [Key:route](https://wiki.openstreetmap.org/wiki/Key:route) and [Key:bridge](https://wiki.openstreetmap.org/wiki/Key:bridge) have been retrieved first.    
 
 [process_way in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L356)
@@ -355,8 +355,116 @@ end
     },
 ```
 
+## Construct and Store WeightData/DurationData for NodeBasedEdge
+Once `Lua` function [`process_way()`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L356) finished, the `C++` code [`ExtractorCallbacks::ProcessWay()`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extractor_callbacks.cpp#L92) will be called to handle this way in memory.     
+The terminology **NodeBasedEdge** can refer to [Understanding OSRM Graph Representation - Terminology](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#terminology).
+For `weight/duration` related handle, there will be two steps:    
+- [construct `WeightData/DurationData`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extractor_callbacks.cpp#L126)    
+The `WeightData/DurationData` will be represented by [`detail::ByEdgeOrByMeterValue`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/extractor/internal_extractor_edge.hpp#L23). It's a tricky way to store a single value but with different labels.      
+
+```c++
+void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const ExtractionWay &parsed_way)
+{
+
+    //[Jay] ignored unrelated codes ... 
+
+    //[Jay] both DurationData and WeightData are alias of detail::ByEdgeOrByMeterValue
+    InternalExtractorEdge::DurationData forward_duration_data;
+    InternalExtractorEdge::DurationData backward_duration_data;
+    InternalExtractorEdge::WeightData forward_weight_data;
+    InternalExtractorEdge::WeightData backward_weight_data;
+
+    //[Jay] construct WeightData/DurationData
+    //[Jay]  1. the `by_way` means `weight/duration` available for this way(i.e. ferry/shuttle_train/movable bridge), 
+    //[Jay]     so store the value for each nodes pair. 
+    //[Jay]  2. the `by_meter` means `forward_speed/backward_speed/forward_rate/backward_rate` available for this way, 
+    //[Jay]     so store the value with unit meter per second. 
+    const auto toValueByEdgeOrByMeter = [&nodes](const double by_way, const double by_meter) {
+        using Value = detail::ByEdgeOrByMeterValue;
+        // get value by weight per edge
+        if (by_way >= 0)
+        {
+            // FIXME We divide by the number of edges here, but should rather consider
+            // the length of each segment. We would either have to compute the length
+            // of the whole way here (we can't: no node coordinates) or push that back
+            // to the container and keep a reference to the way.
+            const std::size_t num_edges = (nodes.size() - 1);
+            return Value(Value::by_edge, by_way / num_edges);
+        }
+        else
+        {
+            // get value by deriving weight from speed per edge
+            return Value(Value::by_meter, by_meter);
+        }
+    };
+
+    if (parsed_way.forward_travel_mode != extractor::TRAVEL_MODE_INACCESSIBLE)
+    {
+        //[Jay] ignored unimportant codes here... 
+
+        forward_duration_data = toValueByEdgeOrByMeter(parsed_way.duration, parsed_way.forward_speed / 3.6);
+        forward_weight_data = toValueByEdgeOrByMeter(parsed_way.weight, parsed_way.forward_rate);
+    }
+    if (parsed_way.backward_travel_mode != extractor::TRAVEL_MODE_INACCESSIBLE)
+    {
+        //[Jay] ignored unimportant codes here... 
+
+        backward_duration_data = toValueByEdgeOrByMeter(parsed_way.duration, parsed_way.backward_speed / 3.6);
+        backward_weight_data = toValueByEdgeOrByMeter(parsed_way.weight, parsed_way.backward_rate);
+    }
+
+    //[Jay] ignored unrelated codes ... 
+```
+
+- [store `WeightData/DurationData` with `NodeBasedEdge`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extractor_callbacks.cpp#L432)    
+
+```c++
+void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const ExtractionWay &parsed_way)
+{
+
+    //[Jay] ignored unrelated codes ... 
+
+    if (in_forward_direction)   //[Jay] forward edge
+    {
+
+        //[Jay] ignored unrelated codes ... 
+
+        util::for_each_pair(
+            nodes.cbegin(),
+            nodes.cend(),
+            [&](const osmium::NodeRef &first_node, const osmium::NodeRef &last_node) {
+                NodeBasedEdgeWithOSM edge = {
+                    OSMNodeID{static_cast<std::uint64_t>(first_node.ref())},
+                    OSMNodeID{static_cast<std::uint64_t>(last_node.ref())},
+                    0,  // weight
+                    0,  // duration
+                    {}, // geometry id
+                    static_cast<AnnotationID>(annotation_data_id),
+                    {true,
+                     in_backward_direction && !split_edge,
+                     split_edge,
+                     parsed_way.roundabout,
+                     parsed_way.circular,
+                     parsed_way.is_startpoint,
+                     parsed_way.forward_restricted,
+                     road_classification,
+                     parsed_way.highway_turn_classification,
+                     parsed_way.access_turn_classification}};
+
+                //[Jay] store WeightData/DurationData with NodeBasedEdge in memory
+                external_memory.all_edges_list.push_back(InternalExtractorEdge(
+                    std::move(edge), forward_weight_data, forward_duration_data, {}));
+            });
+    }
+
+    if (in_backward_direction && (!in_forward_direction || split_edge)) //[Jay] backward edge if necessary
+    {
+    
+        //[Jay] similar as forward, no need to copy code snip again.
+    }
 
 
-
+    //[Jay] ignored unrelated codes ... 
+```
 
 
