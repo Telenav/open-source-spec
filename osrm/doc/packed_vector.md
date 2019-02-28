@@ -37,7 +37,7 @@ For index = 2, we know that it tooks 31 bits from inner array's first value and 
 
 ### How to get random index
 osrm::packed_array grouped input into 64 elements(BLOCK_ELEMENTS = 64), when reach 64 then start to use new uint_64 to record new value.  
-Then OSRM calculate pattern for all 64 situation, I picked 5 elements from each of the array  
+Then OSRM calculate pattern for all 64 situation, I picked first 5 elements from each array here:  
 ```
 lower_mask[0]0000000000000000000000000000000111111111111111111111111111111111
 lower_mask[1]1111111111111111111111111111111000000000000000000000000000000000
@@ -62,15 +62,108 @@ upper_offset[1]0000000000000000000000000000000000000000000000000000000000011111
 upper_offset[2]0000000000000000000000000000000000000000000000000000000000100001
 upper_offset[3]0000000000000000000000000000000000000000000000000000000000011101
 upper_offset[4]0000000000000000000000000000000000000000000000000000000000100001
+
+word_offset[0]0000000000000000000000000000000000000000000000000000000000000000
+word_offset[1]0000000000000000000000000000000000000000000000000000000000000000
+word_offset[2]0000000000000000000000000000000000000000000000000000000000000001
+word_offset[3]0000000000000000000000000000000000000000000000000000000000000001
+word_offset[4]0000000000000000000000000000000000000000000000000000000000000010
 ```
+Full dump could be found [here](../references/files/packed_vector_array_dump.txt) and [initialize()](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp#L208) contains the code to generate the array
 
 
+### Implementation of set_value
+
+The function of [set_value](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp#L512)
+```C++
+inline void set_value(const InternalIndex internal_index, const T value)
+{
+    // [Perry] A value could only be recorded into 1 internal value or at most 2 internal value
+    //         internal_index indicate which inner index the given value would be record into
+    auto &lower_word = vec[internal_index.lower_word];
+    auto &upper_word = vec[internal_index.lower_word + 1];
+    // ...
+    new_lower_word = set_lower_value<WordT, T>(local_lower_word,
+                                               lower_mask[internal_index.element],
+                                               lower_offset[internal_index.element],
+                                               value);
+    // ...
+    new_upper_word = set_upper_value<WordT, T>(local_upper_word,
+                                               upper_mask[internal_index.element],
+                                               upper_offset[internal_index.element],
+                                               value);
+    //...
+}
+
+template <typename WordT, typename T>
+inline WordT set_lower_value(WordT word, WordT mask, std::uint8_t offset, T value)
+{
+    static_assert(std::is_unsigned<WordT>::value, "Only unsigned word types supported for now.");
+    // [Perry] word is the first inner 64bit value, mask is the one from lower_mask[] and offset is from lower_offset
+    //         value is the input value in given bit range
+    //         Let's say we want to set the first value, we just need lower_mask[0] to set lower 33 bits of first word(inner value)
+    //         For second value it becomes tricky.  
+    //         From the upper decription we know that it would record 31 bits in the first word and 33 bits in the second
+    //         Because each word could record multiple input(say if input value is 1 bit then each word could record 64)
+    //         (word & ~mask) will record original value
+    //         ((static_cast<WordT>(value) << offset) & mask) will record lower part and together with original value will generate new word
+    //         For the upper part is similar, the difference with this function is given value's upper part will record in second word's lower part
+    //         That is what >> indicate
+    return (word & ~mask) | ((static_cast<WordT>(value) << offset) & mask);
+}
+
+template <typename WordT, typename T>
+inline WordT set_upper_value(WordT word, WordT mask, std::uint8_t offset, T value)
+{
+    static_assert(std::is_unsigned<WordT>::value, "Only unsigned word types supported for now.");
+    return (word & ~mask) | ((static_cast<WordT>(value) >> offset) & mask);
+}
+
+```
+<br/>
+
+### Implementation of get_value
+
+The function of [get_value](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp#L496)
+
+```C++
+
+inline T get_value(const InternalIndex internal_index) const
+{
+    // [Perry] internal_index indicate which inner index the given value would be record into
+    const auto lower_word = vec[internal_index.lower_word];
+    const auto upper_word = vec[internal_index.lower_word + 1];
+
+    const auto value = get_lower_half_value<WordT, T>(lower_word,
+                                                      lower_mask[internal_index.element],
+                                                      lower_offset[internal_index.element]) |
+                       get_upper_half_value<WordT, T>(upper_word,
+                                                      upper_mask[internal_index.element],
+                                                      upper_offset[internal_index.element]);
+    return value;
+}
+
+template <typename WordT, typename T>
+inline T get_lower_half_value(WordT word,
+                              WordT mask,
+                              std::uint8_t offset,
+                              typename std::enable_if_t<std::is_integral<T>::value> * = 0)
+{
+    return static_cast<T>((word & mask) >> offset);
+}
+
+template <typename WordT, typename T>
+inline T get_upper_half_value(WordT word,
+                              WordT mask,
+                              std::uint8_t offset,
+                              typename std::enable_if_t<std::is_integral<T>::value> * = 0)
+{
+    return static_cast<T>((word & mask) << offset);
+}
 
 
-
-
-
-
+```
+<br>
 
 - Input value must be **positive** and in certain **bit-range**  
 ```C++
