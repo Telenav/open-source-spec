@@ -1,8 +1,10 @@
 # [class packed_vector](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp)
 
 ## Purpose
-Covert given list of values into packed values, allocate only needed memory and still achieve array's time complexity.  
-For example, OSM ids are incontinuous and have value over wide range, packed_vector coverts them to {0, 1, 2 ...} and build mapping internally.
+Covert given list of values into packed values, allocate only needed memory and still achieve array's time complexity.  packed_array provide a way to compact target array value into array[uint_64].
+Say that we have an array contains value in the range of 16 bits, we could make full use of 64 bit to record 4 value like {uint16, uint16, uint16, uint16} into single uint64_t value.  It‘s like using binary stream to paternize and record all the value.
+packed_array generalize compact strategy to handle any bit range in [1, 64].
+
 
 ## Interface
 [push_back](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp#L420) will put given value into packed_vector and return an index which could used for futher logic and retrieve .  
