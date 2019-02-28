@@ -52,6 +52,9 @@ function process_way(profile, way, result, relations)
 end
 ```
 Let's look inside `speed`/`rate` related sub-functions of `process_way()` one-by-one.    
+There're two kinds of values will be got after these sub-functions:    
+- `forward_speed/backward_speed/forward_rate/backward_rate` for a normal and routable way;    
+- or `weight/duration` for routable ferry/shuttle_train/movable bridge.     
 
 #### WayHandlers.ferries
 - Referenced OSM keys/values:    
