@@ -357,7 +357,7 @@ end
 
 ## Construct and Store WeightData/DurationData for NodeBasedEdge
 Once `Lua` function [`process_way()`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L356) finished, the `C++` code [`ExtractorCallbacks::ProcessWay()`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extractor_callbacks.cpp#L92) will be called to handle this way in memory.     
-The terminology **NodeBasedEdge** can refer to [Understanding OSRM Graph Representation - Terminology](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#terminology).
+The terminology **NodeBasedEdge** can refer to [Understanding OSRM Graph Representation - Terminology](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#terminology).     
 For `weight/duration` related handle, there will be two steps:    
 - [construct `WeightData/DurationData`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extractor_callbacks.cpp#L126)    
 The `WeightData/DurationData` will be represented by [`detail::ByEdgeOrByMeterValue`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/extractor/internal_extractor_edge.hpp#L23). It's a tricky way to store a single value but with different labels.      
