@@ -1,3 +1,12 @@
+- [Bidirectional Dijkstra In OSRM](#bidirectional-dijkstra-in-osrm)
+  - [Bidirectional Dijkstra Shortest Path Search Call Graph](#bidirectional-dijkstra-shortest-path-search-call-graph)
+  - [Check Meet](#check-meet)
+    - [TODO](#todo)
+  - [End Condition](#end-condition)
+    - [MLD](#mld)
+    - [CH](#ch)
+      - [TODO](#todo-1)
+
 # Bidirectional Dijkstra In OSRM
 There're two algorithms of route planning available in [OSRM](https://github.com/Project-OSRM/osrm-backend):    
 - CH: Contraction Hierarchies     

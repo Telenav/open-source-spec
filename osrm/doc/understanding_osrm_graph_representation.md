@@ -1,3 +1,11 @@
+- [Understanding OSRM Graph Representation](#understanding-osrm-graph-representation)
+  - [Terminology](#terminology)
+  - [Process of Convert OSM to OSRM Edge-expanded Graph](#process-of-convert-osm-to-osrm-edge-expanded-graph)
+  - [Process of Query Based on OSRM Edge-expanded Graph](#process-of-query-based-on-osrm-edge-expanded-graph)
+  - [Basic Changes of Convert OSM to OSRM Edge-expanded Graph](#basic-changes-of-convert-osm-to-osrm-edge-expanded-graph)
+  - [Known Issues](#known-issues)
+  - [References](#references)
+
 # Understanding OSRM Graph Representation
 [OSRM](https://github.com/Project-OSRM/osrm-backend) will convert original map data (i.e. OSM) to an edge-expanded graph as first phase in [Processing Flow](https://github.com/Project-OSRM/osrm-backend/wiki/Processing-Flow), which exactly will be done by `osrm-extract`. All subsequent algorithms (i.e. Multi-Level Dijkstra, Contraction Hierarchies) will based on this edge-expanded graph.     
 - Also read official documentation for better understanding: [Graph Representation](https://github.com/Project-OSRM/osrm-backend/wiki/Graph-representation).      

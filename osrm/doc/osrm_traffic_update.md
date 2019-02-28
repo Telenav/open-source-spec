@@ -1,3 +1,9 @@
+- [OSRM Traffic](#osrm-traffic)
+  - [How live traffic is updated](#how-live-traffic-is-updated)
+      - [Duration penalty update](#duration-penalty-update)
+      - [Turn penalty update](#turn-penalty-update)
+  - [End to end debug case](#end-to-end-debug-case)
+
 # OSRM Traffic
 
 ## How live traffic is updated

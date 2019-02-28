@@ -1,3 +1,15 @@
+- [Weight and Duration Calculation in OSRM](#weight-and-duration-calculation-in-osrm)
+  - [Basic Concepts](#basic-concepts)
+  - [Process Speed/Rate in Lua Profiles](#process-speedrate-in-lua-profiles)
+    - [process_way](#processway)
+      - [WayHandlers.ferries](#wayhandlersferries)
+      - [WayHandlers.movables](#wayhandlersmovables)
+      - [WayHandlers.speed](#wayhandlersspeed)
+      - [WayHandlers.surface](#wayhandlerssurface)
+      - [WayHandlers.maxspeed](#wayhandlersmaxspeed)
+      - [WayHandlers.penalties](#wayhandlerspenalties)
+  - [Construct and Store WeightData/DurationData for NodeBasedEdge](#construct-and-store-weightdatadurationdata-for-nodebasededge)
+
 # Weight and Duration Calculation in OSRM    
 This document will try to explain how does [OSRM](https://github.com/Telenav/osrm-backend) calculate **weight** and **duration** of a route.     
 - This document will focus on how to calculate weight and duration for a route for car, since generating route for car is one of the most important and most complex feature of [OSRM](https://github.com/Telenav/osrm-backend). It means:     

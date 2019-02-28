@@ -1,3 +1,13 @@
+- [OSRM Customization](#osrm-customization)
+    - [Case 1](#case-1)
+        - [Case description](#case-description)
+        - [Graph construction](#graph-construction)
+        - [Metric](#metric)
+    - [Case 2](#case-2)
+        - [Case description](#case-description-1)
+        - [Graph construction](#graph-construction-1)
+        - [Metric](#metric-1)
+
 # OSRM Customization
 
 Customize is the step to apply real time cost for the graph.  In OSRM, customization means update live traffic to each of graph partitions and then calculate cost between each of entry/exists node pairs.  Real time route query will dramatically be speed up due to those processing.  For more backgrounds, you could go to [CRP](../../routing_basic/doc/crp.md) page.

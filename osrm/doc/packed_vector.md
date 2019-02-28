@@ -1,3 +1,18 @@
+<!-- TOC -->
+- [class packed_vector](#class-packedvector)
+  - [Purpose](#purpose)
+  - [Interface](#interface)
+  - [Notes](#notes)
+    - [How to set value](#how-to-set-value)
+    - [How to retrieve value](#how-to-retrieve-value)
+    - [How to get random index](#how-to-get-random-index)
+    - [Implementation of set_value](#implementation-of-setvalue)
+    - [Implementation of get_value](#implementation-of-getvalue)
+    - [Others](#others)
+  - [Unit Test](#unit-test)
+  - [Reference](#reference)
+
+
 # [class packed_vector](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp)
 
 ## Purpose
@@ -164,6 +179,8 @@ inline T get_upper_half_value(WordT word,
 
 ```
 <br>
+
+### Others
 
 - Input value must be **positive** and in certain **bit-range**  
 ```C++

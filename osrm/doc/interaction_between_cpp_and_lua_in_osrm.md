@@ -1,3 +1,8 @@
+- [Interaction Between C++ and Lua In OSRM](#interaction-between-c-and-lua-in-osrm)
+  - [Lua Functions Brief](#lua-functions-brief)
+  - [Lua Scripting Environment Initialization](#lua-scripting-environment-initialization)
+  - [Invoke Lua Functions In osrm-extract](#invoke-lua-functions-in-osrm-extract)
+
 # Interaction Between C++ and Lua In OSRM
 This document will describe how do `C++` and `Lua` work together in [OSRM](https://github.com/Project-OSRM/osrm-backend).     
 Please read [OSRM Profiles](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/profiles.md) to get understanding of why need `Lua` profiles and how does it work.     
