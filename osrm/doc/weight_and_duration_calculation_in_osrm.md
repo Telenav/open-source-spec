@@ -12,6 +12,7 @@ This document will try to explain how does [OSRM](https://github.com/Telenav/osr
 |`duration` |Estimated travel times. <br>Unit: seconds. |
 |`rate`     |The `rate` is an abstract measure that you can assign to ways as you like to make some ways preferable to others. Routing will prefer ways with high `rate`. <br>It represents weight per meter. The unit will be meters per second if the `weight` is time based. |
 |`weight`   |The `weight` of a way is normally computed as `length` / `rate`. The `weight` can be thought of as the resistance or cost when passing the way. Routing will prefer ways with low `weight`. You can also set the `weight` of a way to a fixed value. In this case it's not calculated based on the `length` or `rate`, and the `rate` is ignored.|
+|`weight_name`|Name used in output for the routing `weight` property, i.e. indicating which weight was used. <br>- `weight_name=routability`: For routing based on duration, but weighted for preferring certain roads. <br>- `weight_name=duration`: For shortest duration without penalties for accessibility. <br>- `weight_name=distance`: For shortest distance without penalties for accessibility. |
 
 Refer to [OSRM Profiles - Understanding speed, weight and rate](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/profiles.md#understanding-speed-weight-and-rate) for more explaination of these concepts.    
 
@@ -210,8 +211,146 @@ end
     default_speed             = 10,
 ```
 
+#### WayHandlers.surface
+- Referenced OSM keys/values:    
+  - [Key:surface](https://wiki.openstreetmap.org/wiki/Key:surface), [Key:tracktype](https://wiki.openstreetmap.org/wiki/Key:tracktype), [Key:smoothness](https://wiki.openstreetmap.org/wiki/Key:smoothness)
+    - Limit speeds by these values and pre-defined surface_speeds,tracktype_speeds,smoothness_speeds.    
+- Codes    
+  - [WayHandlers.surface in way_handlers.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/way_handlers.lua#L355)
+  - [surface_speeds,tracktype_speeds,smoothness_speeds definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L200)
+```lua
+-- reduce speed on bad surfaces
+function WayHandlers.surface(profile,way,result,data)
+  local surface = way:get_value_by_key("surface")
+  local tracktype = way:get_value_by_key("tracktype")
+  local smoothness = way:get_value_by_key("smoothness")
+
+  if surface and profile.surface_speeds[surface] then
+    result.forward_speed = math.min(profile.surface_speeds[surface], result.forward_speed)
+    result.backward_speed = math.min(profile.surface_speeds[surface], result.backward_speed)
+  end
+  if tracktype and profile.tracktype_speeds[tracktype] then
+    result.forward_speed = math.min(profile.tracktype_speeds[tracktype], result.forward_speed)
+    result.backward_speed = math.min(profile.tracktype_speeds[tracktype], result.backward_speed)
+  end
+  if smoothness and profile.smoothness_speeds[smoothness] then
+    result.forward_speed = math.min(profile.smoothness_speeds[smoothness], result.forward_speed)
+    result.backward_speed = math.min(profile.smoothness_speeds[smoothness], result.backward_speed)
+  end
+end
+```
 
 
+#### WayHandlers.maxspeed
+- Referenced OSM keys/values:    
+  - [Key:maxspeed:advisory](https://wiki.openstreetmap.org/wiki/Key:maxspeed:advisory), [Key:maxspeed](https://wiki.openstreetmap.org/wiki/Key:maxspeed)
+    - Prefer to use 80% of max speed.     
+- Codes    
+  - [WayHandlers.maxspeed in way_handlers.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/way_handlers.lua#L434)
+  - [Tags.get_forward_backward_by_set in tags.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/tags.lua#L49)
+  - [speed_reduction definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L37)
+```lua
+-- maxspeed and advisory maxspeed
+function WayHandlers.maxspeed(profile,way,result,data)
+  local keys = Sequence { 'maxspeed:advisory', 'maxspeed' }
+  local forward, backward = Tags.get_forward_backward_by_set(way,data,keys)
+  forward = WayHandlers.parse_maxspeed(forward,profile)
+  backward = WayHandlers.parse_maxspeed(backward,profile)
+
+  if forward and forward > 0 then
+    result.forward_speed = forward * profile.speed_reduction
+  end
+
+  if backward and backward > 0 then
+    result.backward_speed = backward * profile.speed_reduction
+  end
+end
+```
+```lua
+    -- [Jay] reduce maxspeed factor
+    speed_reduction           = 0.8,
+```
+
+
+#### WayHandlers.penalties
+- Referenced OSM keys/values:    
+  - [Key:service](https://wiki.openstreetmap.org/wiki/Key:service): [Tag:service=alley](https://wiki.openstreetmap.org/wiki/Tag:service%3Dalley), [Tag:service=parking_aisle](https://wiki.openstreetmap.org/wiki/Tag:service%3Dparking_aisle), [Tag:service=driveway](https://wiki.openstreetmap.org/wiki/Tag:service%3Ddriveway), [Tag:service=drive-through](https://wiki.openstreetmap.org/wiki/Tag:service%3Ddrive-through)
+  - [Key:width](https://wiki.openstreetmap.org/wiki/Key:width), [Key:lanes](https://wiki.openstreetmap.org/wiki/Key:lanes), [Tag:oneway=alternating](https://wiki.openstreetmap.org/wiki/Tag:oneway=alternating), [Key:side_road](https://wiki.openstreetmap.org/wiki/Key:side_road)     
+scale speeds to get better average driving times if these tags exist.    
+
+- Codes    
+  - [WayHandlers.penalties in way_handlers.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/lib/way_handlers.lua#L375)
+  - [service_penalties definition in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L159)
+```lua
+-- scale speeds to get better average driving times
+function WayHandlers.penalties(profile,way,result,data)
+  -- heavily penalize a way tagged with all HOV lanes
+  -- in order to only route over them if there is no other option
+  local service_penalty = 1.0
+  local service = way:get_value_by_key("service")
+  if service and profile.service_penalties[service] then
+    service_penalty = profile.service_penalties[service]
+  end
+
+  local width_penalty = 1.0
+  local width = math.huge
+  local lanes = math.huge
+  local width_string = way:get_value_by_key("width")
+  if width_string and tonumber(width_string:match("%d*")) then
+    width = tonumber(width_string:match("%d*"))
+  end
+
+  local lanes_string = way:get_value_by_key("lanes")
+  if lanes_string and tonumber(lanes_string:match("%d*")) then
+    lanes = tonumber(lanes_string:match("%d*"))
+  end
+
+  local is_bidirectional = result.forward_mode ~= mode.inaccessible and
+                           result.backward_mode ~= mode.inaccessible
+
+  if width <= 3 or (lanes <= 1 and is_bidirectional) then
+    width_penalty = 0.5
+  end
+
+  -- Handle high frequency reversible oneways (think traffic signal controlled, changing direction every 15 minutes).
+  -- Scaling speed to take average waiting time into account plus some more for start / stop.
+  local alternating_penalty = 1.0
+  if data.oneway == "alternating" then
+    alternating_penalty = 0.4
+  end
+
+  local sideroad_penalty = 1.0
+  data.sideroad = way:get_value_by_key("side_road")
+  if "yes" == data.sideroad or "rotary" == data.sideroad then
+    sideroad_penalty = profile.side_road_multiplier
+  end
+
+  local forward_penalty = math.min(service_penalty, width_penalty, alternating_penalty, sideroad_penalty)
+  local backward_penalty = math.min(service_penalty, width_penalty, alternating_penalty, sideroad_penalty)
+
+  if profile.properties.weight_name == 'routability' then
+    if result.forward_speed > 0 then
+      result.forward_rate = (result.forward_speed * forward_penalty) / 3.6
+    end
+    if result.backward_speed > 0 then
+      result.backward_rate = (result.backward_speed * backward_penalty) / 3.6
+    end
+    if result.duration > 0 then
+      result.weight = result.duration / forward_penalty
+    end
+  end
+end
+```
+```lua
+    service_penalties = {
+      alley             = 0.5,
+      parking           = 0.5,
+      parking_aisle     = 0.5,
+      driveway          = 0.5,
+      ["drive-through"] = 0.5,
+      ["drive-thru"] = 0.5
+    },
+```
 
 
 
