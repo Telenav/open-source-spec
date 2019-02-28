@@ -11,7 +11,10 @@ packed_array generalize compact strategy to handle any bit range in [1, 64].
 [operator \[\] ](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp#L366)could be used to retrieve original value.
 
 ## Notes
-- Input value must be positive and in pre-defined range
+
+
+
+- Input value must be **positive** and in certain bit-range  
 ```C++
 template <storage::Ownership Ownership>
 using PackedOSMIDs = util::detail::PackedVector<OSMNodeID, 33, Ownership>;
