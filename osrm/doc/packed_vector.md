@@ -23,12 +23,13 @@ osrm::packed_array privdes similar interface and time complexity with std::vecto
 Say that you have an array contains value in the range of uint16_t, osrm::packed_array *compact* multiple value together and record them into lower level storage unit.  In [this version's implementation](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/include/util/packed_vector.hpp), osrm::packed_array use array[uint_64] as low level storage.
 
 ## Interface
-[push_back](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp#L420) will put given value into packed_vector and return an index which could used for futher logic and retrieve .  
-[operator \[\] ](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp#L366)could be used to retrieve original value.
+- [push_back](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp#L418) will put given value into packed_vector and return an index which could used for futher logic and retrieve.  
+- [operator \[\] ](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/util/packed_vector.hpp#L366)could be used to retrieve original value.
 
 ## Notes
-- Its easy to design a packed_array for certain value bits range like 8, 16, 32，64.  They could fit in 64 bits entirely and no boundary case need to be handled.  As a utility class for wider usage, osrm::packed_array generalize compact strategy to handle any bit range in [1, 64].<br/>
+Its easy to design a packed_array for certain value bits range like 8, 16, 32，64.  They could fit in 64 bits entirely and no boundary case need to be handled.  As a utility class for wider usage, osrm::packed_array generalize compact strategy to handle any bit range in [1, 64].<br/>
 By profiling, node ids from OSM's data are in the range of [0, pow(2,33)].
+
 <br/>
 
 ### How to set value
@@ -37,7 +38,7 @@ Use 33 bits as an example, let's say input is {1597322404, 1432114613, 193996444
 The binary for `1597322404` is `001011111001101010011010010100100` in 33 bits, if we use inner array's 64bit value to record which then result is `0000000000000000000000000000000001011111001101010011010010100100`.  <br/><br/>
 The binary for `1432114613` is `001010101010111000101010110110101` in 33 bits, for previous 64bit value there are still 31 left, so `1010101010111000101010110110101` will be recorded in the first 64 bit value and `00` will be recorded in the second 64bit value.  The final result for inner array's first 64bit value is `1010101010111000101010110110101001011111001101010011010010100100` and second 64bit is still all 0.  <br/><br/>
 The binary for `1939964443` is `001110011101000011000001000011011` in 33 bits, we could merge the value as a whole part into second 64bit value, so **35 bits**(2 bits from first input, 33 bits from second input) has taken and result is `0000000000000000000000000000000111001110100001100000100001101100`  <br/><br/>
-The binary for `2112255763` is `001111101111001100111011100010011` in 33 bits, we could merge the lower 19 bits into the free space of second 64bit value and merge remaining part into third 64 bit vlaue.  The result of inner array's second 64bit value is `1110111100110011101110001001100111001110100001100000100001101100` and third 64bit value is `0000000000000000000000000000000000000000000000000000000000000011`.  For information recorded in `1110111100110011101110001001100111001110100001100000100001101100`, `00` is from `1432114613`, `001110011101000011000001000011011` is from `1939964443`, `11101111001100111011100010011` is from `2112255763`.  <br/><br/>
+The binary for `2112255763` is `001111101111001100111011100010011` in 33 bits, we could merge the lower 19 bits into the free space of second 64bit value and merge remaining part into third 64 bit vlaue.  The result of inner array's second 64bit value is `1110111100110011101110001001100111001110100001100000100001101100` and third 64bit value is `0000000000000000000000000000000000000000000000000000000000000011`.  For information record in `1110111100110011101110001001100111001110100001100000100001101100`, `00` is from `1432114613`, `001110011101000011000001000011011` is from `1939964443`, `11101111001100111011100010011` is from `2112255763`.  <br/><br/>
 By this example you could see that we could use less space to pack more value into it.  <br/>
 
 ### How to retrieve value
