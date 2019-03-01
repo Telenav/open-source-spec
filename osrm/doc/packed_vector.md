@@ -9,7 +9,7 @@
     - [Implementation of set_value](#implementation-of-setvalue)
     - [Implementation of get_value](#implementation-of-getvalue)
     - [Others](#others)
-  - [Unit Test](#unit-test)
+  - [UnitTest](#unittest)
   - [Reference](#reference)
 
 
@@ -34,11 +34,11 @@ By profiling, node ids from OSM's data are in the range of [0, pow(2,33)].
 ### How to set value
 
 Use 33 bits as an example, let's say input is {1597322404, 1432114613, 1939964443, 2112255763}  
-The binary for `1597322404` is `001011111001101010011010010100100` in 33 bits, if we use inner array's 64bit value to record which then result is `0000000000000000000000000000000001011111001101010011010010100100`.  <br/>
-The binary for `1432114613` is `001010101010111000101010110110101` in 33 bits, for previous 64bit value there are still 31 left, so `1010101010111000101010110110101` will be recorded in the first 64 bit value and `00` will be recorded in the second 64bit value.  The final result for inner array's first 64bit value is `1010101010111000101010110110101001011111001101010011010010100100` and second 64bit is still all 0.  <br/>
-The binary for `1939964443` is `001110011101000011000001000011011` in 33 bits, we could merge the value as a whole part into second 64bit value, so **35 bits**(2 bits from first input, 33 bits from second input) has taken and result is `0000000000000000000000000000000111001110100001100000100001101100`  <br/>
-The binary for `2112255763` is `001111101111001100111011100010011` in 33 bits, we could merge the lower 19 bits into the free space of second 64bit value and merge remaining part into third 64 bit vlaue.  The result of inner array's second 64bit value is `1110111100110011101110001001100111001110100001100000100001101100` and third 64bit value is `0000000000000000000000000000000000000000000000000000000000000011`.  For information recorded in `1110111100110011101110001001100111001110100001100000100001101100`, `00` is from `1432114613`, `001110011101000011000001000011011` is from `1939964443`, `11101111001100111011100010011` is from `2112255763`.  <br/>
-By this example you could see that we could use less space to pack more value into it.  
+The binary for `1597322404` is `001011111001101010011010010100100` in 33 bits, if we use inner array's 64bit value to record which then result is `0000000000000000000000000000000001011111001101010011010010100100`.  <br/><br/>
+The binary for `1432114613` is `001010101010111000101010110110101` in 33 bits, for previous 64bit value there are still 31 left, so `1010101010111000101010110110101` will be recorded in the first 64 bit value and `00` will be recorded in the second 64bit value.  The final result for inner array's first 64bit value is `1010101010111000101010110110101001011111001101010011010010100100` and second 64bit is still all 0.  <br/><br/>
+The binary for `1939964443` is `001110011101000011000001000011011` in 33 bits, we could merge the value as a whole part into second 64bit value, so **35 bits**(2 bits from first input, 33 bits from second input) has taken and result is `0000000000000000000000000000000111001110100001100000100001101100`  <br/><br/>
+The binary for `2112255763` is `001111101111001100111011100010011` in 33 bits, we could merge the lower 19 bits into the free space of second 64bit value and merge remaining part into third 64 bit vlaue.  The result of inner array's second 64bit value is `1110111100110011101110001001100111001110100001100000100001101100` and third 64bit value is `0000000000000000000000000000000000000000000000000000000000000011`.  For information recorded in `1110111100110011101110001001100111001110100001100000100001101100`, `00` is from `1432114613`, `001110011101000011000001000011011` is from `1939964443`, `11101111001100111011100010011` is from `2112255763`.  <br/><br/>
+By this example you could see that we could use less space to pack more value into it.  <br/>
 
 ### How to retrieve value
 
@@ -225,7 +225,7 @@ If you use array like {1,1,1,1,2,2,2} to call push_back, you still could get cor
 
 
 
-## [Unit Test](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/unit_tests/util/packed_vector.cpp#L22)
+## [UnitTest](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/unit_tests/util/packed_vector.cpp#L22)
  - General API(set and get)
  - Functionality test on different bit range(33, 10, etc)
  - Iterator test(begin, end, forward iterator, backward iterator,)
