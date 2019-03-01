@@ -36,7 +36,7 @@ The current default build steps on MacOSX will not generate Xcode project. Also,
 Fortunately @springmeyer have found the reason and give a temp workaround for us(please also refer to the answer from @springmeyer in [How to create Xcode project of osrm-backend on mac](https://github.com/Project-OSRM/osrm-backend/issues/2409)):   
 1. Create an empty `src/dummpy.cpp`   
 2. Apply this patch    
-```shell
+```diff
 diff --git a/CMakeLists.txt b/CMakeLists.txt    
 index e1767b961..f52f3918e 100644    
 --- a/CMakeLists.txt    
