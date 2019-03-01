@@ -36,7 +36,7 @@ The current default build steps on MacOSX will not generate Xcode project. Also,
 Fortunately @springmeyer have found the reason and give a temp workaround for us(please also refer to the answer from @springmeyer in [How to create Xcode project of osrm-backend on mac](https://github.com/Project-OSRM/osrm-backend/issues/2409)):   
 1. Create an empty `src/dummpy.cpp`   
 2. Apply this patch    
-```shell
+```diff
 diff --git a/CMakeLists.txt b/CMakeLists.txt    
 index e1767b961..f52f3918e 100644    
 --- a/CMakeLists.txt    
@@ -49,10 +49,10 @@ index e1767b961..f52f3918e 100644
 +add_library(osrm_guidance $<TARGET_OBJECTS:GUIDANCE> $<TARGET_OBJECTS:UTIL> src/dummy.cpp)    
  add_library(osrm_partition src/osrm/partitioner.cpp $<TARGET_OBJECTS:PARTITIONER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)    
  add_library(osrm_customize src/osrm/customizer.cpp $<TARGET_OBJECTS:CUSTOMIZER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)     
--add_library(osrm_update $<TARGET_OBJECTS:UPDATER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)    
--add_library(osrm_store $<TARGET_OBJECTS:STORAGE> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)     
-+add_library(osrm_update $<TARGET_OBJECTS:UPDATER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL> src/dummy.cpp)     
-+add_library(osrm_store $<TARGET_OBJECTS:STORAGE> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL> src/dummy.cpp)    
+-add_library(osrm_update $<TARGET_OBJECTS:UPDATER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)
+-add_library(osrm_store $<TARGET_OBJECTS:STORAGE> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)
++add_library(osrm_update $<TARGET_OBJECTS:UPDATER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL> src/updater/csv_source.cpp src/updater/updater.cpp)
++add_library(osrm_store $<TARGET_OBJECTS:STORAGE> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL> src/storage/io_config.cpp src/storage/storage.cpp)
       
  if(ENABLE_GOLD_LINKER)         
      execute_process(COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl,--version ERROR_QUIET OUTPUT_VARIABLE LD_VERSION)      
