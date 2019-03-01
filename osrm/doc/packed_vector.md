@@ -122,12 +122,14 @@ inline WordT set_lower_value(WordT word, WordT mask, std::uint8_t offset, T valu
     //         Nothing need to touch set_upper_value
     // 
     //         For second value it becomes tricky.  
-    //         From the examples we know that it would record 31 bits in the first word and 33 bits in the second
-    //         Because each word could record multiple input(say if input value is 1 bit then each word could record 64)
-    //         (word & ~mask) will record original value of the word
-    //         ((static_cast<WordT>(value) << offset) & mask) will record lower part and together with original value will generate new word
-    //         For the upper part is similar, the difference with set_lower_value is input value's upper part will record in second word's lower part
-    //         That is what >> for
+    //         From the examples we know that it would record 31 bits in the first word and 33 bits 
+    //         in the second
+    //         #1. Each word could record multiple input(say if input value is 1 bit then each word 
+    //             could record 64), (word & ~mask) will record original value of the word
+    //         #2. ((static_cast<WordT>(value) << offset) & mask) will record lower part 
+    //             together with original value will generate new word to be recorded in inner array
+    //         #3. set_upper_value is similar, the difference with set_lower_value is input value's 
+    //              upper part will record in second word's lower part, that's what '>>' for
     return (word & ~mask) | ((static_cast<WordT>(value) << offset) & mask);
 }
 
@@ -191,7 +193,8 @@ inline T get_upper_half_value(WordT word,
 template <storage::Ownership Ownership>
 using PackedOSMIDs = util::detail::PackedVector<OSMNodeID, 33, Ownership>;
 ```
-Definition for OSMIDs indicate that the value for original OSMNodeID should in the range of {0, pow(2, 33) - 1}
+Definition for OSMIDs indicate that the value for original OSMNodeID should in the range of {0, pow(2, 33) - 1}<br/>
+If we change this from 33 to 63, then osrm::packed_array won't help much, it would impact the memory usage of OSRM routing server.<br/> 
 
 - packed_vector will store input value into blocks and fill which based on calling sequences.  Its better to make sure each input of push_back is unique value.
 ```C++
