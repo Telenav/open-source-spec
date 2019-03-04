@@ -18,7 +18,7 @@
 ## Purpose
 osrm::packed_array privdes similar interface and time complexity with std::vector, but it would convert given input value into binary stream to save space.  
 <br/>
-<img src="../references/pictures/packed_vector_example.png" alt="packed_vector_example" width="500"/>
+<img src="../references/pictures/packed_vector_example.png" alt="packed_vector_example" width="700"/>
 <br/>
 Say that you have an array contains value in the range of uint16_t, osrm::packed_array *compact* multiple value together and record them into lower level storage unit.  In [this version's implementation](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/include/util/packed_vector.hpp), osrm::packed_array use array[uint_64] as low level storage.
 
