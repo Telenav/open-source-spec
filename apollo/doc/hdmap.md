@@ -61,5 +61,6 @@ Consumer of HDMap will call interface definied in [hdmap.h](https://github.com/A
 # Reference
 - [TomTom HD Map](https://www.tomtom.com/automotive/automotive-solutions/automated-driving/hd-map-roaddna/)
 - [Apollo Auto](https://github.com/ApolloAuto)
+- [Intelligent Transportation and Autonomous Vehicles - Baidu - Slides](http://ggim.un.org/unwgic/presentations/2.2_Ma_Changjie.pdf)
 
 
