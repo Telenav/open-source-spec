@@ -3,6 +3,7 @@
       - [Duration penalty update](#duration-penalty-update)
       - [Turn penalty update](#turn-penalty-update)
   - [End to end debug case](#end-to-end-debug-case)
+  - [Reference](#reference)
 
 # OSRM Traffic
 
@@ -121,4 +122,8 @@ auto osm_nodeid = facade.GetOSMNodeIDOfNode(internal_node_id);
 auto node_coordinate = facade.GetCoordinateOfNode(internal_node_id);
 ```
 
+
+## Reference
+- [OSRM - pull3808 - Add speed update functionality to osrm-customize](https://github.com/Project-OSRM/osrm-backend/pull/3808)
+- [OSRM - wiki - Traffic](https://github.com/Project-OSRM/osrm-backend/wiki/Traffic)
 
