@@ -1,6 +1,6 @@
 - [Inertial flow](#inertial-flow)
   - [Basic idea](#basic-idea)
-  - [Implementation](#implementation)
+  - [Implementation in OSRM](#implementation-in-osrm)
   - [Reference](#reference)
 
 # Inertial flow
@@ -14,7 +14,7 @@ Inertial flow is one of the [graph partition algorithms](./graph_partition.md). 
 
 Strongly recommend you to read [blog post](https://daniel-j-h.github.io/post/selection-algorithms-for-partitioning/) from Daniel J.H., who implemented this in OSRM.  
 
-## Implementation
+## Implementation in OSRM
 [computeInertialFlowCut](https://github.com/Project-OSRM/osrm-backend/blob/9234b2ae76bdbbb91cbb51142bfc0ee1252c4abd/src/partitioner/recursive_bisection.cpp#L73) is the function to calculate best partition
 ```C++
 DinicMaxFlow::MinCut computeInertialFlowCut(const BisectionGraphView &view,
@@ -87,6 +87,12 @@ void reorderFirstLast(RandomIt first, RandomIt last, std::size_t n, Comparator c
     std::nth_element(rfirst, rfirst + (n - 1), rlast, flipped(comp));
 }
 
+```
+After select source and sink, use Dinic algorithm to calculate max-flow/min-cut, for more details could go to [max flow/min cut](./max_flow_min_cut.md) page
+```C++
+DinicMaxFlow::MinCut DinicMaxFlow::operator()(const BisectionGraphView &view,
+                                              const SourceSinkNodes &source_nodes,
+                                              const SourceSinkNodes &sink_nodes) const
 ```
 
 

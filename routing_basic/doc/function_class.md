@@ -1,3 +1,9 @@
+- [Abstract](#abstract)
+  - [Function class definition](#function-class-definition)
+  - [Candidate count strategy](#candidate-count-strategy)
+  - [Drawbacks](#drawbacks)
+  - [Reference](#reference)
+
 # Abstract
 Function class is the attrbitue provide by data vender to identify the "importance" of road segment.  [Function class routing](../resource/presentations/FC_presentation.pptx) means prune road calculation based on function class attribute to balance performance and quality.
 

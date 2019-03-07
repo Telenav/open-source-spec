@@ -24,9 +24,9 @@ Graph partition is the first step to distribute processing graph data.
 
 - [METIS](./metis.md)
 
-- PUNCH
+- [PUNCH](./punch.md)
 
-- Inertial Flow
+- [Inertial Flow](./inertial_flow.md)
 
 - KAHIP
 
