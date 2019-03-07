@@ -1,3 +1,19 @@
+<!-- TOC -->
+
+- [Getting Start with OSRM](#getting-start-with-osrm)
+    - [What is OSRM?](#what-is-osrm)
+    - [Building from Source and Debugging](#building-from-source-and-debugging)
+        - [Building](#building)
+        - [Generate Xcode Project](#generate-xcode-project)
+        - [Run and Debug](#run-and-debug)
+            - [Debug in Xcode](#debug-in-xcode)
+            - [Download OSM data](#download-osm-data)
+        - [If you still want to debug on native Windows](#if-you-still-want-to-debug-on-native-windows)
+    - [Reading Code](#reading-code)
+        - [osrm-routed](#osrm-routed)
+
+<!-- /TOC -->
+
 # Getting Start with OSRM 
 I met a lot of issues when I started the OSRM learning/research, so I built this document to help newcomers to avoid them.      
 Moreover, also some experiences recoreded.       
