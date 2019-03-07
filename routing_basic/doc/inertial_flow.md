@@ -5,7 +5,7 @@
 
 # Inertial flow
 
-Inertial flow is one of the [graph partition algorithms](./graph_partition.md).  The idea behind inertial flow is, if you can identify many vertices on each side of a **good cut** then you could easily find a sparse cut using max-flow, the difficulty always in identifying these vertices[Khandekar, Rao, Vazirani; STOC06].  Inertial flow try to find optimal cut by selecting different sets of vertices and apply max-flow algorithm on them, in the end will return the best partition.
+Inertial flow is one of the [graph partition algorithms](./graph_partition.md).  The idea behind inertial flow is, if you can identify many vertices on each side of a **good cut** then you could easily find a sparse cut using max-flow, the difficulty always in identifying these vertices[Khandekar, Rao, Vazirani; STOC06].  Inertial flow tries to find optimal cut by selecting different sets of vertices and apply max-flow algorithm on them, in the end will return the best partition.
 
 
 ## Basic idea
@@ -33,8 +33,8 @@ DinicMaxFlow::MinCut computeInertialFlowCut(const BisectionGraphView &view,
             //          and n * sink "last" node ids.  The slope determines the spatial 
             //          order for sorting node coordinates.
             //          Using the idea of geo hash create 25%'s source and 25%'s sink.
-            //          By only focussing on a small set on the outside of the source/sink 
-            //          blob, it could save quite some overhead in initialisation/search cost.
+            //          By only focusing on a small set on the outside of the source/sink 
+            //          blob, it could save quite some overhead in initialization/search cost.
             auto order = makeSpatialOrder(view, ratio, slope);
             auto cut = DinicMaxFlow()(view, order.sources, order.sinks);
             auto cut_balance = get_balance(cut.num_nodes_source);
