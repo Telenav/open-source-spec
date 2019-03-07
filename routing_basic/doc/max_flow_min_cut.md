@@ -1,3 +1,13 @@
+- [Max Flow Min Cut](#max-flow-min-cut)
+  - [Key points](#key-points)
+    - [Residual network](#residual-network)
+    - [Augmenting Path](#augmenting-path)
+    - [Ford-Fulkerson](#ford-fulkerson)
+    - [Max flow min cut theory](#max-flow-min-cut-theory)
+    - [Worst case for FF](#worst-case-for-ff)
+    - [Dinic](#dinic)
+    - [Why level graph helps](#why-level-graph-helps)
+
 # Max Flow Min Cut
 
 Max Flow Min Cut is the algorithm be used in inertial flow to find a partition of a given graph.

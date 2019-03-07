@@ -1,3 +1,7 @@
+- [PUNCH](#punch)
+  - [Filtering phase](#filtering-phase)
+  - [Assembly phase](#assembly-phase)
+
 # PUNCH
 PUNCH means partitioning using natural cut heuristics, its intuition is, inside road networks, dense regions(grids, cities) interleaved with natural cuts(mountains, parks, rivers, deserts, sparse areas, freeways).
 PUNCH discovered that road networks have remarkably small separators and it appeared to be the one capable of efficiently computing these separators.

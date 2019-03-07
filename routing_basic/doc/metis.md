@@ -1,3 +1,10 @@
+- [METIS](#metis)
+  - [Key Point](#key-point)
+    - [Algorithm Detail](#algorithm-detail)
+    - [Graph Coarsen](#graph-coarsen)
+    - [Partitioning based on coarsest level graph](#partitioning-based-on-coarsest-level-graph)
+  - [Reference](#reference)
+
 # METIS
 METIS means Serial Graph Partitioning and Fill-reducing Matrix Ordering, which is a set of serial programs for partitioning graphs, partitioning finite element meshes, and producing fill reducing orderings for sparse matrices.  The algorithms implemented in METIS are based on the multilevel recursive-bisection, multilevel k-way, and multi-constraint partitioning schemes developed in our lab. 
 

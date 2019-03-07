@@ -3,6 +3,8 @@
 ## Graph example
 
 <img src="../../graph/osrm_partition_graph_example.png" alt="osrm_partition_graph_example" width="400"/>
+
+![](https://wiki.openstreetmap.org/wiki/File:Height-Restriction-Barrier.jpg)
 <br/>
 
 ```
