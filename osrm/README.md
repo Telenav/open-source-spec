@@ -1,7 +1,7 @@
 # OSRM in Telenav    
 We're going to research deeply in OSRM([Open Source Routing Machine](https://github.com/Project-OSRM/osrm-backend)). Here will be some study resources, experiences, etc.    
 
-- [Getting Start with OSRM in Telenav](./doc/GettingStart.md)    
+- [Getting Start with OSRM](./doc/GettingStart.md)    
 - [OSRM vs Valhalla](./doc/osrm-vs-valhalla.md)    
 
 

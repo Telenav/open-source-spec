@@ -1,4 +1,4 @@
-# Getting Start with OSRM in Telenav
+# Getting Start with OSRM 
 I met a lot of issues when I started the OSRM learning/research, so I built this document to help newcomers to avoid them.      
 Moreover, also some experiences recoreded.       
 Welcome everyone to make this document up to date!    
