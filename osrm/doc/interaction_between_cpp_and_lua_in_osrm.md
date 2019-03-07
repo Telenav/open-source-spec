@@ -30,3 +30,30 @@ The most important methods provided by `Lua` profiles are `process_node()/proces
 Please refer to below call graph for `osrm-extract` processing, **purple** comments in the graph describes where the `Lua` functions be Invoked.      
 ![osrm-extract Startup and Process Call Graph](../graph/osrm-extract_startup_and_process_callgraph.mmd.png)
 
+## API Version
+API Version is the one designed for compatibility, what if parameters have been changed? Would mapping be hide in this function. Like ProcessNode is the old api, let’s say it support 2 parameters but new api restrictions support 3:    
+- [LuaScriptingContext::ProcessNode](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/scripting_environment_lua.cpp#L1155)
+```lua
+void LuaScriptingContext::ProcessNode(const osmium::Node &node,
+                                      ExtractionNode &result,
+                                      const ExtractionRelationContainer &relations)
+{
+    BOOST_ASSERT(state.lua_state() != nullptr);
+
+    switch (api_version)
+    {
+    case 4:
+    case 3:
+        node_function(profile_table, node, result, relations);
+        break;
+    case 2:
+        node_function(profile_table, node, result);
+        break;
+    case 1:
+    case 0:
+        node_function(node, result);
+        break;
+    }
+}
+```
+
