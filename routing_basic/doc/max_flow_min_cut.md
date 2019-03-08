@@ -52,11 +52,9 @@ FF will terminate in the range of max flow value.  Its time complexity is (num_o
 
 
 
-[Implementation](https://github.com/CodeBear801/zoo/blob/master/graph/graph_partition/ford_fulkerson.cpp)
-
 ### Max flow min cut theory
 
-Max cut is the cut of all flow from source to sink , which is the upper bound for the flow network
+Max cut is the cut of all flow from source to sink, which is the upper bound for the flow network
 
 <img src="../resource/pictures/max_flow_min_cut_theory.png" alt="max_flow_min_cut_theory" width="600"/>
 <br/>
@@ -104,9 +102,7 @@ while t is reachable from s in the residual graph
 <img src="../resource/pictures/dinic_alg.png" alt="dinic_alg" width="600"/>
 
 Dinic start with an initial flow of zero. Then repeat the following: build a level graph from the residual flow network, and let k be the length of a shortest path from s to t. Then while there is a path from source to sink that has this length k, which is be used to augment the flow and then update the residual capacities.
-Then repeat this until there are no more s-t paths and we return the current flow.
-
-[Implementation](https://github.com/CodeBear801/zoo/blob/master/graph/graph_partition/dinic.cpp)
+Then repeat this until there are no more s-t paths and we return the current flow.  
 
 ### Why level graph helps
 <img src="../resource/pictures/level_graph.png" alt="level_graph" width="400"/>
@@ -117,5 +113,5 @@ Level graph's creation based on the observation: augmenting along a shortest pat
 ## Reference
 - [Georgia Tech - Maximum Flow](https://s3.amazonaws.com/content.udacity-data.com/courses/gt-cs6505/maximumflow.html)
 - CMU [max-flow-1](http://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15451-f14/www/lectures/lec10/max-flow1.pdf) [max-flow-2](http://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15451-f14/www/lectures/lec11/max-flow2-avrim.pdf) [dinic](http://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15451-f14/www/lectures/lec11/dinic.pdf)
-
-
+- [Ford-Fulkerson simple implementation](https://github.com/CodeBear801/zoo/blob/ff3279549f24e008c1f1cc40c376a0b02b1189b4/graph/graph_partition/ford_fulkerson.cpp#L1)
+- [Dinic simple implementation](https://github.com/CodeBear801/zoo/blob/ff3279549f24e008c1f1cc40c376a0b02b1189b4/graph/graph_partition/dinic.cpp#L1)

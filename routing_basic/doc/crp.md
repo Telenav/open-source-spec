@@ -32,7 +32,8 @@ One of the big technical challenges in point to point route calculation is figur
 
   After partition, each cell would be abstract to "big node", only keeps entry -> exit pair.  Graph be dramatically constructed but keeps original structure.
 
-  <img src="../resource/pictures/single_cell.png" alt="single_cell" width="400"/>
+  <img src="../resource/pictures/single_cell.png" alt="single_cell" width="400"/><br/>
+  (Image from Paper of CRP)
 
 ### Step2 Metric custmization
   Apply dynamic information with cost models, each round of traffic update, seconds
@@ -44,7 +45,8 @@ One of the big technical challenges in point to point route calculation is figur
 ### Step3 Real time query
   Real time, per request, miliseconds
   
-  <img src="../resource/pictures/crp_query.png" alt="crp_query" width="400"/>
+  <img src="../resource/pictures/crp_query.png" alt="crp_query" width="400"/><br/>
+    (Image from Paper of CRP)
 
 ## CRP Core ideas
 Topological and metric properties of the network is differernt.  The topology is the graph structure of the network together with a set of static properties.  The metric encodes the actual cost of traversing a road segment or taking a turn.
@@ -54,10 +56,8 @@ Partition road network with balanced count and min-cut is the most important ste
 <!-- toc -->
 
 ## Reference
-[Paper of CRP](../resource/papers/CustomizableRoutePlanningInRoadNetworks.pdf)
-
-[Telenav Direction team discussion](../resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
-
-[C++ Implementation of Customizable Route Planning (CRP)](https://github.com/michaelwegner/CRP)
+- [Paper of CRP](../resource/papers/CustomizableRoutePlanningInRoadNetworks.pdf)
+- [Telenav Direction team discussion](../resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
+- [C++ Implementation of Customizable Route Planning (CRP)](https://github.com/michaelwegner/CRP)
 
 
