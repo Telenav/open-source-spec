@@ -22,3 +22,4 @@ Valhalla is the open source navigation engine used by Tesla, primary developers 
 - [Intro to Valhalla](https://www.interline.io/valhalla/)
 - [Valhalla Routing API](https://github.com/valhalla/valhalla/blob/master/docs/api/turn-by-turn/api-reference.md)
 - [MapZen Tech blog](https://mapzen.com/blog/)
+- [Valhalla API Docs - tpportugal](https://github.com/tpportugal/tpp_valhalla_api_docs)
