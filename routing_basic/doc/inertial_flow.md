@@ -101,3 +101,4 @@ DinicMaxFlow::MinCut DinicMaxFlow::operator()(const BisectionGraphView &view,
 - [On Balanced Separators in Road Networks - slides](http://sommer.jp/sea2015.pdf)
 - [Selection Algorithms for Graph Partitioning - blog post](https://daniel-j-h.github.io/post/selection-algorithms-for-partitioning/)
 - [OSRM - issue3205 - Implement Inertial Flow Partitioner](https://github.com/Project-OSRM/osrm-backend/issues/3205)
+- [RoutingKit - Impl - Github](https://github.com/RoutingKit/RoutingKit/blob/da6d46accf0986ab8d3684a434a8afce7160eaa8/include/routingkit/nested_dissection.h)
