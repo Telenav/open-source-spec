@@ -11,10 +11,11 @@
   - [Reference](#reference)
 
 # Max Flow Min Cut
+The max-flow min-cut theorem states that in a flow network, the maximum amount of flow passing from the source to the sink is equal to the total weight of the edges in the minimum cut, i.e. the smallest total weight of the edges which if removed would disconnect the source from the sink.  Max Flow Min Cut is the algorithm be used in inertial flow to find a partition of a given graph.  
+<img src="../resource/pictures/max_flow_min_cut_sample.png" alt="max_flow_min_cut_sample" width="400"/>
 
-Max Flow Min Cut is the algorithm be used in inertial flow to find a partition of a given graph.
+For basic ideas, please go to \<\<Introduction to Algorithm\>\>.
 
-For basic ideas, please go to Introduction to Algorithm.
 
 ## Key points
 
@@ -107,7 +108,7 @@ Then repeat this until there are no more s-t paths and we return the current f
 ### Why level graph helps
 <img src="../resource/pictures/level_graph.png" alt="level_graph" width="400"/>
 
-Level graph's creation based on the observation: augmenting along a shortest path only creates longer path.  Level graph could avoid the situation of route back and forth, once exhausted all paths of a given length, the next shortest path must be one edge longer
+Level graph's creation based on the observation: augmenting along a shortest path only creates longer path.  Level graph could avoid the situation of route back and forth, once exhausted all paths of a given length, the next shortest path must be one edge longer. 
 
 
 ## Reference
