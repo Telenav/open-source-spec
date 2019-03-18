@@ -12,6 +12,8 @@
             - [WayHandlers.penalties](#wayhandlerspenalties)
     - [Construct and Store Weight/Duration for NodeBasedEdge](#construct-and-store-weightduration-for-nodebasededge)
     - [Compress NodeBasedEdge](#compress-nodebasededge)
+        - [Add Penalty for Compressible `traffic_signals`](#add-penalty-for-compressible-traffic_signals)
+        - [Sum Weight/Duration of Compressed `NodeBasedEdge`s](#sum-weightduration-of-compressed-nodebasededges)
 
 <!-- /TOC -->
 
@@ -515,9 +517,10 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
 There're two actions for handle weight/duration applied during Compress NodeBasedGraph.     
 For what compress NodeBasedGraph do, please refer to [Understanding OSRM Graph Representation - Basic Changes of Convert OSM to OSRM Edge-expanded Graph](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#basic-changes-of-convert-osm-to-osrm-edge-expanded-graph).     
 
-- [Add Penalty for `traffic_signals`](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L218)    
-Please be aware that comments in [graph_compressor.cpp#L209](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L209) is not correct. it will be fixed by [PR-5384](https://github.com/Project-OSRM/osrm-backend/pull/5384).    
+### Add Penalty for Compressible `traffic_signals`
 By current implementation, there'll be `20` penalty added to both weight and duration on each compressible `traffic_signals`.     
+- [graph_compressor.cpp#L218](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L218)    
+Please be aware that comments in [graph_compressor.cpp#L209](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L209) is not correct. it will be fixed by [PR-5384](https://github.com/Project-OSRM/osrm-backend/pull/5384).    
 
 ```c++
     
@@ -575,8 +578,9 @@ By current implementation, there'll be `20` penalty added to both weight and dur
 
 ```
 
+- [Lua `process_turn()` in car profile](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/profiles/car.lua#L455)    
+
 ```lua
--- [Jay] `process_turn()` in car.lua, ignored some unrelated codes.
 function process_turn(profile, turn)
 
   -- [Jay] ignored unrelated codes ... 
@@ -603,7 +607,8 @@ end
   traffic_light_penalty          = 2,
 ```
 
-- [Sum Weight/Duration of Compressed `NodeBasedEdge`s](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L286)    
+###  Sum Weight/Duration of Compressed `NodeBasedEdge`s
+- [graph_compressor.cpp#L286](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L286)    
 
 ```c++
     //[Jay] ignored unrelated codes ... 
