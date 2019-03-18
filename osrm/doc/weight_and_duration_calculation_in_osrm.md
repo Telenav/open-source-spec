@@ -490,7 +490,7 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
     {
         // Compute edge weights
 
-        //[Jay] ignored not unimportant codes ... 
+        //[Jay] ignored unrelated codes ... 
 
         //[Jay] weight/duration = distance / meter_per_second
         const auto distance =
@@ -507,7 +507,7 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
         edge.weight = std::max<EdgeWeight>(1, std::round(segment.weight * weight_multiplier));
         edge.duration = std::max<EdgeWeight>(1, std::round(segment.duration * 10.));
 
-        //[Jay] ignored not unimportant codes ... 
+        //[Jay] ignored unrelated codes ... 
     }
 ```
 
@@ -521,7 +521,7 @@ By current implementation, there'll be `20` penalty added to both weight and dur
 
 ```c++
     
-    //[Jay] ignored not unimportant codes ... 
+    //[Jay] ignored unrelated codes ... 
 
     const bool has_node_penalty = traffic_signals.find(node_v) != traffic_signals.end();
     EdgeDuration node_duration_penalty = MAXIMAL_EDGE_DURATION;
@@ -571,20 +571,21 @@ By current implementation, there'll be `20` penalty added to both weight and dur
         node_weight_penalty = extraction_turn.weight * weight_multiplier;
     }
 
-    //[Jay] ignored not unimportant codes ... 
+    //[Jay] ignored unrelated codes ... 
 
 ```
 
 ```lua
+-- [Jay] `process_turn()` in car.lua, ignored some unrelated codes.
 function process_turn(profile, turn)
 
-  -- [Jay] ignored not unimportant codes ... 
+  -- [Jay] ignored unrelated codes ... 
 
   if turn.has_traffic_light then
       turn.duration = profile.properties.traffic_light_penalty
   end
 
-  -- [Jay] ignored not unimportant codes ... 
+  -- [Jay] ignored unrelated codes ... 
 
   -- for distance based routing we don't want to have penalties based on turn angle
   if profile.properties.weight_name == 'distance' then
@@ -593,7 +594,7 @@ function process_turn(profile, turn)
      turn.weight = turn.duration
   end
 
-  -- [Jay] ignored not unimportant codes ... 
+  -- [Jay] ignored unrelated codes ... 
 
 end
 ```
@@ -605,7 +606,7 @@ end
 - [Sum Weight/Duration of Compressed `NodeBasedEdge`s](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L286)    
 
 ```c++
-    //[Jay] ignored not unimportant codes ... 
+    //[Jay] ignored unrelated codes ... 
 
 
     // add weight of e2's to e1
@@ -626,5 +627,5 @@ end
         graph.GetEdgeData(reverse_e1).duration += node_duration_penalty;
     }
 
-    //[Jay] ignored not unimportant codes ... 
+    //[Jay] ignored unrelated codes ... 
 ```
