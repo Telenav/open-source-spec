@@ -1,0 +1,24 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i before_compress_nodebasededge.mmd -o before_compress_nodebasededge.mmd.png
+
+%%```mermaid
+graph LR
+Title[<u>Before Compress NodeBasedEdge</u>]
+Title --- Node1(( ))
+style Title fill:#FFF,stroke:#FFF
+linkStyle 0 stroke:#FFF,stroke-width:0;
+
+Node1 -- 10 --- Node2(( ))
+Node2 -- 15 --- Node3(( ))
+Node3 -- 15 --- Node4(( ))
+Node4 -- 10 --- Node5(( ))
+
+Node3 --- Node7(( ))
+
+style Node2 fill:#f9f
+
+Comment["traffic signal on Node"]
+style Comment fill:#f9f,stroke-dasharray: 5, 5
+
+%%```

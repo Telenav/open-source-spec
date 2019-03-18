@@ -519,6 +519,11 @@ For what compress NodeBasedGraph do, please refer to [Understanding OSRM Graph R
 
 ### Add Penalty for Compressible `traffic_signals`
 By current implementation, there'll be `20` penalty added to both weight and duration on each compressible `traffic_signals`.     
+
+![](../graph/before_compress_nodebasededge.mmd.png)    
+![](../graph/after_compress_nodebasededge.mmd.png)     
+
+
 - [graph_compressor.cpp#L218](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L218)    
 Please be aware that comments in [graph_compressor.cpp#L209](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L209) is not correct. it will be fixed by [PR-5384](https://github.com/Project-OSRM/osrm-backend/pull/5384).    
 
