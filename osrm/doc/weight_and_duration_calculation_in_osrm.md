@@ -1,14 +1,19 @@
+<!-- TOC -->
+
 - [Weight and Duration Calculation in OSRM](#weight-and-duration-calculation-in-osrm)
-  - [Basic Concepts](#basic-concepts)
-  - [Process Speed/Rate in Lua Profiles](#process-speedrate-in-lua-profiles)
-    - [process_way](#processway)
-      - [WayHandlers.ferries](#wayhandlersferries)
-      - [WayHandlers.movables](#wayhandlersmovables)
-      - [WayHandlers.speed](#wayhandlersspeed)
-      - [WayHandlers.surface](#wayhandlerssurface)
-      - [WayHandlers.maxspeed](#wayhandlersmaxspeed)
-      - [WayHandlers.penalties](#wayhandlerspenalties)
-  - [Construct and Store WeightData/DurationData for NodeBasedEdge](#construct-and-store-weightdatadurationdata-for-nodebasededge)
+    - [Basic Concepts](#basic-concepts)
+    - [Process Speed/Rate in Lua Profiles](#process-speedrate-in-lua-profiles)
+        - [process_way](#process_way)
+            - [WayHandlers.ferries](#wayhandlersferries)
+            - [WayHandlers.movables](#wayhandlersmovables)
+            - [WayHandlers.speed](#wayhandlersspeed)
+            - [WayHandlers.surface](#wayhandlerssurface)
+            - [WayHandlers.maxspeed](#wayhandlersmaxspeed)
+            - [WayHandlers.penalties](#wayhandlerspenalties)
+    - [Construct and Store Weight/Duration for NodeBasedEdge](#construct-and-store-weightduration-for-nodebasededge)
+    - [Compress NodeBasedEdge](#compress-nodebasededge)
+
+<!-- /TOC -->
 
 # Weight and Duration Calculation in OSRM    
 This document will try to explain how does [OSRM](https://github.com/Telenav/osrm-backend) calculate **weight** and **duration** of a route.     
@@ -506,5 +511,120 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
     }
 ```
 
+## Compress NodeBasedEdge
+There're two actions for handle weight/duration applied during Compress NodeBasedGraph.     
+For what compress NodeBasedGraph do, please refer to [Understanding OSRM Graph Representation - Basic Changes of Convert OSM to OSRM Edge-expanded Graph](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#basic-changes-of-convert-osm-to-osrm-edge-expanded-graph).     
+
+- [Add Penalty for `traffic_signals`](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L218)    
+Please be aware that comments in [graph_compressor.cpp#L209](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L209) is not correct. it will be fixed by [PR-5384](https://github.com/Project-OSRM/osrm-backend/pull/5384).    
+By current implementation, there'll be `20` penalty added to both weight and duration on each compressible `traffic_signals`.     
+
+```c++
+    
+    //[Jay] ignored not unimportant codes ... 
+
+    const bool has_node_penalty = traffic_signals.find(node_v) != traffic_signals.end();
+    EdgeDuration node_duration_penalty = MAXIMAL_EDGE_DURATION;
+    EdgeWeight node_weight_penalty = INVALID_EDGE_WEIGHT;
+    if (has_node_penalty) //[Jay] if traffic_signals appeared, add some penalty for it
+    {
+        // we cannot handle this as node penalty, if it depends on turn direction
+        if (fwd_edge_data1.flags.restricted != fwd_edge_data2.flags.restricted)
+            continue;
+
+        // generate an artifical turn for the turn penalty generation
+        std::vector<ExtractionTurnLeg> roads_on_the_right;
+        std::vector<ExtractionTurnLeg> roads_on_the_left;
+        ExtractionTurn extraction_turn(0,
+                                        2,
+                                        false,
+                                        true,
+                                        false,
+                                        false,
+                                        TRAVEL_MODE_DRIVING,
+                                        false,
+                                        false,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        false,
+                                        TRAVEL_MODE_DRIVING,
+                                        false,
+                                        false,
+                                        1,
+                                        0,
+                                        0,
+                                        0,
+                                        0,
+                                        roads_on_the_right,
+                                        roads_on_the_left);
+
+        //[Jay] call Lua function `process_turn()` to add penalty. 
+        //[Jay] But actually only the `traffic_signals` related codes in `process_turn()` will be touched, 
+        //[Jay]  since no other parameters pass in. 
+        scripting_environment.ProcessTurn(extraction_turn);
+
+        //[Jay] HIGHLIGHT: same as before, scale the weight/duration value by multiply 10
+        node_duration_penalty = extraction_turn.duration * 10;
+        node_weight_penalty = extraction_turn.weight * weight_multiplier;
+    }
+
+    //[Jay] ignored not unimportant codes ... 
+
+```
+
+```lua
+function process_turn(profile, turn)
+
+  -- [Jay] ignored not unimportant codes ... 
+
+  if turn.has_traffic_light then
+      turn.duration = profile.properties.traffic_light_penalty
+  end
+
+  -- [Jay] ignored not unimportant codes ... 
+
+  -- for distance based routing we don't want to have penalties based on turn angle
+  if profile.properties.weight_name == 'distance' then
+     turn.weight = 0
+  else
+     turn.weight = turn.duration
+  end
+
+  -- [Jay] ignored not unimportant codes ... 
+
+end
+```
+
+```lua
+  traffic_light_penalty          = 2,
+```
+
+- [Sum Weight/Duration of Compressed `NodeBasedEdge`s](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/graph_compressor.cpp#L286)    
+
+```c++
+    //[Jay] ignored not unimportant codes ... 
 
 
+    // add weight of e2's to e1
+    graph.GetEdgeData(forward_e1).weight += forward_weight2;
+    graph.GetEdgeData(reverse_e1).weight += reverse_weight2;
+
+    // add duration of e2's to e1
+    graph.GetEdgeData(forward_e1).duration += forward_duration2;
+    graph.GetEdgeData(reverse_e1).duration += reverse_duration2;
+
+    if (node_weight_penalty != INVALID_EDGE_WEIGHT &&
+        node_duration_penalty != MAXIMAL_EDGE_DURATION)
+    {
+        //[Jay] add weight/duration penalty caused by traffic_signals
+        graph.GetEdgeData(forward_e1).weight += node_weight_penalty;
+        graph.GetEdgeData(reverse_e1).weight += node_weight_penalty;
+        graph.GetEdgeData(forward_e1).duration += node_duration_penalty;
+        graph.GetEdgeData(reverse_e1).duration += node_duration_penalty;
+    }
+
+    //[Jay] ignored not unimportant codes ... 
+```
