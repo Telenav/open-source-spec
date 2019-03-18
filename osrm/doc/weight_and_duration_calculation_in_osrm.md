@@ -367,10 +367,10 @@ end
     },
 ```
 
-## Construct and Store WeightData/DurationData for NodeBasedEdge
+## Construct and Store Weight/Duration for NodeBasedEdge
 Once `Lua` function [`process_way()`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/profiles/car.lua#L356) finished, the `C++` code [`ExtractorCallbacks::ProcessWay()`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extractor_callbacks.cpp#L92) will be called to handle this way in memory.     
 The terminology **NodeBasedEdge** can refer to [Understanding OSRM Graph Representation - Terminology](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#terminology).     
-For `weight/duration` related handle, there will be two steps:    
+For `weight/duration` related handle, there will be 3 steps:    
 - [construct `WeightData/DurationData`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extractor_callbacks.cpp#L126)    
 The `WeightData/DurationData` will be represented by [`detail::ByEdgeOrByMeterValue`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/include/extractor/internal_extractor_edge.hpp#L23). It's a tricky way to store a single value but with different labels.      
 
@@ -478,5 +478,33 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
 
     //[Jay] ignored unrelated codes ... 
 ```
+
+- [Compute Weight/Duration for `NodeBasedEdge`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extraction_containers.cpp#L337)     
+
+```c++
+    {
+        // Compute edge weights
+
+        //[Jay] ignored not unimportant codes ... 
+
+        //[Jay] weight/duration = distance / meter_per_second
+        const auto distance =
+            util::coordinate_calculation::greatCircleDistance(source_coord, target_coord);
+        const auto weight = edge_iterator->weight_data(distance);
+        const auto duration = edge_iterator->duration_data(distance);
+
+        //[Jay] `process_segment()` is not currently used in the car profile.
+        ExtractionSegment segment(source_coord, target_coord, distance, weight, duration);
+        scripting_environment.ProcessSegment(segment);
+
+        //[Jay] HIGHLIGHT: scale the weight/duration value by multiply 10
+        auto &edge = edge_iterator->result;
+        edge.weight = std::max<EdgeWeight>(1, std::round(segment.weight * weight_multiplier));
+        edge.duration = std::max<EdgeWeight>(1, std::round(segment.duration * 10.));
+
+        //[Jay] ignored not unimportant codes ... 
+    }
+```
+
 
 
