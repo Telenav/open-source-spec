@@ -1,10 +1,14 @@
-- [OSRM Profile](#osrm-profile)
-  - [Files Size & Memory](#files-size--memory)
-    - [us-west CH](#us-west-ch)
-    - [us-west MLD](#us-west-mld)
-    - [california(telenav_osm) MLD](#californiatelenavosm-mld)
+<!-- TOC -->
 
-# OSRM Profile
+- [OSRM File Size & Memory Profile](#osrm-file-size--memory-profile)
+    - [Files Size & Memory](#files-size--memory)
+        - [us-west CH](#us-west-ch)
+        - [us-west MLD](#us-west-mld)
+        - [california(telenav_osm) MLD](#californiatelenav_osm-mld)
+
+<!-- /TOC -->
+
+# OSRM File Size & Memory Profile
 
 ## Files Size & Memory 
 See [Toolchain file overview](https://github.com/Project-OSRM/osrm-backend/wiki/Toolchain-file-overview) for description of each file.     

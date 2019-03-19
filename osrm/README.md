@@ -10,7 +10,7 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 - [QueryHeap In OSRM](./doc/queryheap_in_osrm.md)
 - [Understanding OSRM Graph Representation](./doc/understanding_osrm_graph_representation.md)    
 - [Bidirectional Dijkstra In OSRM](./doc/bidirectional_dijkstra_in_osrm.md)     
-- [OSRM Profile](./doc/osrm-profile.md)
+- [OSRM File Size & Memory Profile](./doc/osrm-profile.md)
 - [OSRM Customization](./doc/osrm_customization.md)
 - [OSRM Partition](./doc/osrm_partition.md)
 - [OSRM Traffic Update](./doc/osrm_traffic_update.md)
