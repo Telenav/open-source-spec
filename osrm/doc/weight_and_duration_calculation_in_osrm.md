@@ -1,6 +1,6 @@
 <!-- TOC -->
 
-- [Weight and Duration Calculation in OSRM](#weight-and-duration-calculation-in-osrm)
+- [How OSRM Calculate Weight and Duration](#how-osrm-calculate-weight-and-duration)
     - [Basic Concepts](#basic-concepts)
     - [Process Speed/Rate in Lua Profiles](#process-speedrate-in-lua-profiles)
         - [process_way](#process_way)
@@ -20,7 +20,7 @@
 
 <!-- /TOC -->
 
-# Weight and Duration Calculation in OSRM    
+# How OSRM Calculate Weight and Duration     
 This document will try to explain how does [OSRM](https://github.com/Telenav/osrm-backend) calculate **weight** and **duration** of a route.     
 - This document will focus on how to calculate weight and duration for a route for car, since generating route for car is one of the most important and most complex feature of [OSRM](https://github.com/Telenav/osrm-backend). It means:     
     - Only `car.lua` will be focused on, other profiles will be ignored.     
