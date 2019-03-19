@@ -17,6 +17,7 @@
     - [Process Turn While Build GraphEdge](#process-turn-while-build-graphedge)
         - [compute weight and duration penalties](#compute-weight-and-duration-penalties)
         - [process_turn in Lua profile](#process_turn-in-lua-profile)
+    - [Read More](#read-more)
 
 <!-- /TOC -->
 
@@ -790,4 +791,9 @@ end
 read more about the `turn_penalty` calculation by [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function):    
 - [Issue-2918 Investigate Turn Function](https://github.com/Project-OSRM/osrm-backend/issues/2918)
 - [PR-2849 Update turn penalty function to better fit some measured data](https://github.com/Project-OSRM/osrm-backend/pull/2849)
+
+## Read More
+- [OSRM Traffic Update](./doc/osrm_traffic_update.md)
+- [Collection of attributes for better navigation experiences](https://github.com/Telenav/open-source-spec/wiki/Collection-of-attributes-for-better-navigation-experiences)
+
 
