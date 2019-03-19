@@ -488,6 +488,8 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
 
 - [Compute Weight/Duration for `NodeBasedEdge`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extraction_containers.cpp#L337)     
 
+NOTE: be aware that the `unit` of `weight/duration` will be `100ms` start from here.    
+
 ```c++
     {
         // Compute edge weights
@@ -504,7 +506,7 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
         ExtractionSegment segment(source_coord, target_coord, distance, weight, duration);
         scripting_environment.ProcessSegment(segment);
 
-        //[Jay] HIGHLIGHT: scale the weight/duration value by multiply 10
+        //[Jay] HIGHLIGHT: scale the weight/duration value by multiply 10, because it will use 100ms as unit for them.
         auto &edge = edge_iterator->result;
         edge.weight = std::max<EdgeWeight>(1, std::round(segment.weight * weight_multiplier));
         edge.duration = std::max<EdgeWeight>(1, std::round(segment.duration * 10.));
@@ -574,7 +576,7 @@ Please be aware that comments in [graph_compressor.cpp#L209](https://github.com/
         //[Jay]  since no other parameters pass in. 
         scripting_environment.ProcessTurn(extraction_turn);
 
-        //[Jay] HIGHLIGHT: same as before, scale the weight/duration value by multiply 10
+        //[Jay] HIGHLIGHT: same as before, scale the weight/duration value by multiply 10, because it will use 100ms as unit for them.
         node_duration_penalty = extraction_turn.duration * 10;
         node_weight_penalty = extraction_turn.weight * weight_multiplier;
     }
