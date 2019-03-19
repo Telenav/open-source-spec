@@ -748,7 +748,9 @@ function process_turn(profile, turn)
       -- [Jay] Let's say `sig_value` is the return value of the sigmoid function, 
       -- [Jay]   i.e.  `sig_value = 1 / (1 + math.exp( -((13 / turn_bias) *  turn.angle/180 - 6.5*turn_bias)))`, 
       -- [Jay]   `sig_value` will in range (0,1),  
-      -- [Jay]   so the formula equal to `turn.duration = turn.duration + turn_penalty * sig_value`
+      -- [Jay]   so the formula is equal to `turn.duration = turn.duration + turn_penalty * sig_value`, 
+      -- [Jay]   and the `turn_penalty * sig_value` will in range (0,7.5), 
+      -- [Jay]   which means extra (0,7.5) seconds penalty will be applied by turn.     
       turn.duration = turn.duration + turn_penalty / (1 + math.exp( -((13 / turn_bias) *  turn.angle/180 - 6.5*turn_bias)))
     else
       turn.duration = turn.duration + turn_penalty / (1 + math.exp( -((13 * turn_bias) * -turn.angle/180 - 6.5/turn_bias)))
@@ -785,4 +787,7 @@ end
     turn_bias                 = 1.075,
 ```
 
+read more about the `turn_penalty` calculation by [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function):    
+- [Issue-2918 Investigate Turn Function](https://github.com/Project-OSRM/osrm-backend/issues/2918)
+- [PR-2849 Update turn penalty function to better fit some measured data](https://github.com/Project-OSRM/osrm-backend/pull/2849)
 
