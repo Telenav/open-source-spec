@@ -520,7 +520,7 @@ There're two actions for handle weight/duration applied during Compress NodeBase
 For what compress NodeBasedGraph do, please refer to [Understanding OSRM Graph Representation - Basic Changes of Convert OSM to OSRM Edge-expanded Graph](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#basic-changes-of-convert-osm-to-osrm-edge-expanded-graph).     
 
 ### Add Penalty for Compressible `traffic_signals`
-By current implementation, there'll be `20` penalty added to both weight and duration on each compressible `traffic_signals`.     
+By current implementation, there'll be `2s`(defined by `traffic_light_penalty = 2` in `car.lua`) penalty added to both weight and duration on each compressible `traffic_signals`.     
 
 ![](../graph/before_compress_nodebasededge.mmd.png)    
 ![](../graph/after_compress_nodebasededge.mmd.png)     
