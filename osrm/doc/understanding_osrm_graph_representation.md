@@ -20,7 +20,7 @@
 |Segment|OSRM|OSM Segment|A segment is a line connect 2 OSM nodes, undirected. A OSM way can be splitted to several segments.|
 |Edge|OSRM|Node Based Edge|A Node Based Edge is a segment with direction. One segment can be splitted to 2 Node Based Edges with different direction. NOTE: This is not a imporant concept in OSRM. |
 |Graph Node|OSRM|Edge Based Node|Similar with Node Based Edge, Graph Node represents a specific direction (forward or backward) of an segment. There are two graph nodes for a bidirectional segment, but only one if it's a oneway segment. In another word, use a graph node represent a edge. |
-|Graph Edge|OSRM|Movement Based Edge, Edge Based Edge|A Graph Edge is a possible movement taking you from one Graph Node to another. I.e. FromGraphNode-ToGraphNode.|
+|Graph Edge|OSRM|Edge Based Edge, Movement Based Edge|A Graph Edge is a possible movement(a possible maneuver) taking you from one Graph Node to another. I.e. FromGraphNode-ToGraphNode.|
 |Edge-expanded Graph|OSRM||Edge-expanded Graph means a graph created by Graph Nodes and Graph Edges. OSRM loads the OSM data, and transforms it into an edge-expanded graph that's better suited for modelling turn costs and turn restrictions.|
 
 ## Process of Convert OSM to OSRM Edge-expanded Graph
