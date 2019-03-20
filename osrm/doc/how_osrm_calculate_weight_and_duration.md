@@ -22,7 +22,11 @@
 <!-- /TOC -->
 
 # How OSRM Calculate Weight and Duration     
-This document will try to explain how does [OSRM](https://github.com/Telenav/osrm-backend) calculate **weight** and **duration** of a route.     
+This document will try to explain how does [OSRM](https://github.com/Telenav/osrm-backend) calculate **weight** and **duration** of a route. All the calculation of static **weight** and **duration** will be done in `osrm-extract`, which converts original map data (i.e. OSM) to an **OSRM edge-expanded graph**.        
+- Refer to [Understanding OSRM Graph Representation](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md) for the Terminology **OSRM edge-expanded graph**.     
+- Refer to [osrm-extract Startup and Process Call Graph](https://github.com/Telenav/open-source-spec/blob/master/osrm/graph/osrm-extract_startup_and_process_callgraph.mmd.png) to get a whole picture of `osrm-extract`.    
+
+Below are some miscellaneous for this document:     
 - This document will focus on how to calculate weight and duration for a route for car, since generating route for car is one of the most important and most complex feature of [OSRM](https://github.com/Telenav/osrm-backend). It means:     
     - Only `car.lua` will be focused on, other profiles will be ignored.     
     - Only default behavior of car related codes will be read, ignore other unrelated codes.     
