@@ -26,7 +26,7 @@ This document will try to explain how does [OSRM](https://github.com/Telenav/osr
 - This document will focus on how to calculate weight and duration for a route for car, since generating route for car is one of the most important and most complex feature of [OSRM](https://github.com/Telenav/osrm-backend). It means:     
     - Only `car.lua` will be focused on, other profiles will be ignored.     
     - Only default behavior of car related codes will be read, ignore other unrelated codes.     
-
+- Many of description will be represented by comments `--[Jay] ...` in `Lua` code snippets or `//[Jay] ...` in `C++` code snippets.    
 
 ## Basic Concepts    
 |Name       |Description                                                                 |
