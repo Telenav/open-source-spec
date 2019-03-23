@@ -2,6 +2,7 @@
 
 - [OSRM File Size & Memory Profile](#osrm-file-size--memory-profile)
     - [Files Size & Memory](#files-size--memory)
+        - [na MLD](#na-mld)
         - [us-west CH](#us-west-ch)
         - [us-west MLD](#us-west-mld)
         - [california(telenav_osm) MLD](#californiatelenav_osm-mld)
@@ -12,6 +13,51 @@
 
 ## Files Size & Memory 
 See [Toolchain file overview](https://github.com/Project-OSRM/osrm-backend/wiki/Toolchain-file-overview) for description of each file.     
+
+### na MLD
+
+```bash
+$ # original na OSM PBF data file
+$ ll -lh
+$ -rw-r--r-- 1 mapuser appuser 8.3G Mar 21 23:46 20190322T142421CST-north-america-latest.osm.pbf
+$ 
+$ # generated OSRM data files by algorithm=MLD, profile=car 
+$ ll -lh
+total 43G
+-rw-r--r-- 1 mapuser appuser  14G Mar 22 05:03 20190322T142421CST-north-america-latest.osrm.cell_metrics
+-rw-r--r-- 1 mapuser appuser  85M Mar 22 04:54 20190322T142421CST-north-america-latest.osrm.cells
+-rw-r--r-- 1 mapuser appuser 781M Mar 22 03:52 20190322T142421CST-north-america-latest.osrm.cnbg
+-rw-r--r-- 1 mapuser appuser 781M Mar 22 04:52 20190322T142421CST-north-america-latest.osrm.cnbg_to_ebg
+-rw-r--r-- 1 mapuser appuser  68K Mar 22 04:54 20190322T142421CST-north-america-latest.osrm.datasource_names
+-rw-r--r-- 1 mapuser appuser 4.4G Mar 22 04:54 20190322T142421CST-north-america-latest.osrm.ebg
+-rw-r--r-- 1 mapuser appuser 1.2G Mar 22 04:52 20190322T142421CST-north-america-latest.osrm.ebg_nodes
+-rw-r--r-- 1 mapuser appuser 1.3G Mar 22 04:05 20190322T142421CST-north-america-latest.osrm.edges
+-rw-r--r-- 1 mapuser appuser 1.1G Mar 22 04:53 20190322T142421CST-north-america-latest.osrm.enw
+-rwx------ 1 mapuser appuser 4.2G Mar 22 04:52 20190322T142421CST-north-america-latest.osrm.fileIndex
+-rw-r--r-- 1 mapuser appuser 4.6G Mar 22 04:06 20190322T142421CST-north-america-latest.osrm.geometry
+-rw-r--r-- 1 mapuser appuser 806M Mar 22 04:05 20190322T142421CST-north-america-latest.osrm.icd
+-rw-r--r-- 1 mapuser appuser 6.0K Mar 22 04:53 20190322T142421CST-north-america-latest.osrm.maneuver_overrides
+-rw-r--r-- 1 mapuser appuser 4.5G Mar 22 05:03 20190322T142421CST-north-america-latest.osrm.mldgr
+-rw-r--r-- 1 mapuser appuser  51M Mar 22 03:40 20190322T142421CST-north-america-latest.osrm.names
+-rw-r--r-- 1 mapuser appuser 2.4G Mar 22 03:52 20190322T142421CST-north-america-latest.osrm.nbg_nodes
+-rw-r--r-- 1 mapuser appuser 747M Mar 22 04:54 20190322T142421CST-north-america-latest.osrm.partition
+-rw-r--r-- 1 mapuser appuser 6.0K Mar 22 03:40 20190322T142421CST-north-america-latest.osrm.properties
+-rw-r--r-- 1 mapuser appuser  17M Mar 22 04:07 20190322T142421CST-north-america-latest.osrm.ramIndex
+-rw-r--r-- 1 mapuser appuser 4.0K Mar 22 03:57 20190322T142421CST-north-america-latest.osrm.restrictions
+-rw-r--r-- 1 mapuser appuser 3.5K Mar 22 03:25 20190322T142421CST-north-america-latest.osrm.timestamp
+-rw-r--r-- 1 mapuser appuser  15K Mar 22 04:05 20190322T142421CST-north-america-latest.osrm.tld
+-rw-r--r-- 1 mapuser appuser  26K Mar 22 04:05 20190322T142421CST-north-america-latest.osrm.tls
+-rw-r--r-- 1 mapuser appuser 371M Mar 22 03:57 20190322T142421CST-north-america-latest.osrm.turn_duration_penalties
+-rw-r--r-- 1 mapuser appuser 2.2G Mar 22 03:57 20190322T142421CST-north-america-latest.osrm.turn_penalties_index
+-rw-r--r-- 1 mapuser appuser 371M Mar 22 03:57 20190322T142421CST-north-america-latest.osrm.turn_weight_penalties
+```
+
+```bash
+$ top
+$
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND         
+29869 mapuser   20   0 46.686g 0.029t   3120 S   0.0 96.4   0:33.65 osrm-routed                                                                    
+```
 
 ### us-west CH
 
