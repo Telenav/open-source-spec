@@ -799,5 +799,5 @@ read more about the `turn_penalty` calculation by [sigmoid function](https://en.
 ## Read More
 - [OSRM Traffic Update](./doc/osrm_traffic_update.md)
 - [Collection of attributes for better navigation experiences](https://github.com/Telenav/open-source-spec/wiki/Collection-of-attributes-for-better-navigation-experiences)
-
+- [Issue-5400 Why unit of weight/duration is 100ms?](https://github.com/Project-OSRM/osrm-backend/issues/5400)
 
