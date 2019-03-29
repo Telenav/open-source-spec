@@ -17,6 +17,10 @@ The max-flow min-cut theorem states that in a flow network, the maximum amount o
 For basic ideas, please go to \<\<Introduction to Algorithm\>\>.
 
 
+<img src="../resource/pictures/max_flow_min_cut_find_mincut.png" alt="max_flow_min_cut_find_mincut" width="400"/>
+
+
+
 ## Key points
 
 ### Residual network
