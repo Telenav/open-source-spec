@@ -1,6 +1,6 @@
 <!-- TOC -->
 
-- [Weight and Duration Calculation in OSRM](#weight-and-duration-calculation-in-osrm)
+- [How OSRM Calculate Weight and Duration](#how-osrm-calculate-weight-and-duration)
     - [Basic Concepts](#basic-concepts)
     - [Process Speed/Rate in Lua Profiles](#process-speedrate-in-lua-profiles)
         - [process_way](#process_way)
@@ -14,15 +14,23 @@
     - [Compress NodeBasedEdge](#compress-nodebasededge)
         - [Add Penalty for Compressible `traffic_signals`](#add-penalty-for-compressible-traffic_signals)
         - [Sum Weight/Duration of Compressed `NodeBasedEdge`s](#sum-weightduration-of-compressed-nodebasededges)
+    - [Process Turn While Build GraphEdge](#process-turn-while-build-graphedge)
+        - [compute weight and duration penalties](#compute-weight-and-duration-penalties)
+        - [process_turn in Lua profile](#process_turn-in-lua-profile)
+    - [Read More](#read-more)
 
 <!-- /TOC -->
 
-# Weight and Duration Calculation in OSRM    
-This document will try to explain how does [OSRM](https://github.com/Telenav/osrm-backend) calculate **weight** and **duration** of a route.     
+# How OSRM Calculate Weight and Duration     
+This document will try to explain how does [OSRM](https://github.com/Telenav/osrm-backend) calculate **weight** and **duration** of a route. All the calculation of static **weight** and **duration** will be done in `osrm-extract`, which converts original map data (i.e. OSM) to an **OSRM edge-expanded graph**.        
+- Refer to [Understanding OSRM Graph Representation](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md) for the Terminology **OSRM edge-expanded graph**.     
+- Refer to [osrm-extract Startup and Process Call Graph](https://github.com/Telenav/open-source-spec/blob/master/osrm/graph/osrm-extract_startup_and_process_callgraph.mmd.png) to get a whole picture of `osrm-extract`.    
+
+Below are some miscellaneous for this document:     
 - This document will focus on how to calculate weight and duration for a route for car, since generating route for car is one of the most important and most complex feature of [OSRM](https://github.com/Telenav/osrm-backend). It means:     
     - Only `car.lua` will be focused on, other profiles will be ignored.     
     - Only default behavior of car related codes will be read, ignore other unrelated codes.     
-
+- Many of description will be represented by comments `--[Jay] ...` in `Lua` code snippets or `//[Jay] ...` in `C++` code snippets.    
 
 ## Basic Concepts    
 |Name       |Description                                                                 |
@@ -488,6 +496,8 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
 
 - [Compute Weight/Duration for `NodeBasedEdge`](https://github.com/Project-OSRM/osrm-backend/blob/a1e5061799f1980c64be5afb8a9071d6c68d7164/src/extractor/extraction_containers.cpp#L337)     
 
+NOTE: be aware that the `unit` of `weight/duration` will be `100ms` start from here.    
+
 ```c++
     {
         // Compute edge weights
@@ -504,7 +514,7 @@ void ExtractorCallbacks::ProcessWay(const osmium::Way &input_way, const Extracti
         ExtractionSegment segment(source_coord, target_coord, distance, weight, duration);
         scripting_environment.ProcessSegment(segment);
 
-        //[Jay] HIGHLIGHT: scale the weight/duration value by multiply 10
+        //[Jay] HIGHLIGHT: scale the weight/duration value by multiply 10, because it will use 100ms as unit for them.
         auto &edge = edge_iterator->result;
         edge.weight = std::max<EdgeWeight>(1, std::round(segment.weight * weight_multiplier));
         edge.duration = std::max<EdgeWeight>(1, std::round(segment.duration * 10.));
@@ -518,7 +528,7 @@ There're two actions for handle weight/duration applied during Compress NodeBase
 For what compress NodeBasedGraph do, please refer to [Understanding OSRM Graph Representation - Basic Changes of Convert OSM to OSRM Edge-expanded Graph](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#basic-changes-of-convert-osm-to-osrm-edge-expanded-graph).     
 
 ### Add Penalty for Compressible `traffic_signals`
-By current implementation, there'll be `20` penalty added to both weight and duration on each compressible `traffic_signals`.     
+By current implementation, there'll be `2s`(defined by `traffic_light_penalty = 2` in `car.lua`) penalty added to both weight and duration on each compressible `traffic_signals`.     
 
 ![](../graph/before_compress_nodebasededge.mmd.png)    
 ![](../graph/after_compress_nodebasededge.mmd.png)     
@@ -574,7 +584,7 @@ Please be aware that comments in [graph_compressor.cpp#L209](https://github.com/
         //[Jay]  since no other parameters pass in. 
         scripting_environment.ProcessTurn(extraction_turn);
 
-        //[Jay] HIGHLIGHT: same as before, scale the weight/duration value by multiply 10
+        //[Jay] HIGHLIGHT: same as before, scale the weight/duration value by multiply 10, because it will use 100ms as unit for them.
         node_duration_penalty = extraction_turn.duration * 10;
         node_weight_penalty = extraction_turn.weight * weight_multiplier;
     }
@@ -639,3 +649,155 @@ end
 
     //[Jay] ignored unrelated codes ... 
 ```
+
+## Process Turn While Build GraphEdge
+The terminology **GraphEdge** can refer to [Understanding OSRM Graph Representation - Terminology](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#terminology).     
+
+### compute weight and duration penalties
+Turn related `weight/duration` penalties will be calculated while each **GraphEdge** generating. 
+
+- [edge_based_graph_factory.cpp#L607](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/src/extractor/edge_based_graph_factory.cpp#L607)    
+
+```c++
+    //[Jay] ignored unrelated codes ... 
+
+    // compute weight and duration penalties
+    const auto is_traffic_light = m_traffic_lights.count(intersection_node);
+    const auto is_uturn =
+        guidance::getTurnDirection(turn_angle) == guidance::DirectionModifier::UTurn;
+
+    //[Jay] fill in parameters for Lua function `process_turn()`
+    //[Jay] Actually most of these parameters have not been used in `process_turn()`.
+    ExtractionTurn extracted_turn(
+        // general info
+        turn_angle,
+        road_legs_on_the_right.size() + road_legs_on_the_left.size() + 2 - is_uturn,        //[Jay] `turn.number_of_roads` in `process_turn()`
+        is_uturn,
+        is_traffic_light,
+        m_edge_based_node_container.GetAnnotation(edge_data1.annotation_data)
+            .is_left_hand_driving,
+        // source info
+        edge_data1.flags.restricted,
+        m_edge_based_node_container.GetAnnotation(edge_data1.annotation_data).travel_mode,  //[Jay] `turn.source_mode` in `process_turn()`
+        edge_data1.flags.road_classification.IsMotorwayClass(),
+        edge_data1.flags.road_classification.IsLinkClass(),
+        edge_data1.flags.road_classification.GetNumberOfLanes(),
+        edge_data1.flags.highway_turn_classification,
+        edge_data1.flags.access_turn_classification,
+        ((double)intersection::findEdgeLength(edge_geometries, node_based_edge_from) /
+          edge_data1.duration) *
+            36,
+        edge_data1.flags.road_classification.GetPriority(),
+        // target info
+        edge_data2.flags.restricted,
+        m_edge_based_node_container.GetAnnotation(edge_data2.annotation_data).travel_mode,  //[Jay] `turn.target_node` in `process_turn()`
+        edge_data2.flags.road_classification.IsMotorwayClass(),
+        edge_data2.flags.road_classification.IsLinkClass(),
+        edge_data2.flags.road_classification.GetNumberOfLanes(),
+        edge_data2.flags.highway_turn_classification,
+        edge_data2.flags.access_turn_classification,
+        ((double)intersection::findEdgeLength(edge_geometries, node_based_edge_to) /
+          edge_data2.duration) *
+            36,
+        edge_data2.flags.road_classification.GetPriority(),
+        // connected roads
+        road_legs_on_the_right,
+        road_legs_on_the_left);
+
+    //[Jay] call Lua function `process_turn()` for turn weight/duration penalties
+    scripting_environment.ProcessTurn(extracted_turn);
+
+    //[Jay] HIGHLIGHT: same as before, scale the weight/duration value by multiply 10, because it will use 100ms as unit for them.
+    // turn penalties are limited to [-2^15, 2^15) which roughly translates to 54 minutes
+    // and fits signed 16bit deci-seconds
+    auto weight_penalty =
+        boost::numeric_cast<TurnPenalty>(extracted_turn.weight * weight_multiplier);
+    auto duration_penalty = boost::numeric_cast<TurnPenalty>(extracted_turn.duration * 10.);
+
+    BOOST_ASSERT(SPECIAL_NODEID != nbe_to_ebn_mapping[node_based_edge_from]);
+    BOOST_ASSERT(SPECIAL_NODEID != nbe_to_ebn_mapping[node_based_edge_to]);
+
+    //[Jay] weight/duration of GraphEdge = weight/duration of NodeBasedEdge + turn_penalty
+    auto weight = boost::numeric_cast<EdgeWeight>(edge_data1.weight + weight_penalty);
+    auto duration = boost::numeric_cast<EdgeWeight>(edge_data1.duration + duration_penalty);
+
+    //[Jay] ignored unrelated codes ... 
+    
+```
+
+### process_turn in Lua profile
+
+- [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function)    
+A [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) is a mathematical function having a characteristic **"S"-shaped curve** or **sigmoid curve**. Often, [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function) refers to the special case of the logistic function shown in below figure and defined by the formula:    
+![](https://wikimedia.org/api/rest_v1/media/math/render/svg/9537e778e229470d85a68ee0b099c08298a1a3f6)    
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Logistic-curve.svg/480px-Logistic-curve.svg.png)    
+
+- [`process_turn()` in car.lua](https://github.com/Project-OSRM/osrm-backend/blob/e86d93760f51304940d55d62c0d47f15094d6712/profiles/car.lua#L455)    
+Calculate turn `weight/duration` penalities by `Lua` function `process_turn()`.    
+
+```lua
+function process_turn(profile, turn)
+  -- Use a sigmoid function to return a penalty that maxes out at turn_penalty
+  -- over the space of 0-180 degrees.  Values here were chosen by fitting
+  -- the function to some turn penalty samples from real driving.
+  local turn_penalty = profile.turn_penalty
+  local turn_bias = turn.is_left_hand_driving and 1. / profile.turn_bias or profile.turn_bias
+
+  if turn.has_traffic_light then
+      -- [Jay] default 2s for `traffic_signals` on each turn
+      turn.duration = profile.properties.traffic_light_penalty
+  end
+
+  if turn.number_of_roads > 2 or turn.source_mode ~= turn.target_mode or turn.is_u_turn then
+    if turn.angle >= 0 then
+      -- [Jay] Let's say `sig_value` is the return value of the sigmoid function, 
+      -- [Jay]   i.e.  `sig_value = 1 / (1 + math.exp( -((13 / turn_bias) *  turn.angle/180 - 6.5*turn_bias)))`, 
+      -- [Jay]   `sig_value` will in range (0,1),  
+      -- [Jay]   so the formula is equal to `turn.duration = turn.duration + turn_penalty * sig_value`, 
+      -- [Jay]   and the `turn_penalty * sig_value` will in range (0,7.5), 
+      -- [Jay]   which means extra (0,7.5) seconds penalty will be applied by turn.     
+      turn.duration = turn.duration + turn_penalty / (1 + math.exp( -((13 / turn_bias) *  turn.angle/180 - 6.5*turn_bias)))
+    else
+      turn.duration = turn.duration + turn_penalty / (1 + math.exp( -((13 * turn_bias) * -turn.angle/180 - 6.5/turn_bias)))
+    end
+
+    if turn.is_u_turn then
+      -- [Jay] default 20s for `u_turn` on each turn
+      turn.duration = turn.duration + profile.properties.u_turn_penalty
+    end
+  end
+
+  -- for distance based routing we don't want to have penalties based on turn angle
+  if profile.properties.weight_name == 'distance' then
+     turn.weight = 0
+  else
+     turn.weight = turn.duration
+  end
+
+  if profile.properties.weight_name == 'routability' then
+      -- penalize turns from non-local access only segments onto local access only tags
+      if not turn.source_restricted and turn.target_restricted then
+          turn.weight = constants.max_turn_weight
+      end
+  end
+end
+
+```
+
+```lua
+    u_turn_penalty                 = 20,
+    traffic_light_penalty          = 2,
+
+    turn_penalty              = 7.5,
+    turn_bias                 = 1.075,
+```
+
+read more about the `turn_penalty` calculation by [sigmoid function](https://en.wikipedia.org/wiki/Sigmoid_function):    
+- [Issue-2918 Investigate Turn Function](https://github.com/Project-OSRM/osrm-backend/issues/2918)
+- [PR-2849 Update turn penalty function to better fit some measured data](https://github.com/Project-OSRM/osrm-backend/pull/2849)
+
+## Read More
+- [OSRM Traffic Update](./doc/osrm_traffic_update.md)
+- [Collection of attributes for better navigation experiences](https://github.com/Telenav/open-source-spec/wiki/Collection-of-attributes-for-better-navigation-experiences)
+- [Issue-5400 Why unit of weight/duration is 100ms?](https://github.com/Project-OSRM/osrm-backend/issues/5400)
+
