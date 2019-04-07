@@ -38,10 +38,18 @@ Add also, map data might not accurately represent the real world, map matching i
 ## Why map matching is useful
 
 <img src="../resource/pictures/mm_historical_data_eta.png" alt="mm_historical_data_eta" width="200"/><br/>
-Provide accurate arriving time estimation is the target of every nevigation system.
+Provide accurate arriving time estimation is the target of every navigation system.  User's probe data is the ground truth when you adjusting your ETA calculation algorithm.  Map matching helps to build connection between user's probe data and map data.
+
+<img src="../resource/pictures/mm_map_data_is_wrong.png" alt="mm_map_data_is_wrong" width="200"/><br/>
+(Picture from the paper of [map matching when the map is wrong](https://arxiv.org/pdf/1809.09755.pdf))
+Not every map data accurately represent the real world.  Map making could provide lots of value when you have rich user gps trace in your database.
+If you could identify entrance for POI point, best drop off location, those kind of data would make user feel more comfortable during navigation.  
+
+<img src="../resource/pictures/mm_abstract_user_pattern.png" alt="mm_abstract_user_pattern" width="200"/><br/>
+We want to understand our user's driving behavior.  To understand our user more than themselves, we could pay more attention to gps traces.  Is the user afraid to drive on highway?  Can we provide more safe consideration to a specific user?
 
 
-
-
-
+## Reference
+- [HMMM Through Noise and Sparseness](https://www.microsoft.com/en-us/research/publication/hidden-markov-map-matching-noise-sparseness/)  
+- [map matching when the map is wrong](https://arxiv.org/pdf/1809.09755.pdf)
 
