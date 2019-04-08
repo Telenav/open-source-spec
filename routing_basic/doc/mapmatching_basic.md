@@ -140,4 +140,6 @@ If you use too small value for gps_precision, you might lose some part of your r
 ## Reference
 - [HMMM Through Noise and Sparseness](https://www.microsoft.com/en-us/research/publication/hidden-markov-map-matching-noise-sparseness/)  
 - [map matching when the map is wrong](https://arxiv.org/pdf/1809.09755.pdf)
-- 
+- [<<统计学习方法>> 第10章笔记](http://www.hankcs.com/ml/hidden-markov-model.html)
+- [How kalman filter works](https://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures/)
+- [The Douglas-peucker algorithm: sufficiency conditions for non-self-intersections](http://www.scielo.br/scielo.php?script=sci_arttext&pid=S0104-65002004000100006)
