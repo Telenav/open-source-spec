@@ -104,6 +104,16 @@ Still use the picture in original paper as an example, for the following case, f
 
 
 #### Viterbi algorithm
+Viterbi algorithm is dynamic programming algorithm, it accumulate each step's result and get final most probaber result.  
+
+<img src="../resource/pictures/mm_viterbi_alg.png" alt="mm_viterbi_alg" width="400"/><br/>
+
+I feel its much easier to use dijkstra to understand viterbi.  Treat probability as cost and each of transition has one, so find the most probable path likes find shortest path between start point and end point.
+
+
+#### Confidence level
+After find map matching result, we could calculate the distance of route and distance of accumulate valid gps points, the similar the two value is and the high confidence we would have.  The result of (route distance - gps distance) follows Laplace distribution.  
+Confidence level is always be used for map making.
 
 
 ### Experience
