@@ -58,6 +58,8 @@ Here is the formula from original paper
 <img src="../resource/pictures/mm_hmmm_paper_distance_diff_proba.png" alt="mm_hmmm_paper_distance_diff_proba" width="400"/><br/>
 <img src="../resource/pictures/mm_transition_probabilities_formula.png" alt="mm_transition_probabilities_formula" width="400"/><br/>
 
+### Logic flow
+<img src="../resource/pictures/valhalla-mapmatching-logic.png" alt="valhalla-mapmatching-logic" width="500"/><br/>
 
 ## Reference
 - [Meili's Algorithm](https://github.com/valhalla/valhalla/blob/master/docs/meili.md)
