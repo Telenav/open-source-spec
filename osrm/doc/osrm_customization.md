@@ -97,7 +97,9 @@ So for node 3, outweight is 4(to destination_node 2) and 0(to himself), inweight
 ### [Case 2](https://github.com/Project-OSRM/osrm-backend/blob/9234b2ae76bdbbb91cbb51142bfc0ee1252c4abd/unit_tests/customizer/cell_customization.cpp#L125)
 
 ##### Case description
-The directed graph contains 16 nodes and 4 level of partition
+The directed graph contains 16 nodes and 4 level of partition  
+
+<img src="../references/pictures/customization_case2_graph.png" alt="customization_case2_graph" width="400"/>
 
 ##### Graph construction
 Let's take a look at node 0, 1, 2, 3 as an example  
