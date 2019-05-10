@@ -28,7 +28,7 @@ Graph partition is the first step to distribute processing graph data.
 
 - [Inertial Flow](./inertial_flow.md)
 
-- KAHIP
+- [KAHIP](https://github.com/schulzchristian/KaHIP)
 
 ## Distribute Partition
 
