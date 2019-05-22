@@ -14,6 +14,7 @@ Open source Routing Library/Service
  A fast and flexible C++ library for working with OpenStreetMap data
 
 ## Discussions
+- [Open Source Solution for Navigation System](https://github.com/Telenav/open-source-spec/blob/master/routing_basic/resource/presentations/20190410_open_source_solution_for_Navigation.pptx)
 - [Modern Route Algorithm(CRP)](./routing_basic/resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
 - [Map Matching(Hidden Markov Model and Viterbi)](./valhalla/resource/presentations/valhalla_mm_11202018.pptx)
 - [Graph Preprocessing Strategy](./routing_basic/resource/presentations/route_preprocessing_overview_11302017.pptx)
