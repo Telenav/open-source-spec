@@ -1,12 +1,26 @@
+- [Table service](#table-service)
+  - [API](#api)
+    - [Examples](#examples)
+      - [One to many](#one-to-many)
+      - [Many to many](#many-to-many)
+  - [Internal Logic](#internal-logic)
+    - [One to many](#one-to-many-1)
+      - [One to many(mld)](#one-to-manymld)
+        - [MLD Algorithm](#mld-algorithm)
+          - [Graph Example](#graph-example)
+          - [Algorithm Description](#algorithm-description)
+          - [Code](#code)
+    - [Many to many](#many-to-many-1)
+
 # Table service
 
 ## API
 Table service also be called [Matrix API](https://docs.mapbox.com/help/how-mapbox-works/directions/#mapbox-matrix-api), which is used for calculated travel times/distance between many locations.  
 
-## Examples
+### Examples
 Based on the definition in [OSRM's table-service API Documentation](http://project-osrm.org/docs/v5.5.1/api/#table-service), we construct following examples:
 
-### One to many
+#### One to many
 
 ```
 # Returns a 1x4 matrix:
@@ -17,7 +31,7 @@ curl 'http://router.project-osrm.org/table/v1/driving/13.388860,52.517037;13.397
 
 One to many always be used if you have a single source(current location) and several potential destinations(gas stations), the result(ETA, distance) plus other information(price, waiting time) could help application do a better ranking.
 
-### Many to many
+#### Many to many
 
 ```
 # Returns a 3x3 matrix:
@@ -33,7 +47,7 @@ The number of sources and destinations are multiplied to create the matrix or ti
 |D     |A → D|B → D|
 |E     |A → E|B → E|
 
-## Internal
+## Internal Logic
 
 ### One to many
 One to many's logic likes single direction dijkstra exploration, start from source and then expand out, after all destination candidates has been met then program will stop.
@@ -42,7 +56,9 @@ One to many's logic likes single direction dijkstra exploration, start from sour
 
 ##### MLD Algorithm
 
-###### Example
+Let me use a simple graph to calculate shortest path for one source to one destination.  
+
+###### Graph Example
 Asssume we have a graph with 14 nodes.  Based on [graph partition](./osrm_partition.md), we group all nodes in differernt cells(partition), the connection between cells have optimum minimum cuts.  After [custmization](./osrm_customization.md), for each cell at different level, the cost metrix between inner nodes and outer nodes has been built.  
 Let's say graph partition result is generated as following rules:
 
@@ -90,7 +106,7 @@ Summary:
 - MLD has the ability to level up(from node_0->cell_1_0->cell_2_0->cell_3_0) and level down(cell_3_1->cell_2_3->cell_1_5->node_11)  
 
 
-##### Code
+###### Code
 After parsing URI and [finding candidates](./od_in_osrm.md) for each of source and destination nodes, it will come to [oneToManySearch()](https://github.com/Telenav/osrm-backend/blob/016adf6439433929ed5c6fd1272aee00d32f8ec1/src/engine/routing_algorithms/many_to_many_mld.cpp#L192) function in many_to_many_mld.cpp  
 ```C++
 // * one-to-many (many-to-one) tasks use a unidirectional forward (backward) Dijkstra search
@@ -176,3 +192,5 @@ LevelID GetQueryLevel(NodeID start, NodeID target, NodeID node) const
 
 ```
 
+
+### Many to many
