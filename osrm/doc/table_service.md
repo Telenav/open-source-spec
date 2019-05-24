@@ -43,7 +43,7 @@ One to many's logic likes single direction dijkstra exploration, start from sour
 ##### MLD Algorithm
 
 ###### Example
-Asssume we have a graph with 14 nodes.  Based on graph partition, we group all nodes in differernt cells(partition), the connection between cells have optimum minimum cuts.  After custmization, for each cell at different level, the cost metrix between inner nodes and outer nodes has been built.  
+Asssume we have a graph with 14 nodes.  Based on [graph partition](./osrm_partition.md), we group all nodes in differernt cells(partition), the connection between cells have optimum minimum cuts.  After [custmization](./osrm_customization.md), for each cell at different level, the cost metrix between inner nodes and outer nodes has been built.  
 Let's say graph partition result is generated as following rules:
 
 ```C++
@@ -91,7 +91,7 @@ Summary:
 
 
 ##### Code
-After parsing URI and finding cadidate for each of source and destination nodes, it will come to [oneToManySearch()](https://github.com/Telenav/osrm-backend/blob/016adf6439433929ed5c6fd1272aee00d32f8ec1/src/engine/routing_algorithms/many_to_many_mld.cpp#L192) function in many_to_many_mld.cpp  
+After parsing URI and [finding candidates](./od_in_osrm.md) for each of source and destination nodes, it will come to [oneToManySearch()](https://github.com/Telenav/osrm-backend/blob/016adf6439433929ed5c6fd1272aee00d32f8ec1/src/engine/routing_algorithms/many_to_many_mld.cpp#L192) function in many_to_many_mld.cpp  
 ```C++
 // * one-to-many (many-to-one) tasks use a unidirectional forward (backward) Dijkstra search
 //   with the candidate node level `min(GetQueryLevel(phantom_node, node, phantom_nodes)`
@@ -162,11 +162,15 @@ LevelID GetQueryLevel(NodeID start, NodeID target, NodeID node) const
 *         When two nodes not in the same cell, we could try to promote to upper to
 *         speed up route calculation.
 *         Take upper case as example:
-*         GetHighestDifferentLevel(0, 1) == 0
-*         GetHighestDifferentLevel(0, 2) == 1
-*         GetHighestDifferentLevel(0, 4) == 3
-*         GetHighestDifferentLevel(0, 11) == 3
-
+*             GetHighestDifferentLevel(0, 1) == 0
+*             GetHighestDifferentLevel(0, 2) == 1
+*             GetHighestDifferentLevel(0, 4) == 3
+*             GetHighestDifferentLevel(0, 11) == 3
+*
+*         During exploration, if two nodes and faraway, when we reach boader we could
+*         choose high level to speed up
+*         When approaching destination, we will level down and try to evaluate all 
+*         candidates lead to destination  
 **********************************************************/
 
 
