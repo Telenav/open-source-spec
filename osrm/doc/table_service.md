@@ -194,3 +194,5 @@ LevelID GetQueryLevel(NodeID start, NodeID target, NodeID node) const
 
 
 ### Many to many
+Many to many is similar to one to many logic, given 2 sources and 3 destinations, many to many will calculate result for first source node with 3 destination nodes and then calculate second source with 3 destination nodes.
+
