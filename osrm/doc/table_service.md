@@ -34,7 +34,7 @@ One to many always be used if you have a single source(current location) and sev
 #### Many to many
 
 ```
-# Returns a 3x3 matrix:
+# Returns a 2x3 matrix:
 curl 'http://router.project-osrm.org/table/v1/driving/13.388860,52.517037;13.397634,52.529407;13.428555,52.523219;13.428555,52.523219;13.447496,52.524255?sources=0;1&destinations=2;3;4'
 ```
 <img src="../references/pictures/osrm-matrix-nxm.png" alt="osrm-matrix-nxm" width="400"/>
@@ -82,10 +82,10 @@ Let's say we want to calculate a route form source=node_0 to destination=node_11
 
 <img src="../references/pictures/mld_routing_example_backward_all_steps.png" alt="mld_routing_example_backward_all_steps" width="800"/>  
 
-Step 1: Let's assumn node_11 is the one inside node of cell_1_5 with no connection to outside.  If we got all shortest path from node_0 to cell_1_5, then the shortest path from node_0 to node_11 equals min{shortest path from node_0 to cell_1_5 + shortest path from enter point to node_11}.  
-Step 2: Let's assume we got all shortest path from node_0 to cell_2_3, then we could easily got shortest path from node 0 to cell_1_5, because this two cell contains the same informtion.    
-Step 3: Let's assume we got all shortest path from node_0 to cell_3_1, how can we get all shortest path to cell_2_3 quickly?  Actually, we could calculate route at cell_2_* level, treat cell_2_1, cell_2_2, cell_2_3 as a "big node", and put entrance segments at cell_3_* level to the priority_queue and only explore at level_2 level.  By this optimization, we could ignore all inner elements inside of cell_2_1 and cell_2_2 and we won's miss best solution.  The less connection between cells, the faster speed we could get for route calculation.  
-Step 4: Then, find shortest path from node_0 to node_11 convert to find shortest path from node_0 to cell_3_1.  As long as we calculate all cost from node_0 to cell_3_1, we could find shortest path for the final result.  
+Step 1: Let's assumn node_11 is the one inside node of cell_1_5 with no connection to outside.  If we got all shortest path from node_0 to cell_1_5, then the shortest path from node_0 to node_11 equals min{shortest path from node_0 to cell_1_5 + shortest path from enter point to node_11}.  <br/>
+Step 2: Let's assume we got all shortest path from node_0 to cell_2_3, then we could easily got shortest path from node 0 to cell_1_5, because this two cell contains the same informtion.  <br/>
+Step 3: Let's assume we got all shortest path from node_0 to cell_3_1, how can we get all shortest path to cell_2_3 quickly?  Actually, we could calculate route at cell_2_* level, treat cell_2_1, cell_2_2, cell_2_3 as a "big node", and put entrance segments at cell_3_* level to the priority_queue and only explore at level_2 level.  By this optimization, we could ignore all inner elements inside of cell_2_1 and cell_2_2 and we won's miss best solution.  The less connection between cells, the faster speed we could get for route calculation.  <br/>
+Step 4: Then, find shortest path from node_0 to node_11 convert to find shortest path from node_0 to cell_3_1.  As long as we calculate all cost from node_0 to cell_3_1, we could find shortest path for the final result.  <br/>
 
 We can achieve that with similar strategy:
 
