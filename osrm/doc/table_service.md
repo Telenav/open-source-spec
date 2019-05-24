@@ -9,8 +9,8 @@ Based on the definition in [OSRM's table-service API Documentation](http://proje
 ### One to many
 
 ```
-# Returns a 1x3 matrix:
-curl 'http://router.project-osrm.org/table/v1/driving/13.388860,52.517037;13.397634,52.529407;13.428555,52.523219;13.428555,52.523219?sources=0'
+# Returns a 1x4 matrix:
+curl 'http://router.project-osrm.org/table/v1/driving/13.388860,52.517037;13.397634,52.529407;13.428555,52.523219;13.428555,52.523219;13.388860,52.517037?sources=0'
 ```
 
 <img src="../references/pictures/osrm-matrix-1xn.png" alt="osrm-matrix-1xn" width="400"/>
@@ -105,9 +105,70 @@ oneToManySearch(SearchEngineData<Algorithm> &engine_working_data,
                 std::size_t phantom_index,
                 const std::vector<std::size_t> &phantom_indices,
                 const bool calculate_distance)
+{
+    // #step1: put all destination candidates in unordered_multimap
+    // ...
+
+    // #step2: put start point into d_ary_heap
+    // ...
+
+    // #step3: Enter iteration of single direction relaxing
+    //         stopcodition is all destination node has been touched
+    while (!query_heap.Empty() && !target_nodes_index.empty())
+    {
+        // ...
+        // Extract node from the heap
+
+        // Update values
+
+        // Relax outgoing edges
+    }
+}
 ```
 The main logic of GetQueryLevel is 
-```
+```C++
+// Unrestricted search (Args is const PhantomNodes &):
+//   * use partition.GetQueryLevel to find the node query level based on source and target phantoms
+//   * allow to traverse all cells
+template <typename MultiLevelPartition>
+inline LevelID getNodeQueryLevel(const MultiLevelPartition &partition,
+                                 NodeID node,
+                                 const PhantomNodes &phantom_nodes)
+{
+    auto level = [&partition, node](const SegmentID &source, const SegmentID &target) {
+        if (source.enabled && target.enabled)
+            return partition.GetQueryLevel(source.id, target.id, node);
+        return INVALID_LEVEL_ID;
+    };
+    return std::min(std::min(level(phantom_nodes.source_phantom.forward_segment_id,
+                                   phantom_nodes.target_phantom.forward_segment_id),
+                             level(phantom_nodes.source_phantom.forward_segment_id,
+                                   phantom_nodes.target_phantom.reverse_segment_id)),
+                    std::min(level(phantom_nodes.source_phantom.reverse_segment_id,
+                                   phantom_nodes.target_phantom.forward_segment_id),
+                             level(phantom_nodes.source_phantom.reverse_segment_id,
+                                   phantom_nodes.target_phantom.reverse_segment_id)));
+}
+
+LevelID GetQueryLevel(NodeID start, NodeID target, NodeID node) const
+{
+    return std::min(GetHighestDifferentLevel(start, node),
+                    GetHighestDifferentLevel(target, node));
+}
+/************************************************************
+* [Perry] GetHighestDifferentLevel returns highest differernt level for two nodes.
+*         At level 0, all nodes belonging to different cells
+*         At highest level, all nodes belonging to the same cell
+*         When two nodes not in the same cell, we could try to promote to upper to
+*         speed up route calculation.
+*         Take upper case as example:
+*         GetHighestDifferentLevel(0, 1) == 0
+*         GetHighestDifferentLevel(0, 2) == 1
+*         GetHighestDifferentLevel(0, 4) == 3
+*         GetHighestDifferentLevel(0, 11) == 3
+
+**********************************************************/
+
 
 ```
 
