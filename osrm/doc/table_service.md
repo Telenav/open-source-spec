@@ -50,16 +50,16 @@ The number of sources and destinations are multiplied to create the matrix or ti
 ## Internal Logic
 
 ### One to many
-One to many's logic likes single direction dijkstra exploration, start from source and then expand out, after all destination candidates has been met then program will stop.
+One to many's logic likes single direction Dijkstra exploration, start from source and then expand out, after all destination candidates has been met then program will stop.
 
 #### One to many(mld)
 
 ##### MLD Algorithm
-
-Let me use a simple graph to calculate shortest path for one source to one destination.  
+MLD is the magic algorithm could promote to higher levels when two nodes are faraway, and while approaching destination it could also downgrade to lower levels.  
+Let's use a simple graph to describe how MLD speed up calculating shortest path for one source to one destination.  
 
 ###### Graph Example
-Asssume we have a graph with 14 nodes.  Based on [graph partition](./osrm_partition.md), we group all nodes in differernt cells(partition), the connection between cells have optimum minimum cuts.  After [custmization](./osrm_customization.md), for each cell at different level, the cost metrix between inner nodes and outer nodes has been built.  
+Assume we have a graph with 14 nodes.  Based on [graph partition](./osrm_partition.md), we group all nodes in different cells(partition), the connection between cells have optimum minimum cuts.  After [customization](./osrm_customization.md), for each cell at different level, the cost matrix between inner nodes and outer nodes has been built.  
 Let's say graph partition result is generated as following rules:
 
 ```C++
@@ -74,7 +74,7 @@ The upper case could be converted to following picture:
 
 <img src="../references/pictures/mld_routing_example_graph_partition.png" alt="mld_routing_example_graph_partition.png" width="600"/>
 
-Here we ignore the edges between differernt nodes because they are not matters for describing the idea of MLD.  But you should know the {nodes, edges connected between nodes} constructs the graph.
+Here we ignore the edges between different nodes because they are not matters for describing the idea of MLD.  But you should know the {nodes, edges connected between nodes} constructs the graph.
 
 Let's say we want to calculate a route form source=node_0 to destination=node_11.
 
@@ -98,7 +98,7 @@ Step 3: Then we could easily promote to cell_3_0.  <br/>
   
 <img src="../references/pictures/mld_routing_example_level3.png" alt="mld_routing_example_level3" width="200"/>  
 
-In next step, We just need consider cell_3_0, cell_3_2, cell_3_1 and we could gurantee to calculate all shortest path from node_0 to cell_3_1.  This will skip all elements in entire cell_3_2.  
+In next step, We just need consider cell_3_0, cell_3_2, cell_3_1 and we could guarantee to calculate all shortest path from node_0 to cell_3_1.  This will skip all elements in entire cell_3_2.  
 
 
 Summary:
@@ -172,7 +172,7 @@ LevelID GetQueryLevel(NodeID start, NodeID target, NodeID node) const
                     GetHighestDifferentLevel(target, node));
 }
 /************************************************************
-* [Perry] GetHighestDifferentLevel returns highest differernt level for two nodes.
+* [Perry] GetHighestDifferentLevel returns highest different level for two nodes.
 *         At level 0, all nodes belonging to different cells
 *         At highest level, all nodes belonging to the same cell
 *         When two nodes not in the same cell, we could try to promote to upper to
@@ -183,7 +183,7 @@ LevelID GetQueryLevel(NodeID start, NodeID target, NodeID node) const
 *             GetHighestDifferentLevel(0, 4) == 3
 *             GetHighestDifferentLevel(0, 11) == 3
 *
-*         During exploration, if two nodes and faraway, when we reach boader we could
+*         During exploration, if two nodes and faraway, when we reach boarder we could
 *         choose high level to speed up
 *         When approaching destination, we will level down and try to evaluate all 
 *         candidates lead to destination  
