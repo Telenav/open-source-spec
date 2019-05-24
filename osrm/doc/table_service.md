@@ -45,21 +45,50 @@ One to many's logic likes single direction dijkstra exploration, start from sour
 
 ###### Example
 
+
+<img src="../references/pictures/mld_routing_example_graph_partition.png" alt="mld_routing_example_graph_partition.png" width="800"/>
+
 Let's say we want to calculate a route form source=node_0 to destination=node_11.
 
 Based on graph partition, we group all nodes in differernt cells(partition), the connection between cells have optimum minimum cuts.  After custmization, for each cell at different level, the cost metrix between inner nodes and outer nodes has been built.
 
-Let's assumn node_11 is the one inside node of cell_1_5, no connection with outside at all.  Let's assume we got all shortest path from node_0 to cell_1_5, then the shortest path from node_0 to node_11 equals min{shortest path from node_0 to cell_1_5 + shortest path from enter point to node_11}.  
-Let's assume we got all shortest path from node_0 to cell_2_3, then we could easily got shortest path from node 0 to cell_1_5.  
-Let's assume we got all shortest path from node_0 to cell_3_1, how can we get all shortest path to cell_2_3 quickly?  Actually, we could calculate route at cell_2_* level, treat cell_2_1, cell_2_2, cell_2_3 as a "big node", and only put entrance segments at cell_3_* level to the priority_queue and then explore at level_2 level.  By this optimization, we could ignore all inner elements inside of cell_2_1 and cell_2_2 and we won's miss best solution.  The less connection between cells, the faster speed we could get here.  That's the beauty of CRP.
+Let's assumn node_11 is the one inside node of cell_1_5 with no connection to outside.  If we got all shortest path from node_0 to cell_1_5, then the shortest path from node_0 to node_11 equals min{shortest path from node_0 to cell_1_5 + shortest path from enter point to node_11}.  
+
+<img src="../references/pictures/mld_routing_example_backward_1.png" alt="mld_routing_example_backward_1" width="100"/>
 
 
-Based on previous analysis, as long as we calculate all cost from node_0 to cell_3_1, we could find shortest path for the final result.  We can achieve that with similar strategy:
+Let's assume we got all shortest path from node_0 to cell_2_3, then we could easily got shortest path from node 0 to cell_1_5, because this two cell contains the same informtion.    
+
+
+<img src="../references/pictures/mld_routing_example_backward_2.png" alt="mld_routing_example_backward_2" width="100"/>
+
+
+
+Let's assume we got all shortest path from node_0 to cell_3_1, how can we get all shortest path to cell_2_3 quickly?  Actually, we could calculate route at cell_2_* level, treat cell_2_1, cell_2_2, cell_2_3 as a "big node", and put entrance segments at cell_3_* level to the priority_queue and only explore at level_2 level.  By this optimization, we could ignore all inner elements inside of cell_2_1 and cell_2_2 and we won's miss best solution.  The less connection between cells, the faster speed we could get for route calculation.  
+
+<img src="../references/pictures/mld_routing_example_backward_3.png" alt="mld_routing_example_backward_3" width="200"/>
+
+Then, find shortest path from node_0 to node_11 convert to find shortest path from node_0 to cell_3_1.  As long as we calculate all cost from node_0 to cell_3_1, we could find shortest path for the final result.  
+
+<img src="../references/pictures/mld_routing_example_backward_4.png" alt="mld_routing_example_backward_4" width="100"/>
+
+We can achieve that with similar strategy:
+
+<img src="../references/pictures/mld_routing_example_forward_2.png" alt="mld_routing_example_forward_2" width="200"/>
+
 At beginning, we are at level 0 and will calculate all possible shortest path to the boarder of cell_1_0.  Then we could have the view of cell_1_0, everything matters is cell_1_*.  Which means, we don't care what's inside cell_1_1, we treat which as "big node" the only thing matters is its enter edges and exit edges.
+
+<img src="../references/pictures/mld_routing_example_forward_3.png" alt="mld_routing_example_forward_3" width="200"/>
 
 After we have all shortest path to the boarder of cell_2_0, we have the view of cell_2_0, everything matters is level 2 now.  Then we could easily promote to cell_3_0.  
 
-Then, we just need consider cell_3_0, cell_3_2, cell_3_1 and we could gurantee to calculate all shortest path from node_0 to cell_3_1.
+
+<img src="../references/pictures/mld_routing_example_forward_4.png" alt="mld_routing_example_forward_4" width="200"/>
+
+Then, we just need consider cell_3_0, cell_3_2, cell_3_1 and we could gurantee to calculate all shortest path from node_0 to cell_3_1.  
+<img src="../references/pictures/mld_routing_example_level3.png" alt="mld_routing_example_level3" width="200"/>
+
+
 
 Summary:
 - Based on CRP, MLD could calculate the shortest path very quickly.  The result of graph partition(balanced min-cut) is critical to the performance of MLD.  
