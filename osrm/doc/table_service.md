@@ -60,7 +60,7 @@ Let's use a simple graph to describe how MLD speed up calculating shortest path 
 
 ###### Graph Example
 Assume we have a graph with 14 nodes.  Based on [graph partition](./osrm_partition.md), we group all nodes in different cells(partition), the connection between cells have optimum minimum cuts.  After [customization](./osrm_customization.md), for each cell at different level, the cost matrix between inner nodes and outer nodes has been built.  
-Let's say graph partition result is generated as following rules:
+Let's say graph partition result is generated as following:
 
 ```C++
     // node:                0  1  2  3  4  5  6  7  8  9 10 11 12 13
@@ -194,5 +194,23 @@ LevelID GetQueryLevel(NodeID start, NodeID target, NodeID node) const
 
 
 ### Many to many
-Many to many is similar to one to many logic, given 2 sources and 3 destinations, many to many will calculate result for first source node with 3 destination nodes and then calculate second source with 3 destination nodes.
+Many to many is similar to one to many logic, given 2 sources and 3 destinations, many to many will calculate result for first source node with 3 destination nodes and then calculate second source with 3 destination nodes.  
 
+You could find the code [here](https://github.com/Telenav/osrm-backend/blob/016adf6439433929ed5c6fd1272aee00d32f8ec1/src/engine/routing_algorithms/many_to_many_mld.cpp#L536):  
+```C++
+
+// * many-to-many search tasks use a bidirectional Dijkstra search
+//   with the candidate node level `min(GetHighestDifferentLevel(phantom_node, node))`
+//   Due to pruned backward search space it is always better to compute the durations matrix
+//   when number of sources is less than targets. If number of targets is less than sources
+//   then search is performed on a reversed graph with phantom nodes with flipped roles and
+//   returning a transposed matrix.
+template <bool DIRECTION>
+std::pair<std::vector<EdgeDuration>, std::vector<EdgeDistance>>
+manyToManySearch(SearchEngineData<Algorithm> &engine_working_data,
+                 const DataFacade<Algorithm> &facade,
+                 const std::vector<PhantomNode> &phantom_nodes,
+                 const std::vector<std::size_t> &source_indices,
+                 const std::vector<std::size_t> &target_indices,
+                 const bool calculate_distance)
+```
