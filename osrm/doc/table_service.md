@@ -11,6 +11,7 @@
           - [Algorithm Description](#algorithm-description)
           - [Code](#code)
     - [Many to many](#many-to-many-1)
+      - [Code](#code-1)
 
 # Table service
 
@@ -194,7 +195,12 @@ LevelID GetQueryLevel(NodeID start, NodeID target, NodeID node) const
 
 
 ### Many to many
+
+
+
 Many to many is similar to one to many logic, given 2 sources and 3 destinations, many to many will calculate result for first source node with 3 destination nodes and then calculate second source with 3 destination nodes.  
+
+#### Code
 
 You could find the code [here](https://github.com/Telenav/osrm-backend/blob/016adf6439433929ed5c6fd1272aee00d32f8ec1/src/engine/routing_algorithms/many_to_many_mld.cpp#L536):  
 ```C++
