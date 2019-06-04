@@ -14,7 +14,7 @@ http://router.project-osrm.org/tile/v1/car/tile(1310,3166,13).mvt
 - OSRM tiles mainly for debug purpose and is not designed for **tile rendering**.  It contains two layers, speeds layer mainly for checking weight and turns layer is for guidance.  You could get more information from the discussion in [initial pull request](https://github.com/Project-OSRM/osrm-backend/pull/2000).
 
 <img src="../references/pictures/osrm-tile-test.png" alt="osrm-tile-test" width="400"/>
-
+- For osrm-tile-viewer, both open segments will use two lines to represent, while oneway just one line
 
 
 
