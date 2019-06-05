@@ -55,6 +55,7 @@ Test your local connection
 ```bash
 psql postgres -p 5432 -h localhost -l
 ```
+- If you met error related with user not existed, please check this blog [stackoverflow-How to check if a postgres user exists?](https://stackoverflow.com/questions/8546759/how-to-check-if-a-postgres-user-exists)
 
 ### Tegola
 If you use docker to start tegola, you could try with following command
@@ -80,8 +81,9 @@ go get github.com/go-spatial/tegola
 5. Build
    go build
 ```
-For more information, you go to these links: [issue-88](https://github.com/go-spatial/tegola/issues/88#issuecomment-288139027) or [faq-gopath](https://github.com/alco/gostart#faq0) or [Working with $GOPATH on Github forks](http://www.personal.psu.edu/bam49/notebook/gopath-github-fork/)
+For more information, you go to these links: [issue-88](https://github.com/go-spatial/tegola/issues/88#issuecomment-288139027) or [stackoverflow - what is gopath and goroot](https://stackoverflow.com/questions/7970390/what-should-be-the-values-of-gopath-and-goroot) or [faq-gopath](https://github.com/alco/gostart#faq0) or [Working with $GOPATH on Github forks](http://www.personal.psu.edu/bam49/notebook/gopath-github-fork/)
 
+- Connect database outside of docker [issues-140](https://github.com/hasura/graphql-engine/issues/140)
 
 
 ### Frontend
@@ -164,5 +166,15 @@ You will see
 You will see:  
 <img src="../resource/pictures/tegola_road_layers.png" alt="tegola_road_layers" style="width:400px;"/>
 
+
+### More info
+- Setup postgis with docker  
+https://hub.docker.com/r/mdillon/postgis/  
+https://github.com/kartoza/docker-postgis  
+https://alexurquhart.com/post/set-up-postgis-with-docker/  
+
+- How to integrate redis for tegola  
+[discussions](https://github.com/go-spatial/tegola/issues/300)  
+[pull request](https://github.com/go-spatial/tegola/pull/310/commits)  
 
 
