@@ -14,7 +14,7 @@ I directely download bonn postgis data and then import this dumped file into pos
 ```sql
 # step 1:
 create database bonn;
-# You could follow links here to set externsions: http://postgis.net/install/
+# You could follow links here to set extensions: http://postgis.net/install/
 
 # step 2:
 psql bonn < bonn_osm.sql
@@ -94,8 +94,9 @@ Use following URL
 ```url
 http://localhost:8080/#11.8/50.6966/7.1308
 ```
-You will see
+You will see  
 
+<img src="../resource/pictures/tegola_frontend.png" alt="tegola_frontend" style="width:400px;"/>
 
 - Mapbox frontend
 
@@ -160,8 +161,8 @@ You will see
   </body>
 </html>
 ```
-You will see:
-
+You will see:  
+<img src="../resource/pictures/tegola_road_layers.png" alt="tegola_road_layers" style="width:400px;"/>
 
 
 
