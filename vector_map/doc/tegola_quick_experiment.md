@@ -12,6 +12,10 @@ For experiments below, I follow the wiki page [getting-started](https://tegola.i
 ### Postgis
 I directely download bonn postgis data and then import this dumped file into postgis.
 ```sql
+# step 0:
+wget https://github.com/go-spatial/tegola-example-data/raw/master/bonn_osm.sql.tar.gz
+tar -zxvf bonn_osm.sql.tar.gz
+
 # step 1:
 create database bonn;
 # You could follow links here to set extensions: http://postgis.net/install/
@@ -177,4 +181,10 @@ https://alexurquhart.com/post/set-up-postgis-with-docker/
 [discussions](https://github.com/go-spatial/tegola/issues/300)  
 [pull request](https://github.com/go-spatial/tegola/pull/310/commits)  
 
+
+### Todo
+- Enable redis or s3 based on OSM data
+- Import full data of OSM PBF into POSTGIS
+- Use Mapbox styler to verify rendering result
+- Import full data of HERE PBF into POSTGIS
 
