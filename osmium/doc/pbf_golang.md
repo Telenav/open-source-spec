@@ -21,8 +21,8 @@ You could follow the example [here](https://github.com/qedus/osmpbf/blob/f940871
 			case *osmpbf.Node:
 				// Process Node v.
 				nc++
-			case *osmpbf.Way:
-				// Process Way v.
+            case *osmpbf.Way:
+                // Process Way v.
                 wc++
                 // [Perry] Print wayid, nodeids
 				fmt.Printf("WayID: %d, ", v.ID)
@@ -45,10 +45,11 @@ Before I use go version of OSM decoder, I am the beliver of OSMIUM, its elegant 
 
 Decoding PBF works like a simple ETL job.  
 
-<img src="../resource/pictures/mermaid-diagram-20190620112019.svg" alt="mermaid-diagram-20190620112019.svg" width="600"/>
+<img src="../resource/pictures/go_osm_pbf_parser.png" alt="go_osm_pbf_parser.png" width="1000"/>
 
 #### Reader
-Reader is the one deal with source file, please do pay attention to the design of File Block in OSM PBF schema is the one really empower the ability of concurrency.  Each of file block contains several primitive blob, and each primitive blob contains a group of osm element like way/node/relation.  The idea of primitiveblob is similar to the idea parquet in column database, it group data together and provide metadata to describe the group.  OSM data is simple, use only one column could represent way/node/relation.  
+Reader is the one deal with source file, please do pay attention to the design of File Block in OSM PBF schema, which is the one really empower the ability of concurrency.  Each file block contains several primitive blob, and each primitive blob contains a group of osm element like way/node/relation.  The idea of primitiveblob is similar to the idea parquet in column database, it group data together and provide metadata to describe the group.  OSM data is simple, use only one column represent all elements in way/node/relation.  
+Reader part act as round robin, put file blocks into each channel.  
 
 Here is the logic related with [reader](https://github.com/qedus/osmpbf/blob/f9408716cb01c9a60d2929bf510d9b9b4d893f58/decode.go#L179)
 ```go
@@ -78,7 +79,7 @@ Here is the logic related with [reader](https://github.com/qedus/osmpbf/blob/f94
 ```
 
 #### Processor
-Processor will init several go routine to decode osm blob, the number of go routine depends on your target machines' capacity.  This part reminds me the classic speach given by Rob Pike, [Concurrency Is Not Parallelism'](https://www.youtube.com/watch?v=cN_DpYBzKso), concurrency means the ability to deal with multiple things and parallelism means doing several things at the same time.  
+Processor will init several go routine to decode osm blob, the number of go routine depends on your target machine's capacity.  This part reminds me the classic speach given by Rob Pike, [Concurrency Is Not Parallelism'](https://www.youtube.com/watch?v=cN_DpYBzKso), concurrency means the ability to deal with multiple things and parallelism means doing several things at the same time.  Design concurrency algorithm means your algorhim should have the ability to scale when handware changes.  
 
 ```go
 	for i := 0; i < n; i++ {
@@ -104,7 +105,7 @@ Processor will init several go routine to decode osm blob, the number of go rout
 ```
 
 #### Handler
-Handler is the module to let external component to implement call back funcction
+Handler is the module helps external component to implement call back funcction
 
 ```go
 	go func() {
@@ -113,11 +114,14 @@ Handler is the module to let external component to implement call back funcction
 			output := dec.outputs[outputIndex]
 			outputIndex = (outputIndex + 1) % n
 
+            //[Perry]
 			p := <-output
 			if p.i != nil {
 				// send decoded objects one by one
 				for _, o := range p.i.([]interface{}) {
 					dec.serializer <- pair{o, nil}
+					//[Perry] client code will retrieve elements from this channel
+					// p, ok := <-dec.serializer
 				}
 			}
 			if p.e != nil {
@@ -130,6 +134,7 @@ Handler is the module to let external component to implement call back funcction
 	}()
 
 ```
+
 
 
 
