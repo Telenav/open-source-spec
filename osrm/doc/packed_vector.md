@@ -10,6 +10,7 @@
     - [Implementation of get_value](#implementation-of-getvalue)
     - [Others](#others)
   - [UnitTest](#unittest)
+  - [Debug Notes](#debug-notes)
   - [Reference](#reference)
 
 
@@ -233,6 +234,56 @@ If you use array like {1,1,1,1,2,2,2} to call push_back, you still could get cor
  - Extreme condition test
 
 <br/>
+
+## Debug Notes
+- In packed_vector.hpp, print all kinds of word_offset combinations  
+```C++
+    static /* constexpr */ std::array<std::uint8_t, BLOCK_ELEMENTS> initialize_word_offset()
+    {
+        std::array<std::uint8_t, BLOCK_ELEMENTS> word_offset;
+
+        auto offset = 0;
+        for (auto element_index = 0u; element_index < BLOCK_ELEMENTS; element_index++)
+        {
+            word_offset[element_index] = offset / WORD_BITS;
+            offset += Bits;
+            //std::cout << "### word_offset[element_index]"<< std::bitset<64>(word_offset[element_index]) << std::endl;
+        }
+
+        return word_offset;
+    }
+```
+Sample output:  
+```bash
+### upper_mask[element_index]0000000000000000000000000000000000000000000000000000000000000000
+### lower_offset[element_index]0000000000000000000000000000000000000000000000000000000000000000
+```
+
+
+- In packed_vector.hpp, print element_index and lower_word_index for specific value  
+```C++
+    inline InternalIndex get_internal_index(const std::size_t index) const
+    {
+        //std::cout << "+++ BLOCK_WORDS = " << BLOCK_WORDS << " BLOCK_ELEMENTS = " << BLOCK_ELEMENTS << " WORD_BITS =  " << WORD_BITS << std::endl;
+        const auto block_offset = BLOCK_WORDS * (index / BLOCK_ELEMENTS);
+        const std::uint8_t element_index = index % BLOCK_ELEMENTS;
+        const auto lower_word_index = block_offset + word_offset[element_index];
+        
+        //std::cout << "$$$ get_internal_index() index = " << index << " ";
+        //std::cout << "block_offset = " << block_offset << " ";
+        //std::cout << "element_index = " << std::bitset<64>(element_index) << " ";
+        //std::cout << "lower_word_index = " << lower_word_index << " " << std::endl;
+
+        return InternalIndex{lower_word_index, element_index};
+    }
+
+```
+Sample output:
+```bash
+$$$ get_internal_index() index = 4131267 block_offset = 4066713 element_index = 0000000000000000000000000000000000000000000000000000000000000011 lower_word_index = 4066715 
+```
+
+
 
 ## Reference
 - [boost::any](http://cpp.sh/5savy)
