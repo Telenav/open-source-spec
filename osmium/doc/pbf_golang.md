@@ -7,6 +7,7 @@
 			- [Processor](#Processor)
 			- [Handler](#Handler)
 		- [Difference with OSMIUM](#Difference-with-OSMIUM)
+	- [Reference](#Reference)
 
 
 
@@ -54,11 +55,11 @@ You could follow the example [here](https://github.com/qedus/osmpbf/blob/f940871
 ```
 
 ### Internal
-Before I use go version of OSM decoder, I am the believer of OSMIUM, its elegant design of reader->processor->handler really influenced me a lot, I feel it might be the only pbf decoder you should use.  But after have a try with go version, I was surprised by its high performance and simple implementation based on the power of go concurrency.  
-
-Decoding PBF works like a simple ETL job.  
+Before I use go version of OSM decoder, I am the believer of OSMIUM, its elegant design of reader->processor->handler really influenced me a lot, I feel it might be the only pbf decoder you should use.  But after have a try with go version, I was surprised by its high performance and simple implementation based on the power of go concurrency.    
 
 <img src="../resource/pictures/go_osm_pbf_parser.png" alt="go_osm_pbf_parser.png" width="1000"/>
+
+Decoding PBF works like a simple ETL job, add proper partitioner we could make this model executed distributable.  But most of road graph processing is concurrent program running on single machine, I think may be its due to the scale of road network is not that big and the complexity of distribution is not worth to solve most of current problem.
 
 #### Reader
 Reader is the one deal with source file, please do pay attention to the design of File Block in OSM PBF schema, which is the one really empowers the ability of concurrency.  Each file block contains several primitive blobs, and each primitive blob contains a group of osm element like way/node/relation.  The idea of primitiveblob is similar to the idea parquet in column database, it groups data together and provide metadata to describe the group.  OSM data is simple, use only one column represent all elements in way/node/relation.  
@@ -156,3 +157,5 @@ Here is the logic related with [reader](https://github.com/qedus/osmpbf/blob/f94
 
 
 
+## Reference
+- [Merging Huuuge CSV Files Using Golang Channels](https://danrl.com/blog/2018/merging-huuuge-csv-files-using-golang-channels/)
