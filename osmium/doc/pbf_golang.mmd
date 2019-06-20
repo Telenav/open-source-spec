@@ -1,0 +1,32 @@
+graph LR
+PF[pbf file]-->GRR[go_routine_reader]
+subgraph reader
+GRR
+end
+GRR-->IC0(input_chan_0)
+GRR-->IC1(input_chan_1)
+GRR-->ICN_2(input_chan_n-2)
+GRR-->ICN_1(input_chan_n-1)
+
+IC0-->GD0[go_routine_decoder_0]
+IC1-->GD1[go_routine_decoder_1]
+ICN_2-->GDN_2[go_routine_decoder_n-2]
+ICN_1-->GDN_1[go_routine_decoder_n-1]
+subgraph processor
+GD0
+GD1
+GDN_2
+GDN_1
+end
+GD0-->OC0(output_chan_0)
+GD1-->OC1(output_chan_1)
+GDN_2-->OCN_2(output_chan_n-2)
+GDN_1-->OCN_1(output_chan_n-1)
+OC0-->GO[go_routine_output]
+OC1-->GO
+OCN_2-->GO
+OCN_1-->GO
+subgraph handler 
+GO
+end
+GO-->SC(serializer_chan)
