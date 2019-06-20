@@ -44,4 +44,4 @@ OSMIUM has been used widely in OSM world and Telenav internal projects, all of t
 - [osmium wiki](https://wiki.openstreetmap.org/wiki/Osmium)
 - [osmium github](https://github.com/osmcode/libosmium)
 - [talk from author](./resource/slides/Osmium-to-the-Rescue.pdf)
-
+- [osm pbf decoder in golang](./doc/pbf_golang.md)
