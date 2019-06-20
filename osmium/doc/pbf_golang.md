@@ -92,7 +92,7 @@ Here is the logic related with [reader](https://github.com/qedus/osmpbf/blob/f94
 ```
 
 #### Processor
-Processor will init several go routine to decode osm blob, the number of go routine depends on your target machine's capacity.  This part reminds me the classic speech given by Rob Pike, [Concurrency Is Not Parallelism](https://www.youtube.com/watch?v=cN_DpYBzKso), concurrency means the ability to deal with multiple things and parallelism means doing several things at the same time.  Design concurrency algorithm means your algorithm should have the ability to scale when handware changes.  
+[Processor](https://github.com/qedus/osmpbf/blob/f9408716cb01c9a60d2929bf510d9b9b4d893f58/decode.go#L156) will init several go routine to decode osm blob, the number of go routine depends on your target machine's capacity.  This part reminds me the classic speech given by Rob Pike, [Concurrency Is Not Parallelism](https://www.youtube.com/watch?v=cN_DpYBzKso), concurrency means the ability to deal with multiple things and parallelism means doing several things at the same time.  Design concurrency algorithm means your algorithm should have the ability to scale when handware changes.  
 
 ```go
 	for i := 0; i < n; i++ {
@@ -118,7 +118,7 @@ Processor will init several go routine to decode osm blob, the number of go rout
 ```
 
 #### Handler
-Handler is the module helps external component to implement call back function
+[Handler](https://github.com/qedus/osmpbf/blob/f9408716cb01c9a60d2929bf510d9b9b4d893f58/decode.go#L203) is the module helps external component to implement call back function
 
 ```go
 	go func() {
@@ -150,6 +150,7 @@ Handler is the module helps external component to implement call back function
 
 
 ### Difference with OSMIUM
+- For more information of OSMIUM, you could go to the PPT [here](https://github.com/Telenav/open-source-spec/blob/master/osmium/resource/slides/osmium_20181201.pptx)
 - OSMIUM using buffer act as memory pool to minimize memory allocation
 - OSMIUM using std::future to gurantee the sequence of output.  Assume in PBF the sequence of element is node1, node2, way1, way2, the use of std::future gurantee in client side handling sequence is still be node1, node2, way1, way2.  I don't feel this feature matters much for my scenario, but its a good design which is very useful in many fields.
 
