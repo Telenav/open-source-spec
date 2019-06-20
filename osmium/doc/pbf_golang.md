@@ -1,3 +1,15 @@
+<!-- TOC -->
+- [PBF decoder in golang](#PBF-decoder-in-golang)
+	- [qedus/osmpbf](#qedusosmpbf)
+		- [How to use](#How-to-use)
+		- [Internal](#Internal)
+			- [Reader](#Reader)
+			- [Processor](#Processor)
+			- [Handler](#Handler)
+		- [Difference with OSMIUM](#Difference-with-OSMIUM)
+
+
+
 # PBF decoder in golang
 
 ## [qedus/osmpbf](https://github.com/qedus/osmpbf)
@@ -80,7 +92,7 @@ Here is the logic related with [reader](https://github.com/qedus/osmpbf/blob/f94
 ```
 
 #### Processor
-Processor will init several go routine to decode osm blob, the number of go routine depends on your target machine's capacity.  This part reminds me the classic speech given by Rob Pike, [Concurrency Is Not Parallelism'](https://www.youtube.com/watch?v=cN_DpYBzKso), concurrency means the ability to deal with multiple things and parallelism means doing several things at the same time.  Design concurrency algorithm means your algorithm should have the ability to scale when handware changes.  
+Processor will init several go routine to decode osm blob, the number of go routine depends on your target machine's capacity.  This part reminds me the classic speech given by Rob Pike, [Concurrency Is Not Parallelism](https://www.youtube.com/watch?v=cN_DpYBzKso), concurrency means the ability to deal with multiple things and parallelism means doing several things at the same time.  Design concurrency algorithm means your algorithm should have the ability to scale when handware changes.  
 
 ```go
 	for i := 0; i < n; i++ {
@@ -106,7 +118,7 @@ Processor will init several go routine to decode osm blob, the number of go rout
 ```
 
 #### Handler
-Handler is the module helps external component to implement call back funcction
+Handler is the module helps external component to implement call back function
 
 ```go
 	go func() {
@@ -114,8 +126,8 @@ Handler is the module helps external component to implement call back funcction
 		for {
 			output := dec.outputs[outputIndex]
 			outputIndex = (outputIndex + 1) % n
-
-            //[Perry] Get osm objects from output channel
+			
+			//[Perry] Get osm objects from output channel
 			p := <-output
 			if p.i != nil {
 				// send decoded objects one by one
@@ -136,6 +148,10 @@ Handler is the module helps external component to implement call back funcction
 
 ```
 
+
+### Difference with OSMIUM
+- OSMIUM using buffer act as memory pool to minimize memory allocation
+- OSMIUM using std::future to gurantee the sequence of output.  Assume in PBF the sequence of element is node1, node2, way1, way2, the use of std::future gurantee in client side handling sequence is still be node1, node2, way1, way2.  I don't feel this feature matters much for my scenario, but its a good design which is very useful in many fields.
 
 
 
