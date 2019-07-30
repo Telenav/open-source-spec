@@ -23,7 +23,7 @@ More context could be found [here](https://github.com/Project-OSRM/osrm-backend/
 
 
 ## Generate Graph
- BisectionGraph([type](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/include/partitioner/bisection_graph.hpp#L56), [interface](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/include/partitioner/partition_graph.hpp#L64)) is the data structure used for graph partition step.  [makeBisectionGraph](end/blob/v5.20.0/include/partitioner/bisection_graph.hpp#L60) is the function used to construct which, it reorder edges and build adjacent list
+ BisectionGraph([type](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/include/partitioner/bisection_graph.hpp#L56), [interface](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/include/partitioner/partition_graph.hpp#L64)) is the data structure used for graph partition step.  [makeBisectionGraph](https://github.com/Project-OSRM/osrm-backend/blob/9234b2ae76bdbbb91cbb51142bfc0ee1252c4abd/include/partitioner/bisection_graph.hpp#L60) is the function used to construct which, it reorder edges and build adjacent list
 
  ```C++
 inline BisectionGraph makeBisectionGraph(const std::vector<util::Coordinate> &coordinates,
