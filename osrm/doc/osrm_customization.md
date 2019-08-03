@@ -99,8 +99,6 @@ So for node 3, outweight is 4(to destination_node 2) and 0(to himself), inweight
 ##### Case description
 The directed graph contains 16 nodes and 4 level of partition  
 
-<img src="../references/pictures/customization_case2_graph.png" alt="customization_case2_graph" width="400"/>
-
 ##### Graph construction
 Let's take a look at node 0, 1, 2, 3 as an example  
 At level 1, for cell_1_0, node 2 is source node and node 3 is destination node.  
