@@ -13,6 +13,9 @@ Open source Routing Library/Service
 ### [OSMIUM](./osmium/README.md)
  A fast and flexible C++ library for working with OpenStreetMap data
 
+### [Generic](./routing_basic/README.md)
+Documents about navigation related topic: Map matching, CRP, etc.
+
 ## Discussions
 - [Open Source Solution for Navigation System](https://github.com/Telenav/open-source-spec/blob/master/routing_basic/resource/presentations/20190410_open_source_solution_for_Navigation.pptx)
 - [Modern Route Algorithm(CRP)](./routing_basic/resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
