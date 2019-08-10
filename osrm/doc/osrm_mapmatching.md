@@ -30,4 +30,17 @@ SubMatchingList mapMatching(SearchEngineData<Algorithm> &engine_working_data,
     const bool allow_splitting)
 ```
 
+### Emission prob
+
+Calculate emission prob for all trace_coordinates, each trace_coordinates could have a list of matched candidates.  The definition of strcut EmissionLogProbability could be found [here](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/include/engine/map_matching/hidden_markov_model.hpp#L27).
+
+```c++
+double operator()(const double distance) const
+{
+return -0.5 * (log_2_pi + (distance / sigma_z) * (distance / sigma_z)) - log_sigma_z;
+}
+```
+Depend whether "trace_gps_precision" has been set to will use either default sigma_z or adjusted one.
+
+
 
