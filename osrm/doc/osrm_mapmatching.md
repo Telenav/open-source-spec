@@ -71,3 +71,97 @@ Transition probability try to identify candidate pair has similar great circle d
 ```C++
 double operator()(const double d_t) const { return -log_beta - d_t / beta; }
 ```
+
+
+
+### HMM
+
+Init HMM with candidates list and related emission prob.
+```C++
+HMM model(candidates_list, emission_log_probabilities);
+```
+
+The definition of class HiddenMarkovModel could be found [here](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/src/engine/routing_algorithms/map_matching.cpp#L224)
+```C++
+template <class CandidateLists> struct HiddenMarkovModel
+{
+// DP array used to record best weight to each candidate
+// the bigger the better
+std::vector<std::vector<double>> viterbi;
+
+// Is this candidate reachable from previous candidate
+// reachable be assigned value during retrieve
+std::vector<std::vector<bool>> viterbi_reachable;
+
+// pair = <parent_timestamp_index, parent_candidate_index>
+std::vector<std::vector<std::pair<unsigned, unsigned>>> parents;
+
+// accumulate distance
+std::vector<std::vector<float>> path_distances;
+
+// Whether this candidate need to be pruned
+// Only if he could provide better opportunity 
+std::vector<std::vector<bool>> pruned;
+
+// Whether there is a new sub match result
+std::vector<bool> breakage;
+
+```
+
+Viterbi algorithm act as dynamic programming, it accumulate solution from previous step and could always tell the best matched result.  
+You could find related logic [here](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/src/engine/routing_algorithms/map_matching.cpp#L235):
+```C++
+    // [Perry] For current candidate(s_prime), without consider transition prob from s to s_prime, 
+    //         the cost is already smaller than current_viterbi[s_prime] which records best 
+    //         result be found so far, then this candidate(s_prime) won't be a better solution compare with current_viterbi
+    //         Because transition_pr is a negative value, new_value + transition_pr could only be smaller
+    double new_value = prev_viterbi[s] + emission_pr;
+    if (current_viterbi[s_prime] > new_value)
+    {
+        continue;
+    }
+```
+and [here](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/src/engine/routing_algorithms/map_matching.cpp#L261)
+
+```C++
+        // [Perry] new_value = prev_viterbi[s] + emission_pr + transition_pr
+        //         The bigger new_value means more optimal result
+        if (new_value > current_viterbi[s_prime])
+        {
+            current_viterbi[s_prime] = new_value;
+            current_parents[s_prime] = std::make_pair(prev_unbroken_timestamp, s);
+            current_lengths[s_prime] = network_distance;
+            current_pruned[s_prime] = false;
+            model.breakage[t] = false;
+        }
+```
+
+OSRM try to avoid generating too many candidates for DP by pruning some un-reasonable candidates:
+```C++
+            // assumes minumum of 4 m/s
+            const EdgeWeight weight_upper_bound =
+                ((haversine_distance + max_distance_delta) / 4.) * facade.GetWeightMultiplier();
+
+            // ...
+
+                    double network_distance =
+                        getNetworkDistance(engine_working_data,
+                                facade,
+                                forward_heap,
+                                reverse_heap,
+                                prev_unbroken_timestamps_list[s].phantom_node,
+                                current_timestamps_list[s_prime].phantom_node,
+                                weight_upper_bound);
+
+                    // get distance diff between loc1/2 and locs/s_prime
+                    const auto d_t = std::abs(network_distance - haversine_distance);
+
+                    // very low probability transition -> prune
+                    if (d_t >= max_distance_delta)
+                    {
+                        continue;
+                    }
+
+```
+
+
