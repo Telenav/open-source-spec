@@ -12,3 +12,22 @@ Latest OSRM map matching API could be found [here](https://github.com/Project-OS
 OSRM expect user input a list of GPS points and GPS precision, returns one or several OSRM route legs to represent matched result.  Consider the problem is finding most probable result based on given observation, and input always contains contains noise and sparseness, matcher problem be transformed to [hidden markov model(HMM)](https://www.microsoft.com/en-us/research/publication/hidden-markov-map-matching-noise-sparseness).  OSRM would weight each candidate/candidate pair base on emission probability and transition probability, then use Viterbi algorithm to accumulate result and calculate the best result.
 For back ground related with cloud map matching, please go to [map matching basic description](../../routing_basic/doc/mapmatching_basic.md).
 
+
+
+## Work with matcher service
+
+
+## Code analysis
+For each HTTP request, after handled by boost::asio, it will come to this [function](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/src/engine/routing_algorithms/map_matching.cpp#L71)
+```c++
+template <typename Algorithm>
+SubMatchingList mapMatching(SearchEngineData<Algorithm> &engine_working_data,
+    const DataFacade<Algorithm> &facade,
+    const CandidateLists &candidates_list,
+    const std::vector<util::Coordinate> &trace_coordinates,
+    const std::vector<unsigned> &trace_timestamps,
+    const std::vector<boost::optional<double>> &trace_gps_precision,
+    const bool allow_splitting)
+```
+
+
