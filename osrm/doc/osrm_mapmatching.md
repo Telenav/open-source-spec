@@ -43,4 +43,31 @@ return -0.5 * (log_2_pi + (distance / sigma_z) * (distance / sigma_z)) - log_sig
 Depend whether "trace_gps_precision" has been set to will use either default sigma_z or adjusted one.
 
 
+### Transition prob
 
+Here is the logic in function [mapMatching]() to calculate transition prob: 
+```C++
+// Calculate transition prob between last step(candidates calculated in previous step) and this step
+for (const auto s : util::irange<std::size_t>(0UL, prev_viterbi.size()))
+{
+	for (const auto s_prime : util::irange<std::size_t>(0UL, current_viterbi.size()))
+	{
+		//…
+		double network_distance = getNetworkDistance(engine_working_data,
+		facade,
+		forward_heap,
+		reverse_heap,
+		prev_unbroken_timestamps_list[s].phantom_node,
+		current_timestamps_list[s_prime].phantom_node,
+		weight_upper_bound);
+		
+		const auto d_t = std::abs(network_distance - haversine_distance);
+		
+	}
+}
+
+```
+Transition probability try to identify candidate pair has similar great circle distance between two points and shortest path distance.  The definition of struct TransitionLogProbability could be found [here](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/include/engine/map_matching/hidden_markov_model.hpp#L42).
+```C++
+double operator()(const double d_t) const { return -log_beta - d_t / beta; }
+```
