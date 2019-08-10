@@ -1,6 +1,21 @@
+- [OSRM Map Matching](#osrm-map-matching)
+  - [General description](#general-description)
+  - [Work with matcher service](#work-with-matcher-service)
+  - [Code analysis](#code-analysis)
+    - [Emission prob](#emission-prob)
+    - [Transition prob](#transition-prob)
+    - [HMM](#hmm)
+    - [Calculate shortest path](#calculate-shortest-path)
+    - [Handling Split](#handling-split)
+    - [Construct sub-match result](#construct-sub-match-result)
+    - [Evaluate confidence](#evaluate-confidence)
+  - [Case learning](#case-learning)
+    - [Simple case](#simple-case)
+    - [Case with broken trace](#case-with-broken-trace)
+    - [Case with incorrect map data](#case-with-incorrect-map-data)
+
 # OSRM Map Matching
 Map matching matches/snaps given GPS points to the road network in the most plausible way.
-
 
 ## General description
 Latest OSRM map matching API could be found [here](https://github.com/Project-OSRM/osrm-backend/blob/master/docs/http.md#match-service), the official API wiki is [here](http://project-osrm.org/docs/v5.5.1/api/#match-service).  
@@ -32,7 +47,23 @@ SubMatchingList mapMatching(SearchEngineData<Algorithm> &engine_working_data,
 
 ### Emission prob
 
-Calculate emission prob for all trace_coordinates, each trace_coordinates could have a list of matched candidates.  The definition of strcut EmissionLogProbability could be found [here](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/include/engine/map_matching/hidden_markov_model.hpp#L27).
+Calculate emission prob for all trace_coordinates, each trace_coordinates could have a list of matched candidates.  
+
+```C++
+      for (auto t = 0UL; t < candidates_list.size(); ++t)
+      {
+          emission_log_probabilities[t].resize(candidates_list[t].size());
+          std::transform(candidates_list[t].begin(),
+                         candidates_list[t].end(),
+                         emission_log_probabilities[t].begin(),
+                         [&](const PhantomNodeWithDistance &candidate) {
+                             return default_emission_log_probability(candidate.distance);
+                         });
+
+      }
+```
+
+The definition of strcut EmissionLogProbability could be found [here](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/include/engine/map_matching/hidden_markov_model.hpp#L27).
 
 ```c++
 double operator()(const double distance) const
@@ -71,7 +102,6 @@ Transition probability try to identify candidate pair has similar great circle d
 ```C++
 double operator()(const double d_t) const { return -log_beta - d_t / beta; }
 ```
-
 
 
 ### HMM
@@ -155,9 +185,165 @@ OSRM try to avoid generating too many candidates for DP by pruning some un-reaso
 
 ```
 
+### Calculate shortest path
+OSRM using BFS to calculate shortest path between each candidate pair
+```C++
+          // [Perry]Here phantom_node means map matching point, which is a point on navigable segment link
+          //        from given gps point
+          //        weight_upper_bound used to bound routing search radius
+          double network_distance =
+              getNetworkDistance(engine_working_data,
+                                 facade,
+                                 forward_heap,
+                                 reverse_heap,
+                                 prev_unbroken_timestamps_list[s].phantom_node,
+                                 current_timestamps_list[s_prime].phantom_node,
+                                 weight_upper_bound);
+```
+In Telenav's previous experience, we tried using different strategy to optimize this part.  Like additional logic to filter or merge phantom_node candidates, or using DFS to replace BFS logic.  One important reason is that we didn't use HMM model before, and both of such strategy will evolve additional logic while mapping to strategy here.  My opinion is, for traffic pattern matching, if we have strict rules(like follow specific pattern of road type) and we have requirement on single map matching result's performance, we could consider to use such optimization strategy.  For user prob matching which is happening on the cloud side, we could partition requests to speed up and choose simple and clear strategy like OSRM or Valhalla map matching.
+
+### Handling Split
+When input gps trace contains a gap and hard to merge together, OSRM will consider to generate multiple sub match result.
+
+```C++
+      const bool gap_in_trace = [&]() {
+          // use temporal information if available to determine a split
+          // but do not determine split by timestamps if wasn't asked about it
+          if (use_timestamps && allow_splitting)
+          {
+              return step_time > max_broken_time;
+          }
+          else
+          {
+              return t - prev_unbroken_timestamps.back() > MAX_BROKEN_STATES;
+          }
+      }();
+```
+When there is a gap, HMM need to be reset and initialized again to calculate next match.
+
+### Construct sub-match result
+These [part of code](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/src/engine/routing_algorithms/map_matching.cpp#L328) used to construct final result for map matching
+
+### Evaluate confidence
+
+```C++
+    matching.confidence = confidence(trace_distance, matching_distance);
+```
+Class MatchingConfidence defines strategy for how to evaluate confidence.
+```C++
+    double operator()(const float trace_length, const float matched_length) const
+    {
+        const double distance_feature = -std::log(trace_length) + std::log(matched_length);
+
+        // matched to the same point
+        if (!std::isfinite(distance_feature))
+        {
+            return 0;
+        }
+
+        const auto label_with_confidence = classifier.classify(distance_feature);
+        if (label_with_confidence.first == ClassifierT::ClassLabel::POSITIVE)
+        {
+            return label_with_confidence.second;
+        }
+
+        BOOST_ASSERT(label_with_confidence.first == ClassifierT::ClassLabel::NEGATIVE);
+        return 1 - label_with_confidence.second;
+    }
+```
+
+
+
 ## Case learning
 
 ### Simple case
+
+This case based on Berlin data, I use which to track generic map matching's logic.
+```
+http://127.0.0.1:5002/match/v1/driving/13.386399,52.517004;13.385498,52.517611;13.385482,52.517915;13.384667,52.518493?steps=true&overview=full
+```
+In total, there are 4 gps points to be matched.  
+
+The result of calculating emission cost is:
+```bash
+For point 0 the emission prob is [-2.5307,]
+For point 1 the emission prob is [-4.25262,-4.25262,]
+For point 2 the emission prob is [-3.72073,-3.72073,-4.04626,-4.04626,-5.32181,-5.32181,-5.32181,-5.32181,]
+For point 3 the emission prob is [-2.60078,-2.60078,]
+```
+The result means for point 0, there are 1 candidate or 1 segment could be the potential solution.  For point 2 have 2 candidates with and for point 3 have 8 candidates.  We also calculate prob result for all candidates.  
+
+Then come into the loop of 
+```C++
+for (const auto s : util::irange<std::size_t>(0UL, prev_viterbi.size()))
+{
+	for (const auto s_prime : util::irange<std::size_t>(0UL, current_viterbi.size()))
+```
+
+
+For first round, it will set point 1 as current and point 0 as previous one.
+Logs for important variables are:
+```
++++prev_viterbi: -2.5307 
++++prev_pruned: 0 
++++prev_unbroken_timestamps_list's size is 1
++++current_viterbi: -inf -inf 
++++current_pruned: 1 1 
++++current_parents: 0,0 0,0 
++++current_lengths: 0 0 
++++current_timestamps_list's size is 2
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-11.7035,-2.5307,-4.25262,-4.92014
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-41.3886,-2.5307,-4.25262,-34.6053
+```
+
+For second round, it will set point 2 as current and point 1 as previous
+```
++++prev_viterbi: -11.7035 -41.3886 
++++prev_pruned: 0 0 
++++prev_unbroken_timestamps_list's size is 2
++++current_viterbi: -inf -inf -inf -inf -inf -inf -inf -inf 
++++current_pruned: 1 1 1 1 1 1 1 1 
++++current_parents: 0,0 0,0 0,0 0,0 0,0 0,0 0,0 0,0 
++++current_lengths: 0 0 0 0 0 0 0 0 
++++current_timestamps_list's size is 8
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-17.7283,-11.7035,-3.72073,-2.30414
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-55.9615,-11.7035,-3.72073,-40.5373
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-56.3879,-11.7035,-4.04626,-40.6382
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-18.1516,-11.7035,-4.04626,-2.40192
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-20.2219,-11.7035,-5.32181,-3.19661
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-75.2671,-11.7035,-5.32181,-58.2418
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-58.4582,-11.7035,-5.32181,-41.4329
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-20.2219,-11.7035,-5.32181,-3.19661
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-100.366,-41.3886,-3.72073,-55.2566
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-85.468,-41.3886,-4.04626,-40.0332
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-110.2,-41.3886,-5.32181,-63.4895
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-87.5383,-41.3886,-5.32181,-40.8279
+```
+Please notice that, ideally there should be 2 * 8 = 16 result for this step, due to the existing of weight_upper_bound OSRM
+pruned impossible candidates.
+
+Here is the result for the third round:
+```
++++prev_viterbi: -17.7283 -55.9615 -56.3879 -18.1516 -20.2219 -75.2671 -58.4582 -20.2219 
++++prev_pruned: 0 0 0 0 0 0 0 0 
++++prev_unbroken_timestamps_list's size is 8
++++current_viterbi: -inf -inf 
++++current_pruned: 1 1 
++++current_parents: 0,0 0,0 
++++current_lengths: 0 0 
++++current_timestamps_list's size is 2
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-96.898,-17.7283,-2.60078,-76.5689
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-26.4898,-17.7283,-2.60078,-6.16071
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-80.0891,-55.9615,-2.60078,-21.5268
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-100.112,-56.3879,-2.60078,-41.1232
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-40.589,-18.1516,-2.60078,-19.8365
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-78.1178,-18.1516,-2.60078,-57.3654
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-43.4539,-20.2219,-2.60078,-20.6312
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-29.879,-20.2219,-2.60078,-7.05629
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-104.057,-20.2219,-2.60078,-81.2345
++++(new_value = prev_viterbi[s] + emission_pr + transition_pr)-71.3333,-20.2219,-2.60078,-48.5107
+```
+
 
 ### Case with broken trace
 
