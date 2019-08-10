@@ -144,15 +144,6 @@ OSRM try to avoid generating too many candidates for DP by pruning some un-reaso
 
             // ...
 
-                    double network_distance =
-                        getNetworkDistance(engine_working_data,
-                                facade,
-                                forward_heap,
-                                reverse_heap,
-                                prev_unbroken_timestamps_list[s].phantom_node,
-                                current_timestamps_list[s_prime].phantom_node,
-                                weight_upper_bound);
-
                     // get distance diff between loc1/2 and locs/s_prime
                     const auto d_t = std::abs(network_distance - haversine_distance);
 
@@ -163,5 +154,16 @@ OSRM try to avoid generating too many candidates for DP by pruning some un-reaso
                     }
 
 ```
+
+## Case learning
+
+### Simple case
+
+### Case with broken trace
+
+### Case with incorrect map data
+
+
+
 
 
