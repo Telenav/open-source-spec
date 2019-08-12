@@ -24,12 +24,23 @@ Latest OSRM map matching API could be found [here](https://github.com/Project-OS
 /match/v1/{profile}/{coordinates}?steps={true|false}&geometries={polyline|polyline6|geojson}&overview={simplified|full|false}&annotations={true|false}
 ```
 
-OSRM expect user input a list of GPS points and GPS precision, returns one or several OSRM route legs to represent matched result.  Consider the problem is finding most probable result based on given observation, and input always contains contains noise and sparseness, matcher problem be transformed to [hidden markov model(HMM)](https://www.microsoft.com/en-us/research/publication/hidden-markov-map-matching-noise-sparseness).  OSRM would weight each candidate/candidate pair base on emission probability and transition probability, then use Viterbi algorithm to accumulate result and calculate the best result.
+OSRM expect user input a list of GPS points and GPS precision, returns one or several OSRM route legs to represent matched result.  Consider the problem is finding most probable result based on given observation, and input always contains contains noise and sparseness, matcher problem be transformed to [hidden markov model(HMM)](https://www.microsoft.com/en-us/research/publication/hidden-markov-map-matching-noise-sparseness).  HMM's define a class of models that utilize a directed graph structure to represent the probability of observing a particular sequence of event - or in our case, .  OSRM would weight each candidate/candidate pair base on emission probability and transition probability, then use Viterbi algorithm to accumulate result and calculate the best result.
 For back ground related with cloud map matching, please go to [map matching basic description](../../routing_basic/doc/mapmatching_basic.md).
 
 
 
 ## Work with matcher service
+- Clean data.  
+  This pre-processing part could take half of your efforts in map matching.  In our past, we always use [Kalman filter](https://blog.maddevs.io/reduce-gps-data-error-on-android-with-kalman-filter-and-accelerometer-43594faed19c) to remove unwanted points.  
+  If your GPS trace contains speed and direction, you could also make such simple rule:for all neighboring points we calculate the speed according to the GPS and compare it with the speed obtained from the vehicle. If the difference is greater than the acceptable level of inaccuracy, we throw out one of the points. 
+
+- The header of GPS trace or the end part always not helpful for map matching algorithm, except that your target is identify parking or map making for first mile or last mile.  For ETA and traffic flow, we focus on inner points more - we could throw the beginning and end of the route then add back by route calculation.  We could use speed parameter to cut them - before the vehicle's speed reached 5kph ~ 10kph.  
+
+- The parameter of *radius* is important for map matching result.  
+  If the parameter value is too low, sections of the route can get lost; if it is too high, you get superfluous loops added to the route.  
+  It worth to spend time to get one or several value for this parameter based on your gps trace.  At first, I pick several golden cases(100+), by input different value(3, 6, 9) and compare with sum of gps point's distance.  This strategy is helpful at small amount of case and quick start.  
+  A better way is using [dynamic time warping](https://en.wikipedia.org/wiki/Dynamic_time_warping) to deal with such case.  We could process 1000+ routes and comaring the results using the DTW algorithm and then determine the best results.
+
 
 
 ## Code analysis
