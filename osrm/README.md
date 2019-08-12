@@ -17,6 +17,7 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 - [Interaction Between C++ and Lua In OSRM](./doc/interaction_between_cpp_and_lua_in_osrm.md)
 - [How OSRM Calculate Weight and Duration](./doc/how_osrm_calculate_weight_and_duration.md)
 - [OSRM Table service](./doc/table_service.md)
+- [OSRM Map Matching](./doc/osrm_mapmatching.md)
 
 
 ### Graphs for source code
