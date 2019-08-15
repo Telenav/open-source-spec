@@ -9,7 +9,7 @@
 
 ## Important points
 - Average the travel time in k time windows
-- Compute a shortest time-independent path within each window and mark the edges in these paths
+- Compute one or several shortest time-independent path within each window and mark the edges in these paths
 - Compute a shortest time-dependent path in the original graph restricted to the marked edges
 
 ## Freeflow and Avgflow Heuristic
@@ -63,6 +63,7 @@ Question: what is profile mean?
 
 
 ## Terms
+- In the paper, shortest actually means fastest
 - Time independent: Use fixed time and related cost profile to rank route
 - Time dependent: Consider real time information, like A->B->C, lets say A->B takes 1 hour and B-C takes one hour.  If user start at 1PM, then when evaluate cost from B we need consider time at 2PM and for C is time at 3PM
 - FIFO: A car that enters an edge earlier must leave the edge earlier than a car that entered at a later moment

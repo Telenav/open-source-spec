@@ -13,6 +13,7 @@
     - [Simple case](#simple-case)
     - [Case with broken trace](#case-with-broken-trace)
     - [Case with incorrect map data](#case-with-incorrect-map-data)
+  - [Reference](#reference)
 
 # OSRM Map Matching
 Map matching matches/snaps given GPS points to the road network in the most plausible way.
@@ -24,7 +25,7 @@ Latest OSRM map matching API could be found [here](https://github.com/Project-OS
 /match/v1/{profile}/{coordinates}?steps={true|false}&geometries={polyline|polyline6|geojson}&overview={simplified|full|false}&annotations={true|false}
 ```
 
-OSRM expect user input a list of GPS points and GPS precision, returns one or several OSRM route legs to represent matched result.  Consider the problem is finding most probable result based on given observation, and input always contains contains noise and sparseness, matcher problem be transformed to [hidden markov model(HMM)](https://www.microsoft.com/en-us/research/publication/hidden-markov-map-matching-noise-sparseness).  HMM's define a class of models that utilize a directed graph structure to represent the probability of observing a particular sequence of event - or in our case, .  OSRM would weight each candidate/candidate pair base on emission probability and transition probability, then use Viterbi algorithm to accumulate result and calculate the best result.
+OSRM expect user input a list of GPS points and GPS precision, returns one or several OSRM route legs to represent matched result.  Consider the problem is finding most probable result based on given observation, and input always contains contains noise and sparseness, matcher problem be transformed to [hidden markov model(HMM)](https://www.microsoft.com/en-us/research/publication/hidden-markov-map-matching-noise-sparseness).  HMM's define a class of models that utilize a directed graph structure to represent the probability of observing a particular sequence of event - or in our case OSRM would weight each candidate/candidate pair base on emission probability and transition probability, then use Viterbi algorithm to accumulate result and calculate the best result.
 For back ground related with cloud map matching, please go to [map matching basic description](../../routing_basic/doc/mapmatching_basic.md).
 
 
@@ -35,6 +36,7 @@ For back ground related with cloud map matching, please go to [map matching basi
   If your GPS trace contains speed and direction, you could also make such simple rule:for all neighboring points we calculate the speed according to the GPS and compare it with the speed obtained from the vehicle. If the difference is greater than the acceptable level of inaccuracy, we throw out one of the points. 
 
 - The header of GPS trace or the end part always not helpful for map matching algorithm, except that your target is identify parking or map making for first mile or last mile.  For ETA and traffic flow, we focus on inner points more - we could throw the beginning and end of the route then add back by route calculation.  We could use speed parameter to cut them - before the vehicle's speed reached 5kph ~ 10kph.  
+- OSRM will broken data based on "timestamp", if there is no such field in request OSRM will always try to connect between two points even this two are pretty far away.
 
 - The parameter of *radius* is important for map matching result.  
   If the parameter value is too low, sections of the route can get lost; if it is too high, you get superfluous loops added to the route.  
@@ -126,25 +128,25 @@ The definition of class HiddenMarkovModel could be found [here](https://github.c
 ```C++
 template <class CandidateLists> struct HiddenMarkovModel
 {
-// DP array used to record best weight to each candidate
+// [Perry]DP array used to record best weight to each candidate
 // the bigger the better
 std::vector<std::vector<double>> viterbi;
 
-// Is this candidate reachable from previous candidate
+// [Perry]Is this candidate reachable from previous candidate
 // reachable be assigned value during retrieve
 std::vector<std::vector<bool>> viterbi_reachable;
 
-// pair = <parent_timestamp_index, parent_candidate_index>
+// [Perry]pair = <parent_timestamp_index, parent_candidate_index>
 std::vector<std::vector<std::pair<unsigned, unsigned>>> parents;
 
-// accumulate distance
+// [Perry]accumulate distance
 std::vector<std::vector<float>> path_distances;
 
-// Whether this candidate need to be pruned
+// [Perry]Whether this candidate need to be pruned
 // Only if he could provide better opportunity 
 std::vector<std::vector<bool>> pruned;
 
-// Whether there is a new sub match result
+// [Perry]Whether there is a new sub match result
 std::vector<bool> breakage;
 
 ```
@@ -358,9 +360,16 @@ Here is the result for the third round:
 
 ### Case with broken trace
 
+test case
+```
+http://127.0.0.1:5002/match/v1/driving/13.386399,52.517004;13.385498,52.517611;13.385482,52.517915;13.384667,52.518493;13.562944,52.443846;13.563824,52.444075;13.565816,52.444363?steps=true&overview=full&timestamps=1414131082;1414131083;1414131084;1414131085;1414132082;1414132083;1414132085
+```
+
+
 ### Case with incorrect map data
 
 
 
-
+## Reference
+- [OSRM issue 2933](https://github.com/Project-OSRM/osrm-backend/issues/2933#issuecomment-249068441)
 
