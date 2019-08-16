@@ -162,10 +162,124 @@ Those facade will be created in related engines and finally passing to algorithm
 
 
 ## A simple case based on template
-The upper version could help you easily understand how OSRM stores data, but in current version, OSRM implements them by C++ template.  You could find related sample code [here](../references/files/test_template.cpp)
+The upper version could help you easily understand how OSRM stores data, but in current version, OSRM implements them by C++ template.  You could find related sample code [here](../references/files/test_template.cpp).  
 
+For algorithm data facade:
+```C++
+struct CH {};
+struct MLD {};
 
+template<typename AlgorithmT>
+class AlgorithmDataFacadeInterface;
 
+template<>
+class AlgorithmDataFacadeInterface<MLD>
+{
+public:
+    virtual int getMLDData1() = 0;
+    virtual int getMLDData2() = 0;
+};
 
+template<>
+class AlgorithmDataFacadeInterface<CH>
+{
+public:
+    virtual int getCHData1() = 0;
+    virtual int getCHData2() = 0;
+};
+
+```
+Please beware of that: member function of a template class cannot be virtual, only specialized version could have template function.  More information: [Can a class member function template be virtual?](https://stackoverflow.com/questions/2354210/can-a-class-member-function-template-be-virtual).  
+
+Here is the implementation:  
+```C++
+template<typename AlgorithmT>
+class AlgorithmSharedDataFacade;
+
+template<>
+class AlgorithmSharedDataFacade<MLD> : public AlgorithmDataFacadeInterface<MLD>
+{
+public:
+    int getMLDData1() override final { return 4; };
+    int getMLDData2() override final { return 5; };
+};
+
+template<>
+class AlgorithmSharedDataFacade<CH> : public AlgorithmDataFacadeInterface<CH>
+{
+public:
+    int getCHData1() override final { return 6; };
+    int getCHData2() override final { return 7; };
+};
+
+```
+
+For base data, we could still use inheritance:
+```C++
+class BaseDataFacadeInterface
+{
+public:
+    virtual int getData1() = 0;
+    virtual int getData2() = 0;
+};
+
+class BaseSharedDataFacade : public BaseDataFacadeInterface
+{
+public:
+    int getData1() override final { return 1; };
+    int getData2() override final { return 2; };
+};
+```
+
+By inherit interface from base and algorithm facade, we could have the ability to visit all facade api:
+```C++
+template<typename AlgorithmT>
+class SharedDataFacade: public BaseSharedDataFacade, public AlgorithmSharedDataFacade<AlgorithmT> { };
+```
+
+Here is the implementation of Algorithm:
+```C++
+
+    template<template <typename A> class FacadeT>
+    Response operator()(FacadeT<MLD> &facade, const Request& r)
+    {
+        Response result;
+        result.r += facade.getMLDData2();
+        result.r += facade.getData2();
+        return result;
+    }
+```
+Here is the initialization of facade
+```C++
+template<typename AlgorithmT, template <typename A> class FacadeT>
+class Engine : public EngineInterface
+{
+public:
+    Response Route(const Request &ret) final override
+    {
+        return route_plugin.HandleRequest(facade, ret);
+    }
+private:
+    RoutePlugin<AlgorithmT> route_plugin;
+    std::shared_ptr<FacadeT<AlgorithmT>> facade;
+};
+```
+Here is how to initialize specific Engine:
+```C++
+OSRM::OSRM(const EngineConfig &config)
+{
+    if (config.use_shared_memory)
+    {
+        if (config.use_mld)
+        {
+            engine = std::make_unique<Engine<MLD, SharedDataFacade>>();
+        }
+        //...
+    }
+    //...
+}
+
+std::unique_ptr<EngineInterface> engine;
+```
 
 
