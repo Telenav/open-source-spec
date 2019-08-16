@@ -7,6 +7,8 @@
 
 struct CH {};
 struct MLD {};
+struct Request {};
+struct Response { int r; };
 
 class BaseDataFacadeInterface
 {
@@ -96,10 +98,12 @@ public:
     ShortestPath(RoutingData<CH> &data) : data(data) {};
 
     template<template <typename A> class FacadeT>
-    int operator()(FacadeT<CH> &facade)
+    Response operator()(FacadeT<CH> &facade, const Request& r)
     {
-        data.some_data += 1;
-        return data.some_data;
+        Response result;
+        result.r += facade.getCHData1();
+        result.r += facade.getData1();
+        return result;
     }
 
     RoutingData<CH> &data;
@@ -112,10 +116,10 @@ public:
     DistanceTable(RoutingData<CH> &data) : data(data) {};
 
     template<template <typename A> class FacadeT>
-    int operator()(FacadeT<CH> &facade)
+    Response operator()(FacadeT<CH> &facade, const Request& r)
     {
-        data.some_data += 5;
-        return data.some_data;
+        Response result;
+        return result;
     }
 
     RoutingData<CH> &data;
@@ -130,10 +134,12 @@ public:
     ShortestPath(RoutingData<MLD> &data) : data(data) {};
 
     template<template <typename A> class FacadeT>
-    int operator()(FacadeT<MLD> &facade)
+    Response operator()(FacadeT<MLD> &facade, const Request& r)
     {
-        data.some_data += 1;
-        return data.some_data;
+        Response result;
+        result.r += facade.getMLDData2();
+        result.r += facade.getData2();
+        return result;
     }
 
     RoutingData<MLD> &data;
@@ -146,10 +152,11 @@ public:
     DistanceTable(RoutingData<MLD> &data) : data(data) {};
 
     template<template <typename A> class FacadeT>
-    int operator()(FacadeT<MLD> &facade)
+    Response operator()(FacadeT<MLD> &facade, const Request& r)
     {
         throw std::runtime_error("Not implemented");
-        return 0;
+        Response result;
+        return result;
     }
 
     RoutingData<MLD> &data;
@@ -167,9 +174,9 @@ public:
     }
 
     template<template <typename A> class FacadeT>
-    void HandleRequest(std::shared_ptr<FacadeT<AlgorithmT>> facade, int &result)
+    Response HandleRequest(std::shared_ptr<FacadeT<AlgorithmT>> facade, const Request &r)
     {
-        result = shortest_path(*facade);
+        return shortest_path(*facade, r);
     }
 
     RoutingData<AlgorithmT> data;
@@ -186,9 +193,9 @@ public:
     }
 
     template<template <typename A> class FacadeT>
-    void HandleRequest(std::shared_ptr<FacadeT<AlgorithmT>> facade, int &result)
+    Response HandleRequest(std::shared_ptr<FacadeT<AlgorithmT>> facade, const Request &r)
     {
-        result = distance_table(*facade);
+        return distance_table(*facade, r);
     }
 
     RoutingData<AlgorithmT> data;
@@ -200,22 +207,22 @@ public:
 class EngineInterface
 {
 public:
-    virtual void Route(int &ret) = 0;
-    virtual void Table(int &ret) = 0;
+    virtual Response Route(const Request &ret) = 0;
+    virtual Response Table(const Request &ret) = 0;
 };
 
 template<typename AlgorithmT, template <typename A> class FacadeT>
 class Engine : public EngineInterface
 {
 public:
-    void Route(int &ret) final override
+    Response Route(const Request &ret) final override
     {
-        route_plugin.HandleRequest(facade, ret);
+        return route_plugin.HandleRequest(facade, ret);
     }
 
-    void Table(int &ret) final override
+    Response Table(const Request &ret) final override
     {
-        table_plugin.HandleRequest(facade, ret);
+        return table_plugin.HandleRequest(facade, ret);
     }
 
 private:
@@ -237,8 +244,8 @@ class OSRM
 public:
     OSRM(const EngineConfig &config);
 
-    void Route(int &ret);
-    void Table(int &ret);
+    Response Route(const Request &ret);
+    Response Table(const Request &ret);
 
 private:
     std::unique_ptr<EngineInterface> engine;
@@ -266,14 +273,14 @@ OSRM::OSRM(const EngineConfig &config)
     }
 }
 
-void OSRM::Route(int &ret)
+Response OSRM::Route(const Request &ret)
 {
-    engine->Route(ret);
+    return engine->Route(ret);
 }
 
-void OSRM::Table(int &ret)
+Response OSRM::Table(const Request &ret)
 {
-    engine->Table(ret);
+    return engine->Table(ret);
 }
 
 // -----------------------------------------------------------------------------
@@ -283,14 +290,14 @@ int main(int argc, char** argv)
     OSRM mld_osrm { EngineConfig{true, true} };
     OSRM ch_osrm { EngineConfig{true, false} };
 
-    int mld_ret;
-    mld_osrm.Route(mld_ret);
+    Request mld_ret;
+    Response mld_result = mld_osrm.Route(mld_ret);
 
-    int ch_ret;
-    ch_osrm.Route(ch_ret);
+    Request ch_ret;
+    Response ch_result = ch_osrm.Route(ch_ret);
 
-    std::cout << "CH: " << ch_ret << std::endl;
-    std::cout << "MLD: " << mld_ret << std::endl;
+    std::cout << "CH: " << ch_result.r << std::endl;
+    std::cout << "MLD: " << mld_result.r << std::endl;
 
     return EXIT_SUCCESS;
 }
