@@ -1,4 +1,11 @@
-# Abstract version of OSRM Facade
+
+- [Simple version of OSRM Facade](#simple-version-of-osrm-facade)
+  - [Why need facade](#why-need-facade)
+  - [A sample case based on inheritance](#a-sample-case-based-on-inheritance)
+  - [A sample case based on template](#a-sample-case-based-on-template)
+
+
+# Simple version of OSRM Facade
 
 ## Why need facade
 OSRM routing engine has two kind of requirements:
@@ -7,7 +14,7 @@ OSRM routing engine has two kind of requirements:
 
 Facade is the layer provides data access interfaces to support different algorithm(routing, table, map matching) achieve their goal.    
 
-## A simple case based on inheritance
+## A sample case based on inheritance
 
 Suppose we need to implement a class to provide routing service
 
@@ -161,7 +168,7 @@ public:
 Those facade will be created in related engines and finally passing to algorithm.  For more information, you could go to [here](../references/files/test_inheritance.cpp).
 
 
-## A simple case based on template
+## A sample case based on template
 The upper version could help you easily understand how OSRM stores data, but in current version, OSRM implements them by C++ template.  You could find related sample code [here](../references/files/test_template.cpp).  
 
 For algorithm data facade:
