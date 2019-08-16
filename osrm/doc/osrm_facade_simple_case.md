@@ -2,10 +2,10 @@
 
 ## Why need facade
 OSRM routing engine has two kind of requirements:
-- Use different routing algorithm to calculate route, like CH, CRP
-- Support different strategy to load data, such as load all data into memory, used mmap to load, use shared memory to load  
+- Support different routing algorithm to calculate route, like CH, CRP
+- Support different strategy to load data, such as load all data into memory, use mmap to load, use shared memory to load  
 
-Facade is the layer provides interfaces to support different algorithm(routing, table, map matching) achieve their goal.    
+Facade is the layer provides data access interfaces to support different algorithm(routing, table, map matching) achieve their goal.    
 
 ## A simple case based on inheritance
 
@@ -249,7 +249,7 @@ Here is the implementation of Algorithm:
         return result;
     }
 ```
-Here is the initialization of facade
+Please pay attention to facade defined below:
 ```C++
 template<typename AlgorithmT, template <typename A> class FacadeT>
 class Engine : public EngineInterface
