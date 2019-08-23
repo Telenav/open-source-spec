@@ -231,7 +231,7 @@ private:
     std::shared_ptr<FacadeT<AlgorithmT>> facade;
 };
 
-// ------------------------- Public (pre 6) ------------------------------------
+// ------------------------- Public  -------------------------------------------
 
 struct EngineConfig
 {
@@ -269,7 +269,7 @@ OSRM::OSRM(const EngineConfig &config)
     }
     else
     {
-        throw std::runtime_error("Not implemeted");
+        throw std::runtime_error("Not implemented");
     }
 }
 
