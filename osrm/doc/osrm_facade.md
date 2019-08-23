@@ -58,7 +58,7 @@ For algorithm part, OSRM choose template specialization for the implementation. 
 
 In datafacade.hpp, you could find how they provide types for external usage:  
 
-<img src="../references/pictures/facade_datafacade_interface.png" alt="facade_datafacade_interface.png" width="600"/>
+<img src="../references/pictures/facade_datafacade_interface.png" alt="facade_datafacade_interface.png" width="800"/>
 
 
 For more information of interfaces' usage, you could come to this page:  
@@ -110,7 +110,7 @@ Inside [class Engine](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8c
 
 Class diagram
 
-<img src="../references/pictures/facade_init.png" alt="facade_init.png.png" width="600"/>
+<img src="../references/pictures/facade_init.png" alt="facade_init.png.png" width="800"/>
 
 
 Sequence diagram
