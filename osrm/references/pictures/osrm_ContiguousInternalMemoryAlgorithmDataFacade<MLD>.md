@@ -17,21 +17,21 @@
 
 - GetMaxBorderNodeID
 
-## ByEdgeId
+## QueryByEdgeId
 
 - GetTarget
 
 - GetEdgeData
 
-## ByLevel+NodeId
+## QueryByLevel+NodeId
 
 - GetBorderEdgeRange
 
-## ByNodeId+NodeId
+## QueryByNodeId+NodeId
 
 - FindEdge
 
-## ByNodeId
+## QueryByNodeId
 
 - GetOutDegree
 

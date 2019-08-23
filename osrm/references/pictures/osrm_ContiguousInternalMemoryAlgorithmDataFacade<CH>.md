@@ -1,7 +1,7 @@
 # ContiguousInternalMemoryAlgorithmDataFacade<CH>
 
 
-## ByNodeId+NodeId
+## QueryByNodeId+NodeId
 
 - FindEdgeInEitherDirection
 
@@ -11,13 +11,13 @@
 
 - FindSmallestEdge
 
-## ByEdgeId
+## QueryByEdgeId
 
 - GetTarget
 
 - GetEdgeData
 
-## ByNodeId
+## QueryByNodeId
 
 - GetOutDegree
 
