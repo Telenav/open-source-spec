@@ -1,3 +1,10 @@
+<!-- TOC -->
+- [OSRM facade](#osrm-facade)
+  - [Purpose](#purpose)
+  - [Interfaces](#interfaces)
+  - [Class hierarchy](#class-hierarchy)
+  - [Initialization](#initialization)
+
 # OSRM facade
 
 A [Facade](https://www.tutorialspoint.com/design_pattern/facade_pattern.htm) is an object that provides a simplified interface to a larger body to use.  In OSRM, facade provide interfaces to upper layer and hide implementation details of data.  
@@ -45,7 +52,10 @@ void relaxOutgoingEdges(const DataFacade<Algorithm> &facade,
 
 ```
 
-## Interfaces
+## [Interfaces](./osrm_facade_interface.md)
+
+
+## Class hierarchy
 
 BaseDataFacade defines the interface to retrieve basic information, and ContiguousInternalMemoryDataFacadeBase implements the interfaces.  
 
