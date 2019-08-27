@@ -1,0 +1,78 @@
+%% Call below command to convert .mmd to .png
+%%  Adjust -w or -H if necessary
+%% mmdc -p puppeteer-config.json -i osrm-customize_startup_and_process_callgraph.mmd -o osrm-customize_startup_and_process_callgraph.mmd.png -w 3840 -H 2160
+
+graph TD
+
+Title[<u>osrm-customize startup and process Call Graph</u>]
+Title-->Start
+style Title fill:#FFF,stroke:#FFF
+linkStyle 0 stroke:#FFF,stroke-width:0;
+
+Start("Start") --> Main
+
+Main["src/tools/customize.cpp: main()"] -. call .-> parseArguments["src/tools/customize.cpp: parseArguments()"]
+
+subgraph Main Function Flow Chart
+    parseArguments --> osrm_customize["src/customize/customizer.cpp: Customizer::Run()<p></p>    - Runs customize process"]
+end
+
+osrm_customize -. call .-> readPartition["include/partitioner/files.hpp: partitioner::files::readPartition() <p></p> - read multi-level partition from `.osrm.partition`"]
+
+subgraph osrm customize Flow Chart
+
+readPartition --> LoadAndUpdateEdgeExpandedGraph["src/customize/customizer.cpp: LoadAndUpdateEdgeExpandedGraph() <p></p> - load graph <p></p>- update speeds/weights/durations/penalities in the graph if passed in speed_csv/turn_penalites_csv"]
+LoadAndUpdateEdgeExpandedGraph --> readCells["include/partitioner/files.hpp: partitioner::files::readCells() <p></p> - read cells from `.osrm.cells`"]
+readCells --> readNodeData["include/extractor/files.hpp: extractor::files::readNodeData() <p></p> - read EdgeBasedNode data from `.osrm.ebg_nodes`"]
+readNodeData --> readProfileProperties["include/extractor/files.hpp: extractor::files::readProfileProperties() <p></p> - read profile properties from `.osrm.properties`"]
+readProfileProperties --> customizeFilteredMetrics["src/customize/customizer.cpp: customizeFilteredMetrics() <p></p> - customize metrics for cells"]
+customizeFilteredMetrics --> writeCellMetrics["include/customizer/files.hpp: files::writeCellMetrics() <p></p> - write customized cell metrics to file `.osrm.cell_metrics`"]
+writeCellMetrics --> writeGraph["include/customizer/files.hpp: customizer::files::writeGraph() <p></p> - write multi-level edge based graph to file `.osrm.mldgr`"]
+end
+
+
+subgraph LoadAndUpdateEdgeExpandedGraph Flow Chart
+
+LoadAndUpdateEdgeExpandedGraph -. call .-> Updater_LoadAndUpdateEdgeExpandedGraph["src/updater/updater.cpp: Updater::LoadAndUpdateEdgeExpandedGraph() <p></p>"]
+Updater_LoadAndUpdateEdgeExpandedGraph --> readEdgeBasedNodeDistances["include/extractor/files.hpp: extractor::files::readEdgeBasedNodeDistances() <p></p> - read edge based node distances from `.osrm.enw`"]
+readEdgeBasedNodeDistances --> splitBidirectionalEdges["include/partitioner/edge_based_graph_reader.hpp: partitioner::splitBidirectionalEdges() <p></p> - Bidirectional (s,t) to (s,t) and (t,s) "]
+splitBidirectionalEdges --> prepareEdgesForUsageInGraph["include/partitioner/edge_based_graph_reader.hpp: partitioner::prepareEdgesForUsageInGraph() <p></p>"]
+prepareEdgesForUsageInGraph --> ConstructMultiLevelEdgeBasedGraph["include/partitioner/multi_level_graph.hpp: partitioner::MultiLevelEdgeBasedGraph()<p></p>"]
+end
+
+Updater_LoadAndUpdateEdgeExpandedGraph -. call .-> readEdgeBasedNodeWeightsDurations["include/extractor/files.hpp: extractor::files::readEdgeBasedNodeWeightsDurations() <p></p> - read edge based node weights and duration from `.osrm.enw`"]
+
+
+subgraph Updater-LoadAndUpdateEdgeExpandedGraph Flow Chart
+
+readEdgeBasedNodeWeightsDurations --> readEdgeBasedGraph["include/extractor/files.hpp: extractor::files::readEdgeBasedGraph() <p></p> - read edge based graph from `.osrm.ebg`"]
+readEdgeBasedGraph --> readNodes["include/extractor/files.hpp: extractor::files::readNodes() <p></p> - read original nodes from `.osrm.nbg_nodes`"]
+readNodes --> parallelReadSomeData["parallel read data from <p></p> - `.osrm.geometry` <p></p>- `.osrm.ebg_nodes` <p></p>- `.osrm.turn_weight_penalties`<p></p>- `.osrm.turn_duration_penalties`<p></p>- `.osrm.properties`"]
+parallelReadSomeData --> readConditionalRestrictions["include/extractor/files.hpp: extractor::files::readConditionalRestrictions() <p></p> - read conditional restrictions from `.osrm.restrictions`"]
+readConditionalRestrictions --> readSegmentValues["src/updater/csv_source.cpp: csv::readSegmentValues() <p></p> - read speeds from csv file"]
+readSegmentValues --> updateSegmentData["src/updater/updater.cpp: updateSegmentData() <p></p> - update new speeds/weigths/durations to segments"]
+updateSegmentData --> writeSegmentData["include/extractor/files.hpp: extractor::files::writeSegmentData() - save out the updated compressed geometries"]
+writeSegmentData --> readTurnValues["src/updater/csv_source.cpp: csv::readTurnValues() <p></p> - read turn penalities from csv file"]
+readTurnValues --> updateTurnPenalties["src/updater/updater.cpp: updateTurnPenalties() <p></p> - update new turn penalities"]
+updateTurnPenalties --> updateConditionalTurns["src/updater/updater.cpp: updateConditionalTurns() <p></p> - update for conditional turns"]
+updateConditionalTurns --> parallel_compute_new_weight_and_duration["compute_new_weight_and_duration() by parallel_for"]
+parallel_compute_new_weight_and_duration --> parallel_update_edge["update_edge() weights/durations by parallel_for"]
+parallel_update_edge --> parallelWriteTurnData["parallel write turn weight/duration penalities to <p></p>- `.osrm.turn_weight_penalties` <p></p>- `.osrm.turn_duration_penalties`"]
+end
+
+writeGraph --> End("End")
+
+
+style customizeFilteredMetrics fill:#f9f,stroke: 5, 5
+
+style readSegmentValues fill:#3CB371,stroke: 5, 5
+style updateSegmentData fill:#3CB371,stroke: 5, 5
+style readTurnValues fill:#3CB371,stroke: 5, 5
+style updateTurnPenalties fill:#3CB371,stroke: 5, 5
+
+subgraph 
+commentPink["execute customize"] 
+commentGreen["read/update from csv related"]
+style commentPink fill:#f9f,stroke:#FFF
+style commentGreen fill:#3CB371,stroke:#FFF
+end
