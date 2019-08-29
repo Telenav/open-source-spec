@@ -25,6 +25,7 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 - [osrm-routed Startup Call Graph](./graph/osrm-routed_startup_callgraph.mmd.png)
 - [osrm-routed Route Call Graph](./graph/osrm-routed_route_callgraph.mmd.png)
 - [osrm-extract Startup and Process Call Graph](./graph/osrm-extract_startup_and_process_callgraph.mmd.png)
+- [osrm-customize Startup and Process Call Graph](./graph/osrm-customize_startup_and_process_callgraph.mmd.png)
 - [ScriptingEnvironmentLua Initialization Call Graph](./graph/scripting_environment_lua_initialization_call_graph.mmd.png)
 - [ViaRoutePlugin::HandleRequest Flow Chart](./graph/viaroute_handlerequest_flowchart.mmd.png)
 - [TablePlugin::HandleRequest Flow Chart](./graph/table_handlerequest_flowchart.mmd.png)
