@@ -1,3 +1,26 @@
+<!-- TOC -->
+- [Map Matching Basic](#map-matching-basic)
+  - [What is map matching](#what-is-map-matching)
+  - [Different type of map matching](#different-type-of-map-matching)
+    - [Onboard map matching](#onboard-map-matching)
+    - [Offboard map matching](#offboard-map-matching)
+  - [What's the challenge of map matching](#whats-the-challenge-of-map-matching)
+  - [Why map matching is useful](#why-map-matching-is-useful)
+  - [How to map matching](#how-to-map-matching)
+    - [Data cleaning](#data-cleaning)
+      - [Noise point](#noise-point)
+      - [Dense points](#dense-points)
+      - [Start, end and stop](#start-end-and-stop)
+    - [Hidden markov map matching](#hidden-markov-map-matching)
+      - [Why Markov-chain helps](#why-markov-chain-helps)
+      - [Emission probability](#emission-probability)
+      - [Transition probability](#transition-probability)
+      - [Viterbi algorithm](#viterbi-algorithm)
+      - [Confidence level](#confidence-level)
+    - [Experience](#experience)
+  - [More Info](#more-info)
+  - [Reference](#reference)
+
 # Map Matching Basic
 
 ## What is map matching
@@ -135,6 +158,10 @@ If you use too small value for gps_precision, you might lose some part of your r
 
 
 
+## More Info
+- [OSRM MapMatching](../../osrm/doc/osrm_mapmatching.md)
+- [Valhalla MapMatching](../../valhalla/doc/valhalla-mapmatching.md)
+- [MapMatching discussion on 11202018](../../valhalla/resource/presentations/valhalla_mm_11202018.pptx)
 
 
 ## Reference
