@@ -169,4 +169,5 @@ extractor::files::readNodes(config.GetPath(".osrm.nbg_nodes"), coordinates, osm_
 auto original_node_id = osm_node_ids[osrm_node_id];
 
 ```
+The type of original_node_id is [`OSMNodeID`](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/include/util/typedefs.hpp#L52), the ['__value'](https://github.com/Telenav/osrm-backend/blob/0eb269131342197540357b9591c53fc8dd482b8d/include/util/alias.hpp#L44) inside which records the real PBF node id.
 
