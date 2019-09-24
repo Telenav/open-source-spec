@@ -1,4 +1,5 @@
 - [OSRM Customization](#osrm-customization)
+  - [OSRM Logic](#osrm-logic)
     - [Case 1](#case-1)
         - [Case description](#case-description)
         - [Graph construction](#graph-construction)
@@ -7,12 +8,15 @@
         - [Case description](#case-description-1)
         - [Graph construction](#graph-construction-1)
         - [Metric](#metric-1)
+  - [Useful information](#useful-information)
 
 # OSRM Customization
 
 Customize is the step to apply real time cost for the graph.  In OSRM, customization means update live traffic to each of graph partitions and then calculate cost between each of entry/exists node pairs.  Real time route query will dramatically be speed up due to those processing.  For more backgrounds, you could go to [CRP](../../routing_basic/doc/crp.md) page.
 
-I will use two case from [OSRM's unit test](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/unit_tests/customizer/cell_customization.cpp) to describe the terms and how customize works.
+If you want to know how OSRM customization works, you could start from [OSRM's unit test](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/unit_tests/customizer/cell_customization.cpp), [Case 1](#case-1) and [Case 2](#case-2) describe the terms and how customize works.
+
+## OSRM Logic
 
 
 ### [Case 1](https://github.com/Project-OSRM/osrm-backend/blob/9234b2ae76bdbbb91cbb51142bfc0ee1252c4abd/unit_tests/customizer/cell_customization.cpp#L65)
@@ -136,3 +140,14 @@ At level 2, for cell_2_0, there are two destination nodes 5 and 7
     CHECK_EQUAL_RANGE(cell_2_0.GetOutWeight(3), 3, 3);
 ```
 No result for level 3.
+
+## Useful information
+- In OSRM, you could use following command load additional speed file
+```
+./osrm-customize na.osrm --incremental=true --segment-speed-file=speed.csv
+```
+segment-speed-file defines updated speed and finally be used for graph weight.  Please make sure using original node id in speed file.
+```
+340176940001101,96137113102,10
+96137113102,340399910001101,18
+``` 
