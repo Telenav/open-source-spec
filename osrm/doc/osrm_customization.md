@@ -146,8 +146,10 @@ No result for level 3.
 ```
 ./osrm-customize na.osrm --incremental=true --segment-speed-file=speed.csv
 ```
-segment-speed-file defines updated speed and finally be used for graph weight.  Please make sure using original node id in speed file.
+segment-speed-file defines updated speed and finally be used for graph weight.  Please make sure using **original node id** in speed file.
 ```
 340176940001101,96137113102,10
 96137113102,340399910001101,18
 ``` 
+- In OSRM, update segment weight happened inside function `Updater::LoadAndUpdateEdgeExpandedGraph` and code is [here](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/src/updater/updater.cpp#L608).  It will first calling [`csv::readSegmentValues`](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/src/updater/csv_source.cpp#L34:20) to load user defined segment-speed-file into [`SegmentLookupTable`](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/include/updater/source.hpp#L89), which contains a [sorted-vector](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/include/updater/source.hpp#L27) and later could be used for [query](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/include/updater/source.hpp#L17) by given {node_id_from, node_id_to}, you could find sample code [here](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/src/updater/updater.cpp#L246)
+
