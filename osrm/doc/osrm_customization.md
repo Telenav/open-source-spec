@@ -153,3 +153,20 @@ segment-speed-file defines updated speed and finally be used for graph weight.  
 ``` 
 - In OSRM, update segment weight happened inside function `Updater::LoadAndUpdateEdgeExpandedGraph` and code is [here](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/src/updater/updater.cpp#L608).  It will first calling [`csv::readSegmentValues`](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/src/updater/csv_source.cpp#L34:20) to load user defined segment-speed-file into [`SegmentLookupTable`](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/include/updater/source.hpp#L89), which contains a [sorted-vector](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/include/updater/source.hpp#L27) and later could be used for [query](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/include/updater/source.hpp#L17) by given {node_id_from, node_id_to}, you could find sample code [here](https://github.com/Telenav/osrm-backend/blob/951af0c245da0155363535415a6d73cb225d5864/src/updater/updater.cpp#L246)
 
+- About OSRM node ID and PBF node ID.  PBF node ID is a unique ID for each individual node in OSM or other professional data.  They always have large integer value like '340399910001101'.  OSRM node ID is an array index, you could treat it as a mapping from original PBF ID to an array, based on processing sequence during extract.
+```
+OSRM ID, PBF ID
+0, 340399910001101
+1, 96137113102
+2, 39343311001101
+...
+``` 
+In OSRM graph, for upper user, it could only have the view of OSRM node id, to convert them back to PBF ID, you could use following code
+```C++
+extractor::PackedOSMIDs osm_node_ids;
+extractor::files::readNodes(config.GetPath(".osrm.nbg_nodes"), coordinates, osm_node_ids);
+
+auto original_node_id = osm_node_ids[osrm_node_id];
+
+```
+
