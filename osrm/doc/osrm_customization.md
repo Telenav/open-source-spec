@@ -17,7 +17,7 @@ Customize is the step to apply real time cost for the graph.  In OSRM, customiza
 If you want to know how OSRM customization works, you could start from [OSRM's unit test](https://github.com/Project-OSRM/osrm-backend/blob/v5.20.0/unit_tests/customizer/cell_customization.cpp), [Case 1](#case-1) and [Case 2](#case-2) describe the terms and how customize works.
 
 ## OSRM Logic
-
+<img src="../references/pictures/osrm_customization_old.png" alt="osrm_customization_old.png" width="800"/>
 
 ### [Case 1](https://github.com/Project-OSRM/osrm-backend/blob/9234b2ae76bdbbb91cbb51142bfc0ee1252c4abd/unit_tests/customizer/cell_customization.cpp#L65)
 
