@@ -19,6 +19,9 @@ If you want to know how OSRM customization works, you could start from [OSRM's u
 ## OSRM Logic
 <img src="../references/pictures/osrm_customization_old.png" alt="osrm_customization_old.png" width="800"/>
 
+See more details in [osrm-customize Startup and Process Call Graph](../graph/osrm-customize_startup_and_process_callgraph.mmd.png).     
+
+
 ### [Case 1](https://github.com/Project-OSRM/osrm-backend/blob/9234b2ae76bdbbb91cbb51142bfc0ee1252c4abd/unit_tests/customizer/cell_customization.cpp#L65)
 
 ##### Case description
