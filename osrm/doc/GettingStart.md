@@ -51,7 +51,10 @@ Refer to below links for other dependencies and build steps:
 The current default build steps on MacOSX will not generate Xcode project. Also, try to generate Xcode project by `cmake -G Xcode` command can not work(see the still opened issue [How to create Xcode project of osrm-backend on mac](https://github.com/Project-OSRM/osrm-backend/issues/2409)).      
 Fortunately @springmeyer have found the reason and give a temp workaround for us(please also refer to the answer from @springmeyer in [How to create Xcode project of osrm-backend on mac](https://github.com/Project-OSRM/osrm-backend/issues/2409)):   
 1. Create an empty `src/dummpy.cpp`   
-2. Apply this patch    
+2. Apply this patch
+1) cd src/
+2) make a file with below content that save to workaround.dff
+3) git apply workaround.dff
 ```diff
 diff --git a/CMakeLists.txt b/CMakeLists.txt    
 index e1767b961..f52f3918e 100644    
@@ -73,12 +76,24 @@ index e1767b961..f52f3918e 100644
  if(ENABLE_GOLD_LINKER)         
      execute_process(COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl,--version ERROR_QUIET OUTPUT_VARIABLE LD_VERSION)      
 ```
-3.  Then this works:   
+3.  Then this works: 
+```
+Dependency (for mac)
+brew install cmake (brew upgrade cmake, if it's already installed)
+brew install boost (> 1.50)
+```
 ```
 mkdir build
 cd build
 cmake .. -G Xcode
 cmake --build .
+open build/OSRM.xcodeproj
+```
+If Intel TBB NOT found, then build cmake with -DENABLE_MASON=On which should use TBB from mason
+```
+mkdir build
+cd build
+cmake ../ -G Xcode -DENABLE_MASON=ON -DBUILD_TOOLS=1
 open build/OSRM.xcodeproj
 ```
 
