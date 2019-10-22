@@ -1,6 +1,19 @@
 - [Example code from OSRM](#example-code-from-osrm)
   - [std::forward](#stdforward)
-
+  - [Algorithm](#algorithm)
+    - [sorting](#sorting)
+      - [sort](#sort)
+      - [unique](#unique)
+      - [nth_element](#nthelement)
+    - [Partitioning](#partitioning)
+      - [rotate](#rotate)
+      - [[shuffle]](#shuffle)
+  - [<numeric>](#numeric)
+    - [fill](#fill)
+    - [accumulate](#accumulate)
+    - [adjacent_difference](#adjacentdifference)
+    - [partial_sum](#partialsum)
+    - [inner_product](#innerproduct)
 
 # Example code from OSRM
 
@@ -82,6 +95,122 @@ He also have constructor to forward all information passed to him to his parent 
 Here I wrote some simple could to experiment this part: cpp.sh/8kv3r
 
 Here is where [MatchParameters is constructed](https://github.com/Telenav/osrm-backend/blob/ce5120f8c1f752c51c931b1ce193809a7aa94749/include/nodejs/node_osrm_support.hpp#L1418).  OSRM create a MatchParameters without any parameters, and then directly construct its members. 
+
+
+
+
+## Algorithm
+
+### sorting
+
+#### sort
+
+```C++
+//RandIt first, RandIt last
+std::sort(first, last, [](auto lhs, auto rhs) { return lhs.node < rhs.node; });
+```
+
+#### [unique](https://en.cppreference.com/w/cpp/algorithm/unique)
+
+```
+// [Perry] unique should pair with sort
+std::unique(first, last, [](auto lhs, auto rhs) { return lhs.node == rhs.node; }
+```
+
+
+#### nth_element
+
+Important example in [reorderFirstLast](https://github.com/Telenav/osrm-backend/blob/ce5120f8c1f752c51c931b1ce193809a7aa94749/include/partitioner/reorder_first_last.hpp#L26-L27) demo's the usage of std::nth_element
+```C++
+// Reorders the first n elements in the range to satisfy the comparator,
+// and the last n elements to satisfy the comparator with arguments flipped.
+// Note: no guarantees to the element's ordering inside the reordered ranges.
+template <typename RandomIt, typename Comparator>
+void reorderFirstLast(RandomIt first, RandomIt last, std::size_t n, Comparator comp)
+{
+    BOOST_ASSERT_MSG(n <= (last - first) / std::size_t{2}, "overlapping subranges not allowed");
+
+    if (n == 0 || (last - first < 2))
+        return;
+
+    // Reorder first n: guarantees that the predicate holds for the first elements.
+    std::nth_element(first, first + (n - 1), last, comp);
+
+    // Reorder last n: guarantees that the flipped predicate holds for the last k elements.
+    // We reorder from the end backwards up to the end of the already reordered range.
+    // We can not use std::not2, since then e.g. std::less<> would lose its irreflexive
+    // requirements.
+    std::reverse_iterator<RandomIt> rfirst{last}, rlast{first + n};
+
+    const auto flipped = [](auto fn) {
+        return [fn](auto &&lhs, auto &&rhs) {
+            return fn(std::forward<decltype(lhs)>(rhs), std::forward<decltype(rhs)>(lhs));
+        };
+    };
+
+    std::nth_element(rfirst, rfirst + (n - 1), rlast, flipped(comp));
+}
+```
+
+
+
+### Partitioning
+
+#### [rotate](https://en.cppreference.com/w/cpp/algorithm/rotate)
+
+[code example](https://github.com/Telenav/osrm-backend/blob/ce5120f8c1f752c51c931b1ce193809a7aa94749/src/engine/plugins/trip.cpp#L260)
+```C++
+auto desired_start_index = std::find(std::begin(duration_trip), std::end(duration_trip), 0);
+std::rotate(std::begin(duration_trip), desired_start_index, std::end(duration_trip));
+```
+
+#### [shuffle]
+
+[code example](https://github.com/Telenav/osrm-backend/blob/feature/elk-docker-compose/src/benchmarks/packed_vector.cpp#L32-L35)
+```C++
+    std::vector<std::size_t> indices(num_entries);
+    std::iota(indices.begin(), indices.end(), 0);
+    std::mt19937 g(1337);
+    std::shuffle(indices.begin(), indices.end(), g);
+```
+
+## <numeric>
+
+### fill
+
+```C++
+    std::fill(flags.begin() + edges_size - new_edges_size, flags.end(), flag);
+```
+
+
+### accumulate
+
+```C++
+        const auto total_step_count =
+            std::accumulate(legs.begin(), legs.end(), 0, [](const auto &v, const auto &leg) {
+                return v + leg.steps.size();
+            });
+```
+
+### adjacent_difference
+
+```C++
+    std::adjacent_difference(timestamps.begin(), timestamps.end(), sample_times.begin());
+```
+
+
+### partial_sum
+```C++
+    // inplace prefix sum
+    std::partial_sum(turn_lane_offsets.begin(), turn_lane_offsets.end(), turn_lane_offsets.begin());
+```
+
+### inner_product
+
+```C++
+    double primary_sq_sum = std::inner_product(
+        timings_vector.begin(), timings_vector.end(), timings_vector.begin(), 0.0);
+```
 
 
 
