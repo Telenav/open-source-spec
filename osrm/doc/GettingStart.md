@@ -34,68 +34,49 @@ OSRM is designed to run on [OpenStreetMap](https://www.openstreetmap.org/) data.
 There're also a lot of documents on [osrm-backend wiki page](https://github.com/Project-OSRM/osrm-backend/wiki) which are very valuable for a quick view.    
 
 ## Building from Source and Debugging    
-Even OSRM provide docker image to help us build our own OSRM service easier, build and debug the source code will help us to understand the project deeply.    
+Even OSRM provides docker image to help us build our own OSRM service easier, building and debugging the source code can still help us to understand the project deeply.    
 
-### Building   
+### Build 
 Before you start, please     
 - use a Mac    
     - Actually OSRM can be built and run on many platforms, e.g. MacOSX, kinds of Linux, even native Windows (may not work, see [Windows Compilation](https://github.com/Project-OSRM/osrm-backend/wiki/Windows-Compilation)). But for debug the project, it's better to have a Mac with Xcode.    
-- familiar with modern C++ (C++11/14)    
+- get familiar with modern C++ (C++11/14)    
 - install pre-requirements: latest `git, cmake`    
 
-Refer to below links for other dependencies and build steps:    
+Refer to below links for other dependencies and detailed build steps:    
 - [Build from Source](https://github.com/Project-OSRM/osrm-backend#building-from-source)    
 - [Building-OSRM](https://github.com/Project-OSRM/osrm-backend/wiki/Building-OSRM)    
 
 ### Generate Xcode Project    
 The current default build steps on MacOSX will not generate Xcode project. Also, try to generate Xcode project by `cmake -G Xcode` command can not work(see the still opened issue [How to create Xcode project of osrm-backend on mac](https://github.com/Project-OSRM/osrm-backend/issues/2409)).      
 Fortunately @springmeyer have found the reason and give a temp workaround for us(please also refer to the answer from @springmeyer in [How to create Xcode project of osrm-backend on mac](https://github.com/Project-OSRM/osrm-backend/issues/2409)):   
-1. Create an empty `src/dummpy.cpp`   
-2. Apply this patch
-1) cd src/
-2) make a file with below content that save to workaround.dff
-3) git apply workaround.dff
-```diff
-diff --git a/CMakeLists.txt b/CMakeLists.txt    
-index e1767b961..f52f3918e 100644    
---- a/CMakeLists.txt    
-+++ b/CMakeLists.txt    
-@@ -170,11 +170,11 @@ add_executable(osrm-datastore src/tools/store.cpp $<TARGET_OBJECTS:MICROTAR> $<T    
- add_library(osrm src/osrm/osrm.cpp $<TARGET_OBJECTS:ENGINE> $<TARGET_OBJECTS:STORAGE> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)    
- add_library(osrm_contract src/osrm/contractor.cpp $<TARGET_OBJECTS:CONTRACTOR> $<TARGET_OBJECTS:UTIL>)    
- add_library(osrm_extract src/osrm/extractor.cpp $<TARGET_OBJECTS:EXTRACTOR> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)    
--add_library(osrm_guidance $<TARGET_OBJECTS:GUIDANCE> $<TARGET_OBJECTS:UTIL>)    
-+add_library(osrm_guidance $<TARGET_OBJECTS:GUIDANCE> $<TARGET_OBJECTS:UTIL> src/dummy.cpp)    
- add_library(osrm_partition src/osrm/partitioner.cpp $<TARGET_OBJECTS:PARTITIONER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)    
- add_library(osrm_customize src/osrm/customizer.cpp $<TARGET_OBJECTS:CUSTOMIZER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)     
--add_library(osrm_update $<TARGET_OBJECTS:UPDATER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)
--add_library(osrm_store $<TARGET_OBJECTS:STORAGE> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)
-+add_library(osrm_update $<TARGET_OBJECTS:UPDATER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL> src/updater/csv_source.cpp src/updater/updater.cpp)
-+add_library(osrm_store $<TARGET_OBJECTS:STORAGE> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL> src/storage/io_config.cpp src/storage/storage.cpp)
-      
- if(ENABLE_GOLD_LINKER)         
-     execute_process(COMMAND ${CMAKE_C_COMPILER} -fuse-ld=gold -Wl,--version ERROR_QUIET OUTPUT_VARIABLE LD_VERSION)      
-```
-3.  Then this works: 
-```
-Dependency (for mac)
-brew install cmake (brew upgrade cmake, if it's already installed)
-brew install boost (> 1.50)
-```
+1. Go to local cloned `osrm-backend` repository.
+2. `touch src/dummy.cpp`<br>
+3. Apply a patch for CMakeLists.txt.<br>
+3.1 get [patch file](../references/files/enable-xcode-project.diff) and put it in current folder<br>
+3.2 `git apply enable-xcode-project.diff`<br>
+3.3 If the apply fails in the future when the original CMakeLists file has some extra changes, then you could manually add the diffs into it. <br>
+3.4 The idea is simple, somehow the targets `libosrm_store.a` and `libosrm_updater.a` can't be generated correctly, which makes linking can't be finished correctly. So we need to make a workaround to generate the targets.<br>
+4. Then run the following commands: 
 ```
 mkdir build
 cd build
+```
+5. Then you have two choices:
+```
+Build with Mason package manager (Recommended).
+
+cmake ../ -G Xcode -DENABLE_MASON=ON -DBUILD_TOOLS=1
+cmake --build .
+```
+```
+Manually install all the dependencies. (You may need to install some specific one if Mason manager can't install if for you in the first way.)
+
+brew install boost git cmake libzip libstxxl libxml2 lua tbb ccache GDAL (only select what you don't have)
 cmake .. -G Xcode
 cmake --build .
-open build/OSRM.xcodeproj
 ```
-If Intel TBB NOT found, then build cmake with -DENABLE_MASON=On which should use TBB from mason
-```
-mkdir build
-cd build
-cmake ../ -G Xcode -DENABLE_MASON=ON -DBUILD_TOOLS=1
-open build/OSRM.xcodeproj
-```
+6. You will find `OSRM.xcodeproj` under `build` folder.
 
 ### Run and Debug   
 There're several runable binaries, i.e. `osrm-components, osrm-contract, osrm-customize, osrm-datastore, osrm-extract, osrm-io-benchmark, osrm-partition, osrm-routed`, most of them are used for pre-processing map data.    
