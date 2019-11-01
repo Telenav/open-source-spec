@@ -14,8 +14,8 @@ Futures represent the asynchronous result of an already running operation.  Futu
 ### Example 1
 ```C++
 auto f = folly::makeFuture(std::string("first"))
-                    .then([=](folly::Try<std::string>&& t){ return makeFuture(t.value() + " second ");} )
-                    .then([=](folly::Try<std::string>&& t){ return makeFuture(t.value() + " third ");} )
+                    .then([=](folly::Try<std::string>&& t){ return folly::makeFuture(t.value() + " second ");} )
+                    .then([=](folly::Try<std::string>&& t){ return folly::makeFuture(t.value() + " third ");} )
 ```
 
 ### Example 2
@@ -61,5 +61,6 @@ folly::Future<Response> twoStageFanout(std::shared_ptr<Request> request) {
             });
       });
 }
+
 ```
 
