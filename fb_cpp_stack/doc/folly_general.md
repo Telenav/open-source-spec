@@ -19,7 +19,7 @@ auto f = folly::makeFuture(std::string("first"))
 ```
 
 ### Example 2
-
+instegram's example
 
 ### Example 3
 
@@ -63,4 +63,13 @@ folly::Future<Response> twoStageFanout(std::shared_ptr<Request> request) {
 }
 
 ```
+
+## Executers
+
+
+## Fiber
+
+## Coroutine
+
+
 
