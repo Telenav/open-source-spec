@@ -2,14 +2,14 @@
 
 Folly (Facebook Open Source Library) contains a collection of reusable C++ library artifacts developed and used at Facebook.  Its the fundamental of lots of Facebook's open source libraries, such as Fizz/Wangle/MCrouter.
 
-## Start
+## Get started
 Start from [README](https://github.com/facebook/folly/blob/master/README.md) and take a look at folder structure inside /folly can give you a initial opinion about folly.  
 If you are new to C++11, here is an good article about [Learn from Folly source code the new C++11 features](http://www.javadepend.com/Blog/?p=431). 
 Here is presentation from Facebook engineer about folly: Experiences with Facebook's C++ library [video](https://www.youtube.com/watch?v=GDxb21kEthM)
 
-## Future
+## folly::Future
 
-Futures represent the asynchronous result of an already running operation.  Future::then provide a powerful ability to chain callbacks, which std::future doesn't support yet(Until the end of 2019, still `std::experimental::future<T>::then` from cppreference).  Here is a [tech-blog from facebook](https://engineering.fb.com/developer-tools/futures-for-c-11-at-facebook/) describes folly::futures.  Highly recommended.
+Futures represent the asynchronous result of an already running operation.  future->then provide a powerful ability to chain callbacks, which std::future doesn't support yet(Until the end of 2019, still `std::experimental::future<T>::then` from cppreference).  Here is a [tech-blog from facebook](https://engineering.fb.com/developer-tools/futures-for-c-11-at-facebook/) describes folly::futures.  Highly recommended.
 
 ### Example 1
 ```C++
