@@ -72,4 +72,28 @@ Here is the complete code for reference.[todo]
 
 ### Example 3
 
-This example is from Instagram, you could read their tech blog here: [C++ Futures at Instagram](https://instagram-engineering.com/c-futures-at-instagram-9628ff634f49).  You could read [notes about C++ Futures at Instagram](./cpp_futures_instagram_notes.md) for more information.
+This example is from Instagram, you could read their tech blog here: [C++ Futures at Instagram](https://instagram-engineering.com/c-futures-at-instagram-9628ff634f49), then [notes about C++ Futures at Instagram](./cpp_futures_instagram_notes.md) for more information.
+
+## folly::Executors
+folly::Executors works similar as thread pool, it helps to run your concurrent code in a preferment way.  For more information you could go to [here](https://github.com/facebook/folly/blob/master/folly/docs/Executors.md).
+
+```C++
+auto f = someFutureFunction().via(getCPUExecutor()).then(...)
+```
+You could find more useful examples in [via()'s unit test](https://github.com/facebook/folly/blob/master/folly/futures/test/ViaTest.cpp#L64).
+
+## folly::fiber
+[folly::fiber](https://github.com/facebook/folly/tree/master/folly/fibers) is lightweight application thread, you can treat it as golang's goroutine(see [here](https://stackoverflow.com/a/35996436) for difference).
+
+```C++
+fiberManager.addTask([]() {
+  ...
+});
+```
+You could find more useful examples here in [unit test](https://github.com/facebook/folly/blob/05490a16e98b2b7c4857d39b2c2b9d89f33a5b1d/folly/fibers/test/FibersTestApp.cpp#L27).
+
+
+## folly::experimental::coro
+[folly::coro](https://github.com/facebook/folly/tree/master/folly/experimental/coro) is a developer-friendly asynchronous C++ framework based on [Coroutines TS](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1477r0.pdf).  For more information about coroutine, you could go to [cpp_coroutine_notes](./cpp_coroutine_notes.md).
+
+
