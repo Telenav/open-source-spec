@@ -10,7 +10,7 @@
 - Most of those source code requires gcc5.1+ and C++14 support.  Which makes them challenge to be used on embedded devices such as QNX.  But if your final release is a ubuntu docker image, which means at cloud side, you could refer to the Build part for a quick star.  
 - Part of our data processing pipeline is based on C++ and running on cloud side, its possible to use folly's future()->then()->then() to chain all the tasks and simplify the logic.  
 - Wangle like C++ version's Netty + Finagle
-- Please do have good reason for why using C++
+- Please do have good reason for why using C++.
 
 ## Build
 
