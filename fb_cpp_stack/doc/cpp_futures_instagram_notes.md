@@ -235,6 +235,9 @@ class Server implements Runnable {
 
 #### Single thread Reactor
 
+
+<img src="../resource/instagram_paper_java_nio_v2.png" alt="instagram_paper_java_nio_v2.png" width="400"/>
+
 ```java
 class Reactor implements Runnable { 
     final Selector selector;
@@ -325,6 +328,8 @@ final class Handler implements Runnable {
 ```
 
 #### Using Thread pool
+<img src="../resource/instagram_paper_java_nio_v3.png" alt="instagram_paper_java_nio_v3.png" width="400"/>
+
 
 ```java
 
@@ -354,6 +359,9 @@ class Handler implements Runnable {
 ```
 
 #### Multiple reactor
+
+
+<img src="../resource/instagram_paper_java_nio_v4.png" alt="instagram_paper_java_nio_v4.png" width="400"/>
 
 ```java
 Selector[] selectors; //a collection of subReactors
