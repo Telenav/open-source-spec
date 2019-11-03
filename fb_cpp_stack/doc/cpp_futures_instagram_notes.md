@@ -201,6 +201,173 @@ The following sequence diagram is an example from paper shows how logging accept
 
 ### Notes from [Scalable IO in Java](http://gee.cs.oswego.edu/dl/cpjslides/nio.pdf)
 
+#### Native version
+`connection per thread`
+
+<img src="../resource/instagram_paper_java_nio_v1.png" alt="instagram_paper_java_nio_v1.png" width="400"/>
+
+```java
+class Server implements Runnable {
+    public void run() {
+        try {
+            ServerSocket ss = new ServerSocket(PORT);
+            while (!Thread.interrupted())
+            new Thread(new Handler(ss.accept())).start(); // connection per thread
+            // or, single-threaded, or a thread pool
+        } catch (IOException ex) { /* ... */ }
+    }
+    
+    static class Handler implements Runnable {
+        final Socket socket;
+        Handler(Socket s) { socket = s; }
+        public void run() {
+            try {
+                byte[] input = new byte[MAX_INPUT];
+                socket.getInputStream().read(input);
+                byte[] output = process(input);
+                socket.getOutputStream().write(output);
+            } catch (IOException ex) { /* ... */ }
+        }       
+        private byte[] process(byte[] cmd) { /* ... */ }
+    }
+}
+```
+
+#### Single thread Reactor
+
+```java
+class Reactor implements Runnable { 
+    final Selector selector;
+    final ServerSocketChannel serverSocket;
+    Reactor(int port) throws IOException { //Reactor initialization
+        selector = Selector.open();
+        serverSocket = ServerSocketChannel.open();
+        serverSocket.socket().bind(new InetSocketAddress(port));
+        serverSocket.configureBlocking(false); // none-blocking
+        SelectionKey sk = serverSocket.register(selector, SelectionKey.OP_ACCEPT); //multi-step,step 1,receve event of OP_ACCEPT
+        sk.attach(new Acceptor()); //attach callback object, Acceptor
+    }
+    
+    public void run() { 
+        try {
+            while (!Thread.interrupted()) {
+                selector.select();
+                Set selected = selector.selectedKeys();
+                Iterator it = selected.iterator();
+                while (it.hasNext())
+                    dispatch((SelectionKey)(it.next()); //Reactor responsible for dispatch coming event
+                selected.clear();
+            }
+        } catch (IOException ex) { /* ... */ }
+    }
+    
+    void dispatch(SelectionKey k) {
+    	Runnable r = (Runnable)(k.attachment()); // execute callback object registered before
+    	if (r != null)
+    	    r.run();
+    }
+    
+    class Acceptor implements Runnable { // inner
+        public void run() {
+            try {
+                SocketChannel c = serverSocket.accept();
+                if (c != null)
+                new Handler(selector, c);
+            }
+            catch(IOException ex) { /* ... */ }
+        }
+    }
+}
+
+final class Handler implements Runnable {
+    final SocketChannel socket;
+    final SelectionKey sk;
+    ByteBuffer input = ByteBuffer.allocate(MAXIN);
+    ByteBuffer output = ByteBuffer.allocate(MAXOUT);
+    static final int READING = 0, SENDING = 1;
+    int state = READING;
+    
+    Handler(Selector sel, SocketChannel c) throws IOException {
+        socket = c; c.configureBlocking(false);
+        // Optionally try first read now
+        sk = socket.register(sel, 0);
+        sk.attach(this); //Register Handler as callback obj将Handler作为callback对象
+        sk.interestOps(SelectionKey.OP_READ); // step 2, receive event of OP_READ
+        sel.wakeup();
+    }
+    boolean inputIsComplete() { /* ... */ }
+    boolean outputIsComplete() { /* ... */ }
+    void process() { /* ... */ }
+    
+    public void run() {
+        try {
+            if (state == READING) read();
+            else if (state == SENDING) send();
+        } catch (IOException ex) { /* ... */ }
+    }
+    
+    void read() throws IOException {
+        socket.read(input);
+        if (inputIsComplete()) {
+            process();
+            state = SENDING;
+            // Normally also do first write now
+            sk.interestOps(SelectionKey.OP_WRITE); //step 3, receive event of OP_WRITE
+        }
+    }
+    void send() throws IOException {
+        socket.write(output);
+        if (outputIsComplete()) sk.cancel(); //when write is done, close select key
+    }
+}
+
+
+```
+
+#### Using Thread pool
+
+```java
+
+class Handler implements Runnable {
+    // uses util.concurrent thread pool
+    static PooledExecutor pool = new PooledExecutor(...);
+    static final int PROCESSING = 3;
+    // ...
+    synchronized void read() { // ...
+        socket.read(input);
+        if (inputIsComplete()) {
+            state = PROCESSING;
+            pool.execute(new Processer()); //Using thread pool aync execute 
+        }
+    }
+    
+    synchronized void processAndHandOff() {
+        process();
+        state = SENDING; // or rebind attachment
+        sk.interest(SelectionKey.OP_WRITE); 
+    }
+    
+    class Processer implements Runnable {
+        public void run() { processAndHandOff(); }
+    }
+}
+```
+
+#### Multiple reactor
+
+```java
+Selector[] selectors; //a collection of subReactors
+int next = 0;
+class Acceptor { // ...
+    public synchronized void run() { ...
+        Socket connection = serverSocket.accept(); // master selector response for accept
+        if (connection != null)
+            new Handler(selectors[next], connection); //Pick one subReactor responsible for connection
+        if (++next == selectors.length) next = 0;
+    }
+}
+```
+
 
 ## OS support for I/O multiplexing 
 Under Unix/Linux system, I/O multiplexing be abstract as select/poll/epoll funcitons.
