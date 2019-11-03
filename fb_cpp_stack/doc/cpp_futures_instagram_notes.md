@@ -111,7 +111,7 @@ while(true){
 }
 ```
 The following question would be: What's the cost for creating thread(memory: several MB per-thread, system load), could I create un-limit threads and what's the impact for that?  
-There are famous articles for this: [The C10K problem](http://www.kegel.com/c10k.html), [Scalable Network Programming](http://bulk.fefe.de/scalable-networking.pdf), [Fast UNIX Servers](https://nick-black.com/dankwiki/index.php/Fast_UNIX_Servers) and many others.  The short answer for upper questions is, you could not create as many thread as you expected, scheduling will be a trouble when come to thousands level of thread.
+There are famous articles for this: [The C10K problem](http://www.kegel.com/c10k.html), [Scalable Network Programming](http://bulk.fefe.de/scalable-networking.pdf), [Fast UNIX Servers](https://nick-black.com/dankwiki/index.php/Fast_UNIX_Servers) and many others.  The short answer for upper questions is, you could not create as many thread as you expected, it will be a trouble when come to thousands level of thread scheduling:
 
 <img src="../resource/instagram_thread_performance.png" alt="instagram_thread_performance.png" width="400"/>
 
@@ -135,7 +135,7 @@ Send reply
 ```
 We could think about have dedicate module to handle accept(eg, TCP connection), read I/O(eg, from network), process, and then write back/send.  
 
-For accept part, I expect to have a none-blocking, and event driven strategy, which means, I expect system could notify me when there is a event comes and tell me what category the event is.  Then I could use dedicate I/O thread to read data, then submit task into a thread pool for processing and then use dedicate I/O thread to write data.  This is a simple version of Reactor, it focus on abstract a high performance pattern and let user focus on what kind of event I need to deal with and how to deal with that.  For system's notification, such as select/poll/epoll, will be described later and let's focus on Reactor pattern first.
+For accept part, I assume I have a none-blocking, and event driven strategy, which means, I expect system could notify me when there is a event comes and tell me what category the event is.  Then I could use dedicate I/O thread to read data, then submit task into a thread pool for processing and then use dedicate I/O thread to write data.  This is a simple version of Reactor, it focus on abstract a high performance pattern and let user focus on what kind of event they need to deal with and how to deal.  For system's notification, such as select/poll/epoll, will be described later and let's focus on Reactor pattern first.
 
 ## What is reactor
 
