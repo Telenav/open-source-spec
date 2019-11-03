@@ -135,12 +135,22 @@ For accept part, I expect to have a none-blocking, and event driven strategy, wh
 
 From [wiki](https://en.wikipedia.org/wiki/Reactor_pattern)
 ```
-The reactor design pattern is an event handling pattern for handling service requests delivered concurrently by one or more inputs. The service handler then demultiplexes the incoming requests and dispatches them synchronously to associated request handlers.
+The reactor design pattern is an event handling pattern for handling service 
+requests delivered concurrently by one or more inputs. The service handler 
+then demultiplexes the incoming requests and dispatches them synchronously to 
+associated request handlers.
 ```
 
 From [Reactor by Douglas C. Schmidt](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf)
 ```
-The Reactor design pattern handles service requests that are delivered concurrently to an application by one or more clients. Each service in an application may consistent of several methods and is represented by a separate event handler that is responsible for dispatching service-specific requests. Dispatching of event handlers is performed by an initiation dispatcher, which manages the registered event handlers. Demultiplexing of service requests is performed by a synchronous event demultiplexer. Also known as Dispatcher, Notifier
+The Reactor design pattern handles service requests that are delivered 
+concurrently to an application by one or more clients. Each service in an 
+application may consistent of several methods and is represented by a separate
+ event handler that is responsible for dispatching service-specific requests. 
+ Dispatching of event handlers is performed by an initiation dispatcher, which 
+ manages the registered event handlers. Demultiplexing of service requests is 
+ performed by a synchronous event demultiplexer. Also known as Dispatcher, 
+ Notifier
 ```
 
 ## Reactor pattern in detail
@@ -302,7 +312,7 @@ select() and poll() provide basically the same functionality. They only differ i
 select() overwrites the fd_set variables whose pointers are passed in as arguments 2-4, telling it what to wait for. This makes a typical loop having to either have a backup copy of the variables, or even worse, do the loop to populate the bitmasks every time select() is to be called. poll() doesn't destroy the input data, so the same input array can be used over and over.
 poll() handles many file handles, like more than 1024 by default and without any particular work-arounds. Since select() uses bitmasks for file descriptor info with fixed size bitmasks it is much less convenient. On some operating systems like Solaris, you can compile for support with > 1024 file descriptors by changing the FD_SETSIZE define.
 poll offers somewhat more flavours of events to wait for, and to receive, although for most common networked cases they don't add a lot of value
-Different timeout values. poll takes milliseonds, select takes a struct timeval pointer that offers microsecond resolution. In practise however, there probably isn't any difference that will matter.
+Different timeout values. poll takes milliseonds, select takes a struct timeval pointer that offers microsecond resolution. In practice however, there probably isn't any difference that will matter.
 
 select and poll both handle file descriptors in a linear way. The more descriptors you ask them to check, the slower they get. As soon as you go beyond perhaps a hundred file descriptors or so - of course depending on your CPU and hardware - you will start noticing that the mere waiting for file descriptor activity and the following checking which file descriptor that it was, takes a significant time and becomes a bottle neck.
 The select() API with a "max fds" as first argument of course forces a scan over the bitmasks to find the exact file descriptors to check for, which the poll() API avoids. A small win for poll().
