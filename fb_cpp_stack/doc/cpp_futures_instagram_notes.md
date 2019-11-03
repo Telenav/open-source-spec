@@ -1,6 +1,5 @@
 # C++ Futures at Instagram Notes
 
-
 This page records the summary and expansion of Instagram's tech blog: [C++ Futures at Instagram](https://instagram-engineering.com/c-futures-at-instagram-9628ff634f49).  
 
 The following part of this article will first describe the evolution path of Instagram from simple synchronous I/O to none-blocking I/O to future version.  Then describe the common design pattern for supporting this and then lower level operating system support for I/O multiplexing.
@@ -85,6 +84,231 @@ From
 
 To
 
-
-
 <img src="../resource/instagram_future_to_then.png" alt="instagram_future_to_then.png" width="400"/>
+
+
+## Reactor pattern
+
+### Why
+A simple network programming looks like
+```
+while(true){
+   socket = accept();
+   handle(socket)
+}
+```
+Its easy to implement, but it’s a low performance version: if current request is not finished, all following request will be blocked.  We could quickly implement a `connection per thread` version:
+```
+while(true){
+   socket = accept();
+   new thread(socket);
+}
+```
+The following question would be: What's the cost for creating thread(memory: several MB per-thread, system load), could I create un-limit threads and what's the impact for that?  
+There are famous articles for this: [The C10K problem](http://www.kegel.com/c10k.html), [Scalable Network Programming](http://bulk.fefe.de/scalable-networking.pdf), [Fast UNIX Servers](https://nick-black.com/dankwiki/index.php/Fast_UNIX_Servers) and many others.  The short answer for upper questions is, you could not create as many thread as you expected, scheduling will be a trouble when come to thousands level of thread.
+
+<img src="../resource/instagram_thread_performance.png" alt="instagram_thread_performance.png" width="400"/>
+
+
+(picture come form paper of [SEDA: An Architecture for Well-Conditioned, Scalable Internet Services](http://sosp.org/2001/papers/welsh.pdf), Linux 2.6 and later has much stronger scheduler but create threads still be an expensive operation)
+
+To be summary, the big issue for thread-per-connection is:(from [Reactor by Douglas C. Schmidt](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf))
+```
+Efficiency: Threading may lead to poor performance due to context switching, synchronization, and data movement [2];
+Programming simplicity: Threading may require complex concurrency control schemes;
+Portability: Threading is not available on all OS platforms.
+```
+
+Most of I/O operation following the pattern listed below
+```
+Read request
+Decode request
+Process service
+Encode reply
+Send reply
+```
+We could think about have dedicate module to handle accept(eg, TCP connection), read I/O(eg, from network), process, and then write back/send.  
+
+For accept part, I expect to have a none-blocking, and event driven strategy, which means, I expect system could notify me when there is a event comes and tell me what category the event is.  Then I could use dedicate I/O thread to read data, then submit task into a thread pool for processing and then use dedicate I/O thread to write data.  This is a simple version of Reactor, it focus on abstract a high performance pattern and let user focus on what kind of event I need to deal with and how to deal with that.  For system's notification, such as select/poll/epoll, will be described later and let's focus on Reactor pattern first.
+
+## What is reactor
+
+From [wiki](https://en.wikipedia.org/wiki/Reactor_pattern)
+```
+The reactor design pattern is an event handling pattern for handling service requests delivered concurrently by one or more inputs. The service handler then demultiplexes the incoming requests and dispatches them synchronously to associated request handlers.
+```
+
+From [Reactor by Douglas C. Schmidt](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf)
+```
+The Reactor design pattern handles service requests that are delivered concurrently to an application by one or more clients. Each service in an application may consistent of several methods and is represented by a separate event handler that is responsible for dispatching service-specific requests. Dispatching of event handlers is performed by an initiation dispatcher, which manages the registered event handlers. Demultiplexing of service requests is performed by a synchronous event demultiplexer. Also known as Dispatcher, Notifier
+```
+
+## Reactor pattern in detail
+
+### Notes from [Reactor paper](http://www.dre.vanderbilt.edu/~schmidt/PDF/reactor-siemens.pdf)
+
+The paper use a log server as an example: Let's say we have a logging server support our clients to upload their logs via network, for different category of logs we might have different strategy to handle them, such as record to database, print out or show result on console.
+
+<img src="../resource/instagram_paper_reactor_overview.png" alt="instagram_paper_reactor_overview.png" width="400"/>
+
+
+Here is the class diagram from paper:
+
+<img src="../resource/instagram_paper_reactor_class_diagram.png" alt="instagram_paper_reactor_class_diagram.png" width="400"/>
+
+
+- Handle
+   - Identify resources that are managed by an OS.
+   - These resources commonly include network connections, open files, timers, synchronization objects, etc.
+   - Every connection is represented in the server by a socket handle.
+- Synchronous Event Demultiplexer 
+  - Blocks awaiting events to occur on a set of Handles.
+  - It returns when it is possible to initiate an operation on a Handle without blocking.
+  - (select/poll/epoll)
+- Initiation Dispatcher
+  - Defines an interface for registering, removing, and dispatching Event Handlers. Ultimately, the
+  - Synchronous Event Demultiplexer is responsible for waiting until new events occur. When it detects new events, it informs the Initiation
+  - Dispatcher to call back application-specific event handlers.
+- Event Handler
+   - Specifies an interface consisting of a hook method that abstractly represents the dispatching operation for service-specific events.
+- Concrete Event Handler
+  - Implements the hook method, as well as the methods to process these events in an application-specific manner. 
+  - Applications register Concrete Event Handlers with the Initiation Dispatcher to process certain types of events. 
+  - When these events arrive, the Initiation Dispatcher calls back the hook method of the appropriate Concrete Event Handler.
+
+For complete code from paper, you could go to here for reference. [todo]
+
+
+The following sequence diagram is an example from paper shows how logging acceptor triggering logging handler.
+
+<img src="../resource/instagram_paper_reactor_sequence_diagram.png" alt="instagram_paper_reactor_sequence_diagram.png" width="400"/>
+
+- During initialization, InitiationDispatcher is constructed
+- `LoggingAcceptor la(addr);`, in `LoggingAcceptor`'s constructor, will register himself to listen to system's addr and then register the object itself into InitiationDispatcher 
+- Then will come to handle_event loop, system's select() start waiting
+- to be continued
+
+
+### Notes from [Scalable IO in Java](http://gee.cs.oswego.edu/dl/cpjslides/nio.pdf)
+
+
+
+## OS support for I/O multiplexing 
+Under Unix/Linux system, I/O multiplexing be abstract as select/poll/epoll funcitons.
+
+### select
+from: http://man7.org/linux/man-pages/man2/select.2.html
+```
+select() and pselect() allow a program to monitor multiple file
+       descriptors, waiting until one or more of the file descriptors become
+       "ready" for some class of I/O operation (e.g., input possible).  A
+       file descriptor is considered ready if it is possible to perform a
+       corresponding I/O operation (e.g., read(2), or a sufficiently small
+       write(2)) without blocking.
+
+       select() can monitor only file descriptors numbers that are less than
+       FD_SETSIZE; poll(2) does not have this limitation.  See BUGS.
+
+```
+
+### poll
+http://man7.org/linux/man-pages/man2/poll.2.html
+
+### epoll
+
+from: http://man7.org/linux/man-pages/man7/epoll.7.html
+
+```
+       The epoll API performs a similar task to poll(2): monitoring multiple
+       file descriptors to see if I/O is possible on any of them.  The epoll
+       API can be used either as an edge-triggered or a level-triggered
+       interface and scales well to large numbers of watched file
+       descriptors.
+
+       The central concept of the epoll API is the epoll instance, an in-
+       kernel data structure which, from a user-space perspective, can be
+       considered as a container for two lists:
+
+       *   The interest list (sometimes also called the epoll set): the set
+           of file descriptors that the process has registered an interest
+           in monitoring.
+
+       *   The ready list: the set of file descriptors that are "ready" for
+           I/O.  The ready list is a subset of (or, more precisely, a set of
+           references to) the file descriptors in the interest list that is
+           dynamically populated by the kernel as a result of I/O activity
+           on those file descriptors.
+```
+
+One place need pay special attention to is the difference between the following two:
+
+```
+   Level-triggered and edge-triggered
+       The epoll event distribution interface is able to behave both as
+       edge-triggered (ET) and as level-triggered (LT).  The difference
+       between the two mechanisms can be described as follows.  Suppose that
+       this scenario happens:
+
+       1. The file descriptor that represents the read side of a pipe (rfd)
+          is registered on the epoll instance.
+
+       2. A pipe writer writes 2 kB of data on the write side of the pipe.
+
+       3. A call to epoll_wait(2) is done that will return rfd as a ready
+          file descriptor.
+
+       4. The pipe reader reads 1 kB of data from rfd.
+
+       5. A call to epoll_wait(2) is done.
+
+       If the rfd file descriptor has been added to the epoll interface
+       using the EPOLLET (edge-triggered) flag, the call to epoll_wait(2)
+       done in step 5 will probably hang despite the available data still
+       present in the file input buffer; meanwhile the remote peer might be
+       expecting a response based on the data it already sent.  The reason
+       for this is that edge-triggered mode delivers events only when
+       changes occur on the monitored file descriptor.  So, in step 5 the
+       caller might end up waiting for some data that is already present
+       inside the input buffer.  In the above example, an event on rfd will
+       be generated because of the write done in 2 and the event is consumed
+       in 3.  Since the read operation done in 4 does not consume the whole
+       buffer data, the call to epoll_wait(2) done in step 5 might block
+       indefinitely.
+
+       An application that employs the EPOLLET flag should use nonblocking
+       file descriptors to avoid having a blocking read or write starve a
+       task that is handling multiple file descriptors.  The suggested way
+       to use epoll as an edge-triggered (EPOLLET) interface is as follows:
+
+              i   with nonblocking file descriptors; and
+
+              ii  by waiting for an event only after read(2) or write(2)
+                  return EAGAIN.
+
+```
+
+### Difference
+
+
+A typical server might be dealing with, say, 200 connections. It will service every connection that needs to have data written or read and then it will need to wait until there's more work to do. While it's waiting, it needs to be interrupted if data is received on any of those 200 connections.
+With select, the kernel has to add the process to 200 wait lists, one for each connection. To do this, it needs a "thunk" to attach the process to the wait list. When the process finally does wake up, it needs to be removed from all 200 wait lists and all those thunks need to be freed.
+By contrast, with epoll, the epoll socket itself has a wait list. The process needs to be put on only that one wait list using only one thunk. When the process wakes up, it needs to be removed from only one wait list and only one thunk needs to be freed.
+To be clear, with epoll, the epoll socket itself has to be attached to each of those 200 connections. But this is done once, for each connection, when it is accepted in the first place. And this is torn down once, for each connection, when it is removed. By contrast, each call to select that blocks must add the process to every wait queue for every socket being monitored.
+Ironically, with select, the largest cost comes from checking if sockets that have had no activity have had any activity. With epoll, there is no need to check sockets that have had no activity because if they did have activity, they would have informed the epoll socket when that activity happened. In a sense, select polls each socket each time you call select to see if there's any activity while epoll rigs it so that the socket activity itself notifies the process.
+
+
+
+select() and poll() provide basically the same functionality. They only differ in the details:
+
+select() overwrites the fd_set variables whose pointers are passed in as arguments 2-4, telling it what to wait for. This makes a typical loop having to either have a backup copy of the variables, or even worse, do the loop to populate the bitmasks every time select() is to be called. poll() doesn't destroy the input data, so the same input array can be used over and over.
+poll() handles many file handles, like more than 1024 by default and without any particular work-arounds. Since select() uses bitmasks for file descriptor info with fixed size bitmasks it is much less convenient. On some operating systems like Solaris, you can compile for support with > 1024 file descriptors by changing the FD_SETSIZE define.
+poll offers somewhat more flavours of events to wait for, and to receive, although for most common networked cases they don't add a lot of value
+Different timeout values. poll takes milliseonds, select takes a struct timeval pointer that offers microsecond resolution. In practise however, there probably isn't any difference that will matter.
+
+select and poll both handle file descriptors in a linear way. The more descriptors you ask them to check, the slower they get. As soon as you go beyond perhaps a hundred file descriptors or so - of course depending on your CPU and hardware - you will start noticing that the mere waiting for file descriptor activity and the following checking which file descriptor that it was, takes a significant time and becomes a bottle neck.
+The select() API with a "max fds" as first argument of course forces a scan over the bitmasks to find the exact file descriptors to check for, which the poll() API avoids. A small win for poll().
+select() only uses (at maximum) three bits of data per file descriptor, while poll() typically uses 64 bits per file descriptor. In each syscall invoke poll() thus needs to copy a lot more over to kernel space. A small win for select().
+
+
+
+
