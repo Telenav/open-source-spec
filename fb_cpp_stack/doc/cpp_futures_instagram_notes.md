@@ -192,7 +192,6 @@ The following sequence diagram is an example from paper shows how logging accept
 ### Notes from [Scalable IO in Java](http://gee.cs.oswego.edu/dl/cpjslides/nio.pdf)
 
 
-
 ## OS support for I/O multiplexing 
 Under Unix/Linux system, I/O multiplexing be abstract as select/poll/epoll funcitons.
 
@@ -308,6 +307,7 @@ Different timeout values. poll takes milliseonds, select takes a struct timeval 
 select and poll both handle file descriptors in a linear way. The more descriptors you ask them to check, the slower they get. As soon as you go beyond perhaps a hundred file descriptors or so - of course depending on your CPU and hardware - you will start noticing that the mere waiting for file descriptor activity and the following checking which file descriptor that it was, takes a significant time and becomes a bottle neck.
 The select() API with a "max fds" as first argument of course forces a scan over the bitmasks to find the exact file descriptors to check for, which the poll() API avoids. A small win for poll().
 select() only uses (at maximum) three bits of data per file descriptor, while poll() typically uses 64 bits per file descriptor. In each syscall invoke poll() thus needs to copy a lot more over to kernel space. A small win for select().
+
 
 
 
