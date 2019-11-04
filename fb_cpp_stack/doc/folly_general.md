@@ -97,12 +97,4 @@ You could find more useful examples here in [unit test](https://github.com/faceb
 [folly::coro](https://github.com/facebook/folly/tree/master/folly/experimental/coro) is a developer-friendly asynchronous C++ framework based on [Coroutines TS](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2019/p1477r0.pdf).  For more information about coroutine, you could go to [cpp_coroutine_notes](./cpp_coroutine_notes.md).
 
 
-## Executers
-
-
-## Fiber
-
-## Coroutine
-
-
 
