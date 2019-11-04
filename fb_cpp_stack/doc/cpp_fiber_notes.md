@@ -9,7 +9,7 @@ FibersTestApp, the case is coming from folly's unit test: [FibersTestApp](https:
 ```C++
 // [perry] SimpleLoopController() works similar as while(true)
 void loop() {
-    // [perry] When there are certain number of elements in pendingRequests then start fullfill data
+    // [perry] When there are certain number of elements in pendingRequests then start fulfill data
     //         each round pop 1 request 
     if (pendingRequests.size() == maxOutstanding || toSend == 0) {
       // [perry] full fill data from pendingRequests
@@ -32,7 +32,7 @@ void loop() {
   }
 ```
 
-- For the generator part, the logic in `else`, it is controlled by the parameter of `toSend`.  For each round will create a fiber by `fiberManager.addTask`, and inside each fiber, will put two requests into `pendingRequests`
+- For the generator part, the logic in `else`, it is controlled by the parameter of `toSend`.  For each round will create a fiber by `fiberManager.addTask`, and inside each fiber, will put two requests into `pendingRequests`.
 ```C++
 	fiberManager.addTask([this, id]() {
         // #1 
@@ -58,14 +58,14 @@ Then `auto result1` be set to the value of `value` which is generated randomly. 
 
 - The running result of this program could be found [here](../resource/fibers_app_test_result.txt), the execution is similar to
 ```
-Add reqeust id = 1 into pendingRequests, resut1 for id = 1 is waiting
-Add reqeust id = 2 into pendingRequests, resut1 for id = 2 is waiting
-Add reqeust id = 3 into pendingRequests, resut1 for id = 3 is waiting
-Add reqeust id = 4 into pendingRequests, resut1 for id = 4 is waiting
-Add reqeust id = 5 into pendingRequests, resut1 for id = 5 is waiting
+Add request id = 1 into pendingRequests, result1 for id = 1 is waiting
+Add request id = 2 into pendingRequests, result1 for id = 2 is waiting
+Add request id = 3 into pendingRequests, result1 for id = 3 is waiting
+Add request id = 4 into pendingRequests, result1 for id = 4 is waiting
+Add request id = 5 into pendingRequests, result1 for id = 5 is waiting
 // when there are 5 elements in pending pendingRequests
 Go to if(...), result1 for id = 1's value has been set, reset stack, go to next line of auto result1 = await...
-Add reqeust id = 1 into pendingRequests, resut2 for id = 1 is waiting 
+Add request id = 1 into pendingRequests, result2 for id = 1 is waiting 
 Go to if(...), result1 for id = 2's value has been set, reset stack, go to next line of auto result1 = await...
 ...
 ```
