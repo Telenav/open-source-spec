@@ -18,7 +18,7 @@
 |OSM Way|OSM||An OSM way connects a number of nodes. A way is thus a 2D poly-line, consisting of a number of segments. Several ways can share the same node where they cross.|
 |OSM Relation|OSM||An OSM relation relates several nodes or ways, or both. It can be used for turn restrictions, routes, and other things. A relation is often not a physical structure, but an abstraction like a bus route for example.|
 |Segment|OSRM|OSM Segment|A segment is a line connect 2 OSM nodes, undirected. A OSM way can be splitted to several segments.|
-|Edge|OSRM|Node Based Edge|A Node Based Edge is a segment with direction. One segment can be splitted to 2 Node Based Edges with different direction. NOTE: This is not a imporant concept in OSRM. |
+|Edge|OSRM|Node Based Edge|A Node Based Edge is a segment with direction. One segment can be splitted to 2 Node Based Edges with different direction. NOTE: This is not a important concept in OSRM. |
 |Graph Node|OSRM|Edge Based Node|Similar with Node Based Edge, Graph Node represents a specific direction (forward or backward) of an segment. There are two graph nodes for a bidirectional segment, but only one if it's a oneway segment. In another word, use a graph node represent a edge. |
 |Graph Edge|OSRM|Edge Based Edge, Movement Based Edge|A Graph Edge is a possible movement(a possible maneuver) taking you from one Graph Node to another. I.e. FromGraphNode-ToGraphNode.|
 |Edge-expanded Graph|OSRM||Edge-expanded Graph means a graph created by Graph Nodes and Graph Edges. OSRM loads the OSM data, and transforms it into an edge-expanded graph that's better suited for modelling turn costs and turn restrictions.|
