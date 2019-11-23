@@ -2,7 +2,7 @@
 
 
 ## Build docker image
-Go to the folder of [`fb_cpp_docker`](../)
+Go to the folder of [`fb_cpp_docker`](../fb_cpp_docker)
 ```
 docker build -t fb-cpp-docker:v1 -f Dockerfile .
 ```
