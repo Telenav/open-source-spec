@@ -21,7 +21,7 @@ Here is presentation from Facebook engineer about folly: Experiences with Facebo
 
 ## folly::Future
 
-Futures represent the asynchronous result of an already running operation.  future->then provide a powerful ability to chain callbacks, which std::future doesn't support yet(Until the end of 2019, still `std::experimental::future<T>::then` from cppreference).  Here is a [tech-blog from facebook](https://engineering.fb.com/developer-tools/futures-for-c-11-at-facebook/) describes folly::futures.  Highly recommended.
+`Futures` represent the asynchronous result of an already running operation.  `future->then` provide a powerful ability to chain callbacks, which std::future doesn't support yet(Until the end of 2019, still `std::experimental::future<T>::then` from cppreference).  Here is a [tech-blog from facebook](https://engineering.fb.com/developer-tools/futures-for-c-11-at-facebook/) describes folly::futures.  Highly recommended.
 
 ### Example 1
 ```C++
