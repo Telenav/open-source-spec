@@ -10,16 +10,16 @@
 A [Facade](https://www.tutorialspoint.com/design_pattern/facade_pattern.htm) is an object that provides a simplified interface to a larger body to use.  In OSRM, facade provide interfaces to upper layer and hide implementation details of data.  
 
 There are two major purpose for facade layer:
-- Support different routing algorithm to calculate route, like CH, CRP
-- Support different strategy to load data, such as load all data into memory, use mmap to load, use shared memory to load  
+- Support different routing algorithm to calculate route, like `CH`, `CRP`
+- Support different strategy to load data, such as load `all data into memory`, use `mmap` to load, use `shared memory` to load  
 
-You could read [an abstract version of OSRM facade's design](./osrm_facade_simple_case.md).  Here is the notes related with [facade interface](./osrm_facade_interface.md).
+You could read [an abstract version of OSRM facade's design](./osrm_facade_simple_case.md) which contains a simplified version of OSRM facade.  Here is the notes related with [facade interface](./osrm_facade_interface.md).
 
 
 ## Purpose
 
 
-Facade provides the interface to retrieve data, for example, here is the code in routing_base_mld.hpp for how to use it:
+Facade provides the interface to retrieve data, for example, here is the code in [routing_base_mld.hpp](https://github.com/Telenav/osrm-backend/blob/6cee22ed4834914bd374c6f2e80436cfa72364cb/include/engine/routing_algorithms/routing_base_mld.hpp#L230) for how to use it:
 
 ```C++
 template <bool DIRECTION, typename Algorithm, typename... Args>
@@ -57,12 +57,12 @@ void relaxOutgoingEdges(const DataFacade<Algorithm> &facade,
 
 ## Class hierarchy
 
-BaseDataFacade defines the interface to retrieve basic information, and ContiguousInternalMemoryDataFacadeBase implements the interfaces.  
+`BaseDataFacade` defines the interface to retrieve basic information, and `ContiguousInternalMemoryDataFacadeBase` implements the interfaces.  
 
 <img src="../references/pictures/facade_basedatafacade.png" alt="facade_basedatafacade.png" width="200"/>
 
 
-For algorithm part, OSRM choose template specialization for the implementation.  AlgorithmDataFacade defines the basic type, AlgorithmDataFacade<CH> and template <> class AlgorithmDataFacade<MLD> is two specialization defines interfaces for different functions,  ContiguousInternalMemoryAlgorithmDataFacade<CH> and ContiguousInternalMemoryAlgorithmDataFacade<MLD> implements those two template separately.  
+For algorithm part, OSRM choose template specialization for the implementation.  `AlgorithmDataFacade` defines the basic type, `AlgorithmDataFacade<CH>` and `AlgorithmDataFacade<MLD>` are two specialization defines interfaces for supporting different algorithm,  `ContiguousInternalMemoryAlgorithmDataFacade<CH>` and `ContiguousInternalMemoryAlgorithmDataFacade<MLD>` implements those two template separately.  
 
 <img src="../references/pictures/facade_algorithm_facade_class_diagram.png" alt="facade_algorithm_facade_class_diagram.png" width="400"/>
 
@@ -83,9 +83,9 @@ Facade is the layer based on pre-processed OSRM data(extraction, contraction, pa
 OSRM provides 3 ways to load data [code link](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/include/engine/engine.hpp#L51):
 ```C++
 
-		// method #1: Use shared memory to load data
-		//            Shared memory is a way for inter process communication
-		//            Which could used for multiple process visiting the same data
+       // method #1: Use shared memory to load data
+       //            Shared memory is a way for inter process communication
+       //            Which could used for multiple process visiting the same data
         if (config.use_shared_memory)
         {
             util::Log(logDEBUG) << "Using shared memory with name \"" << config.dataset_name
