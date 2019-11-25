@@ -13,7 +13,7 @@ There are two major purpose for facade layer:
 - Support different routing algorithm to calculate route, like `CH`, `CRP`
 - Support different strategy to load data, such as load `all data into memory`, use `mmap` to load, use `shared memory` to load  
 
-You could read [an abstract version of OSRM facade's design](./osrm_facade_simple_case.md) which contains a simplified version of OSRM facade.  Here is the notes related with [facade interface](./osrm_facade_interface.md).
+You could read [an abstract version of OSRM facade's design](./osrm_facade_simple_case.md) which contains a simplified version of OSRM facade.  For more details about interface defined in facade please go to [facade interface](./osrm_facade_interface.md).
 
 
 ## Purpose
@@ -66,12 +66,12 @@ For algorithm part, OSRM choose template specialization for the implementation. 
 
 <img src="../references/pictures/facade_algorithm_facade_class_diagram.png" alt="facade_algorithm_facade_class_diagram.png" width="400"/>
 
-In datafacade.hpp, you could find how they provide types for external usage:  
+In [datafacade.hpp](https://github.com/Telenav/osrm-backend/blob/master-telenav/include/engine/datafacade.hpp), you could find how they provide types for external usage:  
 
 <img src="../references/pictures/facade_datafacade_interface.png" alt="facade_datafacade_interface.png" width="800"/>
 
 
-For more information of interfaces' usage, you could come to this page:  
+For more information of interfaces' usage, you could come to this page: [facade interface](./osrm_facade_interface.md)
 
 
 
@@ -116,7 +116,7 @@ OSRM provides 3 ways to load data [code link](https://github.com/Telenav/osrm-ba
 
 ``` 
 
-Inside [class Engine](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/include/engine/engine.hpp#L48), there is a member variable [facade_provider](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/include/engine/engine.hpp#L131), depend on different config it will init facade_provider with different Provider.  And different provider instancelized different memory allocator, so during engine's initialization it would use different strategy to init pointer point to different data.  
+Inside [class Engine](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/include/engine/engine.hpp#L48), there is a member variable [facade_provider](https://github.com/Telenav/osrm-backend/blob/7677b8513bf8cdbadb575c745acf4f9124887764/include/engine/engine.hpp#L131), depend on different config it will init facade_provider with different Provider.  And different provider instancelized different memory allocator, so during engine's initialization it would use different strategy to init pointers which point to different data.  
 
 Class diagram
 

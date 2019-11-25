@@ -3,6 +3,7 @@
   - [Why need facade](#why-need-facade)
   - [A sample case based on inheritance](#a-sample-case-based-on-inheritance)
   - [A sample case based on template](#a-sample-case-based-on-template)
+  - [References](#references)
 
 
 # Simple version of OSRM Facade
@@ -12,7 +13,7 @@ OSRM routing engine has two kind of requirements:
 - Support different routing algorithm to calculate route, like CH, CRP
 - Support different strategy to load data, such as load all data into memory, use mmap to load, use shared memory to load  
 
-Facade is the layer provides data access interfaces to support different algorithm(routing, table, map matching) achieve their goal.    
+Facade is the layer provides data access interfaces to support different algorithm(routing, table, map matching) achieve their functionality.
 
 ## A sample case based on inheritance
 
@@ -24,7 +25,7 @@ class OSRM
 public:
     OSRM(const EngineConfig& config)
     {
-        if (config.use_mld) 
+        if (config.use_mld)
         {
             engine = std::make_unique<MLDEngine>(config);
         }
@@ -43,18 +44,22 @@ private:
     std::unique_ptr<EngineInterface> engine;
 };
 ```
+
 EngineConfig defines which algorithm to use and how to load data
+
 ```C++
 struct EngineConfig
 {
     // enum for how to load data, could be shared mem, mmap or memory
-    
+
     // enum for which algorithm to use
 };
 ```
+
 We would init engine based on different value in EngineConfig.
 
 EngineInterface defines the interface of Route and MLDEngine/CHEngine implements it.
+
 ```c++
 class EngineInterface
 {
@@ -196,9 +201,11 @@ public:
 };
 
 ```
+
 Please beware of that: member function of a template class cannot be virtual, only specialized version could have template function.  More information: [Can a class member function template be virtual?](https://stackoverflow.com/questions/2354210/can-a-class-member-function-template-be-virtual).  
 
 Here is the implementation:  
+
 ```C++
 template<typename AlgorithmT>
 class AlgorithmSharedDataFacade;
@@ -222,6 +229,7 @@ public:
 ```
 
 For base data, we could still use inheritance:
+
 ```C++
 class BaseDataFacadeInterface
 {
@@ -239,12 +247,14 @@ public:
 ```
 
 By inherit interface from base and algorithm facade, we could have the ability to visit all facade api:
+
 ```C++
 template<typename AlgorithmT>
 class SharedDataFacade: public BaseSharedDataFacade, public AlgorithmSharedDataFacade<AlgorithmT> { };
 ```
 
 Here is the implementation of Algorithm:
+
 ```C++
 
     template<template <typename A> class FacadeT>
@@ -256,7 +266,9 @@ Here is the implementation of Algorithm:
         return result;
     }
 ```
+
 Please pay attention to facade defined below:
+
 ```C++
 template<typename AlgorithmT, template <typename A> class FacadeT>
 class Engine : public EngineInterface
@@ -271,7 +283,9 @@ private:
     std::shared_ptr<FacadeT<AlgorithmT>> facade;
 };
 ```
+
 Here is how to initialize specific Engine:
+
 ```C++
 OSRM::OSRM(const EngineConfig &config)
 {
@@ -289,4 +303,6 @@ OSRM::OSRM(const EngineConfig &config)
 std::unique_ptr<EngineInterface> engine;
 ```
 
-
+## References
+- [inheritance code](https://github.com/Telenav/open-source-spec/blob/master/osrm/references/files/test_inheritance.cpp)
+- [template code](https://github.com/Telenav/open-source-spec/blob/master/osrm/references/files/test_template.cpp)
