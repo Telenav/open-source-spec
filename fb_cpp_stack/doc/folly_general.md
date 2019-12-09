@@ -1,4 +1,3 @@
-
 - [Facebook folly](#facebook-folly)
   - [Get started](#get-started)
   - [folly::Future](#follyfuture)
@@ -80,7 +79,7 @@ folly::Future<Response> twoStageFanout(std::shared_ptr<Request> request) {
 }
 
 ```
-Here is the complete code for reference.[todo]
+Here is the complete code for reference: [code](./../resource/FirstFutureTest.cpp)
 
 ### Example 3
 
