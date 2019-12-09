@@ -178,11 +178,11 @@ From [Reactor by Douglas C. Schmidt](http://www.dre.vanderbilt.edu/~schmidt/PDF/
 The Reactor design pattern handles service requests that are delivered 
 concurrently to an application by one or more clients. Each service in an 
 application may consistent of several methods and is represented by a separate
- event handler that is responsible for dispatching service-specific requests. 
- Dispatching of event handlers is performed by an initiation dispatcher, which 
- manages the registered event handlers. Demultiplexing of service requests is 
- performed by a synchronous event demultiplexer. Also known as Dispatcher, 
- Notifier
+event handler that is responsible for dispatching service-specific requests. 
+Dispatching of event handlers is performed by an initiation dispatcher, which 
+manages the registered event handlers. Demultiplexing of service requests is 
+performed by a synchronous event demultiplexer. Also known as Dispatcher, 
+Notifier
 ```
 
 ## Reactor pattern in detail
