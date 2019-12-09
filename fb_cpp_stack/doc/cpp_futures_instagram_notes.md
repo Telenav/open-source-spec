@@ -10,7 +10,7 @@
     - [Result](#result)
   - [Reactor pattern](#reactor-pattern)
     - [Why](#why)
-  - [What is reactor](#what-is-reactor)
+    - [What](#what)
   - [Reactor pattern in detail](#reactor-pattern-in-detail)
     - [Notes from Reactor paper](#notes-from-reactor-paper)
     - [Notes from Scalable IO in Java](#notes-from-scalable-io-in-java)
@@ -163,7 +163,7 @@ We could think about have dedicate module to handle accept(eg, TCP connection), 
 
 For accept part, I assume I have a none-blocking, and event driven strategy, which means, I expect system could notify me when there is a event comes and tell me what category the event is.  Then I could use dedicate I/O thread to read data, then submit task into a thread pool for processing and then use dedicate I/O thread to write data.  This is a simple version of Reactor, it focus on abstract a high performance pattern and let user focus on what kind of event they need to deal with and how to deal.  For system's notification, such as select/poll/epoll, will be described later and let's focus on Reactor pattern first.
 
-## What is reactor
+### What
 
 From [wiki](https://en.wikipedia.org/wiki/Reactor_pattern)
 ```
