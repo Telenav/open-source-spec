@@ -15,12 +15,13 @@ Folly (Facebook Open Source Library) contains a collection of reusable C++ libra
 
 ## Get started
 Start from [README](https://github.com/facebook/folly/blob/master/README.md) and take a look at folder structure inside /folly can give you a initial opinion about folly.  
-If you are new to C++11, here is an good article about [Learn from Folly source code the new C++11 features](http://www.javadepend.com/Blog/?p=431). 
-Here is presentation from Facebook engineer about folly: Experiences with Facebook's C++ library [video](https://www.youtube.com/watch?v=GDxb21kEthM)
+If you are new to C++11, here is an good article about [Learn from Folly source code the new C++11 features](http://www.javadepend.com/Blog/?p=431).  
+Here is presentation from Facebook engineer about folly: Experiences with Facebook's C++ library [video](https://www.youtube.com/watch?v=GDxb21kEthM).  
+You could build docker image in your local and play the code, follow instruction [here](../fb_cpp_docker/README.md).
 
 ## folly::Future
 
-`Futures` represent the asynchronous result of an already running operation.  `future->then` provide a powerful ability to chain callbacks, which std::future doesn't support yet(Until the end of 2019, still `std::experimental::future<T>::then` from cppreference).  Here is a [tech-blog from facebook](https://engineering.fb.com/developer-tools/futures-for-c-11-at-facebook/) describes folly::futures.  Highly recommended.
+**`Future` represents the asynchronous result of an already running operation**.  `future->then` provide a powerful ability to chain callbacks, which std::future doesn't support yet(At the end of 2019, still `std::experimental::future<T>::then` from cppreference).  Here is a [tech-blog from facebook](https://engineering.fb.com/developer-tools/futures-for-c-11-at-facebook/) describes folly::futures.  Highly recommended.
 
 ### Example 1
 ```C++
