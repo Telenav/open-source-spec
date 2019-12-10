@@ -1,17 +1,22 @@
+<!-- TOC -->
+
 - [OD In OSRM](#od-in-osrm)
-  - [Basic Concepts](#basic-concepts)
-    - [Strongly Connected Component](#strongly-connected-component)
-    - [Big/Small Component](#bigsmall-component)
-    - [RTree](#rtree)
-      - [RTree in OSRM](#rtree-in-osrm)
-  - [Implementation In Source Code](#implementation-in-source-code)
-    - [Entrance](#entrance)
-      - [OD in Route Service Workflow](#od-in-route-service-workflow)
-    - [Process Flow](#process-flow)
-    - [Misc.](#misc)
-  - [Summary](#summary)
-  - [TODO from data side](#todo-from-data-side)
-  - [References](#references)
+    - [Basic Concepts](#basic-concepts)
+        - [Strongly Connected Component](#strongly-connected-component)
+        - [Big/Small Component](#bigsmall-component)
+        - [RTree](#rtree)
+            - [RTree in OSRM](#rtree-in-osrm)
+        - [PhantomNode](#phantomnode)
+    - [Implementation In Source Code](#implementation-in-source-code)
+        - [Entrance](#entrance)
+            - [OD in Route Service Workflow](#od-in-route-service-workflow)
+        - [Process Flow](#process-flow)
+        - [Misc.](#misc)
+    - [Summary](#summary)
+    - [TODO from data side](#todo-from-data-side)
+    - [References](#references)
+
+<!-- /TOC -->
 
 # OD In OSRM
 This document will explain how **OD(Origin-Destination)** works in [OSRM](../).      
@@ -115,6 +120,20 @@ Below comments refers from comment for `include/util/static_rtree.hpp(81): class
      *
      ***********************************************/
 ```
+
+### PhantomNode
+I found excellent explanation for `PhantomNode` from author(Orignal discussion see [Project-OSRM#5626#issuecomment-563344568](https://github.com/Project-OSRM/osrm-backend/issues/5626#issuecomment-563344568)):     
+
+```
+The road network is built up of nodes and edges, as people draw them in OpenStreetmap.
+
+The routing algorithm implemented in OSRM assumes you'll start on a "node".
+
+However, when you supply a longitude/latitude to OSRM, it's very rarely exactly on an intersection point on the road network - it's usually off to the side of the road.
+
+The PhantomNode class represents a temporary node that's inserted into the graph at the position where your input longitude/latitude is. This acts as the starting and ending "node"s for the routing algorithm, and allows the algorithm to not have a special case for the initial/last iteration.
+```
+
 
 ## Implementation In Source Code
 Ideas of `OD` in `OSRM` is deeply based on `RTree` and `Strongly Connected Component`.    
