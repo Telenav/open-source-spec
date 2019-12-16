@@ -19,7 +19,7 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 - [OSRM Table service](./doc/table_service.md)
 - [OSRM Map Matching](./doc/osrm_mapmatching.md)
 - [OSRM Facade](./doc/osrm_facade.md)
-
+- [OSRM Toolchain Files](./doc/osrm-toolchain-files/README.md)
 
 ### Graphs for source code
 - [osrm-routed Startup Call Graph](./graph/osrm-routed_startup_callgraph.mmd.png)
