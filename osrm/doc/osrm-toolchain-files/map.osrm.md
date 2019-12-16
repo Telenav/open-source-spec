@@ -4,6 +4,12 @@
   - [/extractor/nodes, /extractor/nodes.meta](#extractornodes-extractornodesmeta)
     - [Layout](#layout)
     - [Implementation](#implementation)
+  - [/extractor/barriers, /extractor/barriers.meta](#extractorbarriers-extractorbarriersmeta)
+    - [Layout](#layout-1)
+    - [Implementation](#implementation-1)
+  - [/extractor/traffic_lights, /extractor/traffic_lights.meta](#extractortrafficlights-extractortrafficlightsmeta)
+    - [Layout](#layout-2)
+    - [Implementation](#implementation-2)
 
 
 # .osrm
@@ -51,3 +57,18 @@ struct QueryNode
     // [Jay] ...
 }
 ```
+
+## /extractor/barriers, /extractor/barriers.meta
+
+### Layout
+![](graph/map.osrm.extractor.barriers.png)
+
+### Implementation
+
+
+## /extractor/traffic_lights, /extractor/traffic_lights.meta
+
+### Layout 
+![](graph/map.osrm.extractor.traffic_lights.png)
+
+### Implementation
