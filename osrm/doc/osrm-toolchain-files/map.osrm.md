@@ -103,7 +103,7 @@ using NodeID = std::uint32_t;
 static const NodeID SPECIAL_NODEID = std::numeric_limits<NodeID>::max();
 ```
 
-The `Internal NodeID` is index of the `OSM Node` in `/extractor/nodes`(calculated by `std::distance` between the `OSM Node`'s iterator and the first iterator of the `std::vector<OSM Node>`). Note that **the `Internal NodeID` will overflow if use more than `2^32` OSM Nodes**.       
+The `Internal NodeID` is index of the `OSM Node` in `/extractor/nodes`(calculated by `std::distance` between the `OSM Node`'s iterator and the first iterator of the `std::vector<OSM Node>`). Note that **the `Internal NodeID` will overflow if use more than `2^32` OSM Nodes**, otherwise [exception happens](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extraction_containers.cpp#L243).      
 See [mapExternalToInternalNodeID()](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extraction_containers.cpp#L96)    
 
 ```c++
