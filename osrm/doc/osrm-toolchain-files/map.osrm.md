@@ -12,7 +12,11 @@
     - [Layout](#layout-2)
     - [Implementation](#implementation-2)
   - [/extractor/edges, /extractor/edges.meta](#extractoredges-extractoredgesmeta)
+    - [Layout](#layout-3)
+    - [Implementation](#implementation-3)
   - [/extractor/annotations, /extractor/annotations.meta](#extractorannotations-extractorannotationsmeta)
+    - [Layout](#layout-4)
+    - [Implementation](#implementation-4)
 
 
 # .osrm
@@ -155,7 +159,54 @@ See [Writing traffic light nodes](https://github.com/Telenav/osrm-backend/blob/6
 ```
 
 ## /extractor/edges, /extractor/edges.meta
+Stores all [**Node Based Edges**](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#terminology).    
 
+### Layout 
 ![](./graph/map.osrm.extractor.edges.png)
 
+### Implementation
+
+The `/extractor/edges` stores [`struct NodeBasedEdge`](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/include/extractor/node_based_edge.hpp#L92). It represents an [NodeBasedEdge](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#terminology) which defines by OSRM.     
+In [`ExtractionContainers::PrepareData()`](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extraction_containers.cpp#L131:28), the `edges` will be prepared by [ExtractionContainers::PrepareEdges()](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extraction_containers.cpp#L253) and then wrote by [ExtractionContainers::WriteEdges()](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extraction_containers.cpp#L538). Both `source` and `target` are [`Internal NodeID`](#internal-nodeid). The stored `edges` will be sorted by `source` before write.    
+
+```c++
+
+// [Jay] NodeBasedEdge structure
+struct NodeBasedEdge
+{
+    NodeID source;                     // 32 4
+    NodeID target;                     // 32 4
+    EdgeWeight weight;                 // 32 4
+    EdgeDuration duration;             // 32 4
+    EdgeDistance distance;             // 32 4
+    GeometryID geometry_id;            // 32 4
+    AnnotationID annotation_data;      // 32 4
+    NodeBasedEdgeClassification flags; // 32 4
+};
+
+// [Jay] Write edges
+void ExtractionContainers::WriteEdges(storage::tar::FileWriter &writer) const
+{
+    std::vector<NodeBasedEdge> normal_edges;    // [Jay] each edge structure is NodeBasedEdge
+    normal_edges.reserve(all_edges_list.size());
+    {
+        util::UnbufferedLog log;
+        log << "Writing used edges       ... " << std::flush;
+
+        // [Jay] ...
+
+        // [Jay] write edges
+        storage::serialization::write(writer, "/extractor/edges", normal_edges);
+
+    }
+}
+
+
+```
+
 ## /extractor/annotations, /extractor/annotations.meta
+
+### Layout 
+
+### Implementation
+
