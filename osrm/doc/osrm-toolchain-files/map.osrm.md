@@ -11,6 +11,8 @@
   - [/extractor/traffic_lights, /extractor/traffic_lights.meta](#extractortrafficlights-extractortrafficlightsmeta)
     - [Layout](#layout-2)
     - [Implementation](#implementation-2)
+  - [/extractor/edges, /extractor/edges.meta](#extractoredges-extractoredgesmeta)
+  - [/extractor/annotations, /extractor/annotations.meta](#extractorannotations-extractorannotationsmeta)
 
 
 # .osrm
@@ -151,3 +153,9 @@ See [Writing traffic light nodes](https://github.com/Telenav/osrm-backend/blob/6
     }
 
 ```
+
+## /extractor/edges, /extractor/edges.meta
+
+![](./graph/map.osrm.extractor.edges.png)
+
+## /extractor/annotations, /extractor/annotations.meta
