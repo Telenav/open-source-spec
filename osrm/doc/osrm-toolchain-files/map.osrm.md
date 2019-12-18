@@ -207,6 +207,7 @@ void ExtractionContainers::WriteEdges(storage::tar::FileWriter &writer) const
 ## /extractor/annotations, /extractor/annotations.meta
 
 ### Layout 
+![](./graph/map.osrm.extractor.annotations.png)
 
 ### Implementation
 
