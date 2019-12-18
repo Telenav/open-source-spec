@@ -205,9 +205,44 @@ void ExtractionContainers::WriteEdges(storage::tar::FileWriter &writer) const
 ```
 
 ## /extractor/annotations, /extractor/annotations.meta
+Stores annotation data(i.e. [`NodeBasedEdgeAnnotation`](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/include/extractor/node_based_edge.hpp#L66)) for parsed [**Node Based Edges**](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/understanding_osrm_graph_representation.md#terminology). Each `NodeBasedEdge` has a `AnnotationID annotation_data` to index related `NodeBasedEdgeAnnotation`.            
 
 ### Layout 
 ![](./graph/map.osrm.extractor.annotations.png)
 
 ### Implementation
+Annotation data defined as `vector` of [`NodeBasedEdgeAnnotation`](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/include/extractor/node_based_edge.hpp#L66) in implementation. It constructed in [ExtractorCallbacks::ProcessWay](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extractor_callbacks.cpp#L92) together with `NodeBasedEdge` construction, see details in [extractor_callbacks.cpp#L403](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extractor_callbacks.cpp#L403) and [extractor_callbacks.cpp#L440](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extractor_callbacks.cpp#L440). It'll be written in [ExtractionContainers::WriteMetadata()](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extraction_containers.cpp#L573) which will be call by [`ExtractionContainers::PrepareData()`](https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extraction_containers.cpp#L131:28) too.               
 
+```c++
+struct NodeBasedEdgeAnnotation
+{
+    NameID name_id;                        // 32 4
+    LaneDescriptionID lane_description_id; // 16 2
+    ClassData classes;                     // 8  1
+    TravelMode travel_mode : 4;            // 4
+    bool is_left_hand_driving : 1;         // 1
+}
+
+// [Jay] forward annotation data construction
+// [Jay] https://github.com/Telenav/osrm-backend/blob/6283c6074066f98e6d4a9f774f21ea45407c0d52/src/extractor/extractor_callbacks.cpp#L403
+        const auto annotation_data_id = external_memory.all_edges_annotation_data_list.size();
+        external_memory.all_edges_annotation_data_list.push_back({forward_name_id,
+                                                                  turn_lane_id_forward,
+                                                                  forward_classes,
+                                                                  parsed_way.forward_travel_mode,
+                                                                  parsed_way.is_left_hand_driving});
+
+
+void ExtractionContainers::WriteMetadata(storage::tar::FileWriter &writer) const
+{
+    // [Jay] ...
+
+    // [Jay] same as before, write vector to file
+    storage::serialization::write(writer, "/extractor/annotations", all_edges_annotation_data_list);
+
+    // [Jay] ...
+}
+
+
+
+```
