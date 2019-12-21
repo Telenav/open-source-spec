@@ -5,6 +5,10 @@
 
 ### Why Dijkstra works?  
 
+#### What is time complexity
+
+#### Priority Queue helps to pop min element or max element, what if we want to adjust existing items' weight?  What's the time complexity?
+
 ### For Bidirectional Dijkstra, why first meet may not be the shortest path?  
 
 ### Why A* helps Dijkstra?  
