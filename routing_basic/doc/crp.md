@@ -3,6 +3,8 @@
   - [CRP's problem set](#crps-problem-set)
   - [CRP Basic steps](#crp-basic-steps)
     - [Step1 Metric independent preprocessing](#step1-metric-independent-preprocessing)
+      - [Overlay graph](#overlay-graph)
+      - [Turns](#turns)
     - [Step2 Metric custmization](#step2-metric-custmization)
     - [Step3 Real time query](#step3-real-time-query)
   - [CRP Core ideas](#crp-core-ideas)
@@ -34,6 +36,32 @@ One of the big technical challenges in point to point route calculation is figur
 
   <img src="../resource/pictures/single_cell.png" alt="single_cell" width="400"/><br/>
   (Image from Paper of CRP)
+
+
+#### Overlay graph
+
+- Nested multi-level partition  
+
+<img src="../resource/pictures/crp_multi_level_partition.png" alt="crp_multi_level_partition" width="400"/><br/>
+<br/>
+
+- H is abstract graph only contains overlays.  
+
+<img src="../resource/pictures/crp_overlay.png" alt="crp_overlay" width="400"/><br/>  
+(Image from Paper of CRP)
+<br/>
+
+- Query applied on overlay.  
+
+- Pruning the overlay
+
+
+#### Turns
+<img src="../resource/pictures/crp_turns.png" alt="crp_overlay" width="400"/><br/>  
+(Image from Paper of CRP)
+<br/>
+
+
 
 ### Step2 Metric custmization
   Apply dynamic information with cost models, each round of traffic update, seconds
