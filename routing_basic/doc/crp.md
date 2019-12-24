@@ -57,10 +57,19 @@ One of the big technical challenges in point to point route calculation is figur
 
 
 #### Turns
-<img src="../resource/pictures/crp_turns.png" alt="crp_overlay" width="400"/><br/>  
+<img src="../resource/pictures/crp_turns.png" alt="crp_overlay" width="600"/><br/>  
 (Image from Paper of CRP)
 <br/>
 
+- Modeling turn pattern is important for routing algorithm's performance.  Ideally, we should hide the complexity of turns and let upper algorithm could apply on classic graph.
+
+- `arc-based` strategy only keeps tail vertices of intersection, each arc is a road segment following with a turn.  Similar strategy be used in OSRM, click [here](../../osrm/doc/understanding_osrm_graph_representation.md) for more information.
+
+- `compact representation` will convert intersection to a single vertex.  Similar to `Big node`.
+  - p * q table, tu[i, j] contains all combination {head, tail}
+  - CRP mentioned based on carefully optimize, performance penalty due to turns could dropped from 3 times to 2 times.
+
+- Stalling: During search, scanning an entry point of an intersection immediately gives us upper bound of exists points.  We could only scan another entry point is its own distance label is small enough to potentially improve result.
 
 
 ### Step2 Metric custmization
