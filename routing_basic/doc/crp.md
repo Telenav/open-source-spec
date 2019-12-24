@@ -34,7 +34,7 @@ One of the big technical challenges in point to point route calculation is figur
 
   After partition, each cell would be abstract to "big node", only keeps entry -> exit pair.  Graph be dramatically constructed but keeps original structure.
 
-  <img src="../resource/pictures/single_cell.png" alt="single_cell" width="400"/><br/>
+  <img src="../resource/pictures/crp_single_cell2.png" alt="crp_single_cell2" width="600"/><br/>
   (Image from Paper of CRP)
 
 
@@ -76,7 +76,10 @@ One of the big technical challenges in point to point route calculation is figur
   Apply dynamic information with cost models, each round of traffic update, seconds
 
   This step should be fast, live traffic could be used only after this step is ready.
-  Partition data with minimum cut is crucial to this step, and in practise, move efforts into step1 could also help to speed up.
+  Partition data with minimum cut is crucial to this step, and in practice, move efforts into step1 could also help to speed up.  
+
+Pre-allocating metrics table during pre-processing is one of the most important optimization.  During customization only recalculate cost based on traffic and update value.
+
 
 
 ### Step3 Real time query
