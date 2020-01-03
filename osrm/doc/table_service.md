@@ -73,7 +73,7 @@ Let's say graph partition result is generated as following:
 ```
 The upper case could be converted to following picture:
 
-<img src="../references/pictures/mld_routing_example_graph_partition.png" alt="mld_routing_example_graph_partition.png" width="600"/>
+<img src="../references/pictures/mld_routing_example_graph_partition.png" alt="mld_routing_example_graph_partition.png" width="800"/>
 
 Here we ignore the edges between different nodes because they are not matters for describing the idea of MLD.  But you should know the {nodes, edges connected between nodes} constructs the graph.
 
@@ -83,23 +83,23 @@ Let's say we want to calculate a route form source=node_0 to destination=node_11
 
 <img src="../references/pictures/mld_routing_example_backward_all_steps.png" alt="mld_routing_example_backward_all_steps" width="800"/>  
 
-Step 1: Let's assumn node_11 is the one inside node of cell_1_5 with no connection to outside.  If we got all shortest path from node_0 to cell_1_5, then the shortest path from node_0 to node_11 equals min{shortest path from node_0 to cell_1_5 + shortest path from enter point to node_11}.  <br/>
-Step 2: Let's assume we got all shortest path from node_0 to cell_2_3, then we could easily got shortest path from node 0 to cell_1_5, because this two cell contains the same informtion.  <br/>
-Step 3: Let's assume we got all shortest path from node_0 to cell_3_1, how can we get all shortest path to cell_2_3 quickly?  Actually, we could calculate route at cell_2_* level, treat cell_2_1, cell_2_2, cell_2_3 as a "big node", and put entrance segments at cell_3_* level to the priority_queue and only explore at level_2 level.  By this optimization, we could ignore all inner elements inside of cell_2_1 and cell_2_2 and we won's miss best solution.  The less connection between cells, the faster speed we could get for route calculation.  <br/>
-Step 4: Then, find shortest path from node_0 to node_11 convert to find shortest path from node_0 to cell_3_1.  As long as we calculate all cost from node_0 to cell_3_1, we could find shortest path for the final result.  <br/>
+- Step 1: Let's assume node_11 is one of the `inside nodes` of cell_1_5 with no connection to outside directly.  If we got all shortest path from node_0 to cell_1_5, then the shortest path from node_0 to node_11 equals min{shortest path from node_0 to cell_1_5 + shortest path from related enter point of cell_1_5  to node_11}.   
+- Step 2: Let's assume we got all shortest path from node_0 to cell_2_3, then we could easily got shortest path from node 0 to cell_1_5, because cell_1_5 is the only cell in cell_2_3, this two cell contains the same information.   
+- Step 3: Let's assume we got all shortest path from node_0 to cell_3_1, how can we get all shortest path to cell_2_3 quickly?  Actually, we could calculate route at cell_2_* level, treat cell_2_1, cell_2_2, cell_2_3 as a "big node", and put entrance segments at cell_3_* level to the priority_queue and only explore at level_2 level.  By this optimization, we could ignore all inner elements inside of cell_2_1 and cell_2_2 and we won's miss best solution.  The **less connection between cells, the faster speed we could get for route calculation**.  
+- Step 4: Then, find shortest path from node_0 to node_11 convert to find shortest path from node_0 to cell_3_1.  As long as we calculate all cost from node_0 to cell_3_1, we could find shortest path for the final result.  <br/>
 
 We can achieve that with similar strategy:
 
 <img src="../references/pictures/mld_routing_example_forward_all_steps.png" alt="mld_routing_example_forward_all_steps" width="800"/><br/>
-Step 1: We are at level 0 and will calculate all possible shortest path to the boarder of cell_1_0.  Then we could have the view of cell_1_0, everything matters is cell_1_*.  Which means, we don't care what's inside cell_1_1, we treat which as "big node" the only thing matters is its enter edges and exit edges. <br/>
-Step 2: After we have all shortest path to the boarder of cell_2_0, we have the view of cell_2_0, everything matters is level 2 now.  <br/>
-Step 3: Then we could easily promote to cell_3_0.  <br/>
+- Step 1: We are at level 0 and will calculate all possible shortest path to the boarder of cell_1_0.  Then we could have the view of cell_1_0, everything matters is cell_1_*.  Which means, we don't care what's inside cell_1_1, we treat which as "big node" the only thing matters is its enter edges and exit edges. <br/>
+- Step 2: After we have all shortest path to the boarder of cell_2_0, we have the view of cell_2_0, everything matters is level 2 now.  <br/>
+- Step 3: Then we could easily promote to cell_3_0.  <br/>
 
 
   
 <img src="../references/pictures/mld_routing_example_level3.png" alt="mld_routing_example_level3" width="200"/>  
 
-In next step, We just need consider cell_3_0, cell_3_2, cell_3_1 and we could guarantee to calculate all shortest path from node_0 to cell_3_1.  This will skip all elements in entire cell_3_2.  
+- In next step, We just need consider cell_3_0, cell_3_2, cell_3_1 and we could guarantee to calculate all shortest path from node_0 to cell_3_1.  This will skip all elements in entire cell_3_2.  
 
 
 Summary:
