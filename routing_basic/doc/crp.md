@@ -91,13 +91,13 @@ Pre-allocating metrics table during pre-processing is one of the most important 
 ## CRP Core ideas
 Topological and metric properties of the network is differernt.  The topology is the graph structure of the network together with a set of static properties.  The metric encodes the actual cost of traversing a road segment or taking a turn.
 
-Partition road network with balanced count and min-cut is the most important step of CRP.  [Kernighan Lin](https://en.wikipedia.org/wiki/Kernighan%E2%80%93Lin_algorithm) and [Dinic](https://en.wikipedia.org/wiki/Dinic%27s_algorithm) are two basic algorithms.  In practise, there are METIS, PUNCH, KAHIP, Inertial flow.  For more details, please go to graph partition page.
+Partition road network with balanced count and min-cut is the most important step of CRP.  [Kernighan Lin](https://en.wikipedia.org/wiki/Kernighan%E2%80%93Lin_algorithm) and [Dinic](https://en.wikipedia.org/wiki/Dinic%27s_algorithm) are two basic algorithms.  In practice, there are METIS, PUNCH, KAHIP, Inertial flow.  For more details, please go to [graph partition](./graph_partition.md) page.
 
 <!-- toc -->
 
 ## Reference
-- [Paper of CRP](../resource/papers/CustomizableRoutePlanningInRoadNetworks.pdf)
-- [Telenav Direction team discussion](../resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
-- [C++ Implementation of Customizable Route Planning (CRP)](https://github.com/michaelwegner/CRP)
+- [Paper of CRP by Delling et al](../resource/papers/CustomizableRoutePlanningInRoadNetworks.pdf)
+- [Telenav Direction team's discussion in 2018](../resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
+- [C++ Implementation of Customizable Route Planning (CRP) from github](https://github.com/michaelwegner/CRP)
 
 
