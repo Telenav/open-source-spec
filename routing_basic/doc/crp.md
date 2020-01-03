@@ -14,7 +14,7 @@
 # Customizable Route Planning
 
 ## General
-One of the big technical challenges in point to point route calculation is figuring out how to do real time pre-processing while keeping query latency low.  One of pretty common method is partitioning the graph into various cells and being able to figure out which cells need updates based on live traffic.  Only need to pre-processing particular sections of the graph and then creating shortcut edges across boundary nodes in each cell, then do routing on the overlay.  CRP is one of the best paper to summary those idea.
+One of the biggest technical challenges in point to point route calculation is figuring out how to do real time pre-processing while keeping query latency low.  One of pretty common method is partitioning the graph into various cells and being able to figure out which cells need updates based on live traffic.  Only need to pre-processing particular sections of the graph and then creating shortcut edges across boundary nodes in each cell, then do routing on the overlay.  CRP is one of the best paper to summary those idea.
 
 <!-- toc -->
 
