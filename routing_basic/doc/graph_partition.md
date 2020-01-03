@@ -4,9 +4,9 @@
 
 The graph partitioning problem asks for a division of a graph's node set into k equally sized blocks such that the number of edges that run between the blocks is minimized.  The size of each block is a configurable parameter.
 
-<img src="../resource/pictures/probelm_description_partitioning.png" alt="probelm_description_partitioning" style="width:400px;"/>
+<img src="../resource/pictures/probelm_description_partitioning.png" alt="problem_description_partitioning" style="width:400px;"/>
 
-## Problems be solved
+## Application of the algorithm
 
 | Road network | Graphics process | Scocial Network |
 | --- | --- | --- |
@@ -20,7 +20,7 @@ Graph partition is the first step to distribute processing graph data.
 
 - [Max Flow Min Cut](./max_flow_min_cut.md)
 
-## Solutions
+## Solutions for Route network
 
 - [METIS](./metis.md)
 
@@ -31,6 +31,7 @@ Graph partition is the first step to distribute processing graph data.
 - [KAHIP](https://github.com/schulzchristian/KaHIP)
 
 ## Distribute Partition
+- [pregel](https://kowshik.github.io/JPregel/pregel_paper.pdf)
 
 - Google
 
