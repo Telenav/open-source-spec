@@ -8,6 +8,7 @@
     - [Step2 Metric custmization](#step2-metric-custmization)
     - [Step3 Real time query](#step3-real-time-query)
   - [CRP Core ideas](#crp-core-ideas)
+  - [CRP in OSRM](#crp_in_osrm)
   - [Reference](#reference)
 
 # Customizable Route Planning
@@ -95,9 +96,16 @@ Partition road network with balanced count and min-cut is the most important ste
 
 <!-- toc -->
 
+## CRP in OSRM
+- OSRM has 3 related components: partition, customization, routed(query).   
+- [Inertial flow](../../osrm/doc/inertial_flow.md) is the algorithm used for partition graph, you could go to [notes related with OSRM partition](../../osrm/doc/osrm_partition.md) for more information.   
+- [OSRM customization](../../osrm/doc/osrm_customization.md) and [OSRM traffic update](../../osrm/doc/osrm_traffic_update.md) records the information for how OSRM update graph based on live traffic.  
+- How query works in OSRM could go to [this page](../../osrm/doc/table_service.md#mld-algorithm).
+
+
 ## Reference
 - [Paper of CRP by Delling et al](../resource/papers/CustomizableRoutePlanningInRoadNetworks.pdf)
 - [Telenav Direction team's discussion in 2018](../resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
-- [C++ Implementation of Customizable Route Planning (CRP) from github](https://github.com/michaelwegner/CRP)
+- [C++ Implementation of Customizable Route Planning(CRP) from github](https://github.com/michaelwegner/CRP)
 
 
