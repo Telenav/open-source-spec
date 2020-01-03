@@ -13,7 +13,7 @@
 [proxygen](https://github.com/facebook/proxygen) provides A collection of C++ HTTP libraries including an easy to use HTTP server.  [facebook - blog](https://engineering.fb.com/production-engineering/introducing-proxygen-facebook-s-c-http-framework/)  
 
 ## Where could Telenav use them
-- Most of those source code requires gcc5.1+ and C++14's support.  Which makes them challenge to be used on embedded devices such as QNX.  But if your final release is a ubuntu docker image, which means at cloud side, you could refer to the [Build](#build) part for a quick start.  
+- Most of those source code requires gcc5.1+ and C++14's support, which makes them hard to be used on embedded devices such as QNX.  But if your final release is a ubuntu docker image, which means at cloud side, you could refer to the [Build](#build) part for a quick start.  
 - Part of our data processing pipeline is based on C++ and running on cloud side, its possible to use folly's future()->then()->then() to chain all the tasks and simplify the logic.  
 - Wangle like C++ version's [Netty](https://netty.io/) + [Finagle](https://twitter.github.io/finagle/)
 - Boost could be a good alternative for those [folly features](./doc/folly_general.md), consider that boost already be integrated into our compilation chain, which could be your first option.
