@@ -118,5 +118,6 @@ Level graph's creation based on the observation: augmenting along a shortest pat
 ## Reference
 - [Georgia Tech - Maximum Flow](https://s3.amazonaws.com/content.udacity-data.com/courses/gt-cs6505/maximumflow.html)
 - CMU [max-flow-1](http://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15451-f14/www/lectures/lec10/max-flow1.pdf) [max-flow-2](http://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15451-f14/www/lectures/lec11/max-flow2-avrim.pdf) [dinic](http://www.cs.cmu.edu/afs/cs.cmu.edu/academic/class/15451-f14/www/lectures/lec11/dinic.pdf)
+- Princeton [Max Flow Min Cut](https://www.cs.princeton.edu/courses/archive/spr04/cos226/lectures/maxflow.4up.pdf)
 - [Ford-Fulkerson simple implementation](https://github.com/CodeBear801/zoo/blob/ff3279549f24e008c1f1cc40c376a0b02b1189b4/graph/graph_partition/ford_fulkerson.cpp#L1)
 - [Dinic simple implementation](https://github.com/CodeBear801/zoo/blob/ff3279549f24e008c1f1cc40c376a0b02b1189b4/graph/graph_partition/dinic.cpp#L1)

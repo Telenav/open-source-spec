@@ -33,8 +33,10 @@ Graph partition is the first step to distribute processing graph data.
 ## Distribute Partition
 - [pregel](https://kowshik.github.io/JPregel/pregel_paper.pdf)
 
-- Google
+- [Google - Affinity Clustering: Hierarchical Clustering at Scale](https://papers.nips.cc/paper/7262-affinity-clustering-hierarchical-clustering-at-scale.pdf)
 
-- Facebook
+- [Facebook - Balanced Label Propagation for Partitioning Massive Graphs](https://stanford.edu/~jugander/papers/wsdm13-blp.pdf)
 
+## More information
+- [Graph Partitioning and Clustering in Theory and Practice by Christian Schulz from KIT](https://par.tuwien.ac.at/teaching/2015w/195.084.psp#detailedcontent)
 
