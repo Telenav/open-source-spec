@@ -12,21 +12,21 @@
 
 <img src="../resource/pictures/kernighan_lin_vertex_switch.png" alt="kernighan_lin_vertex_switch" width="200"/>
 
-For given graph be divided into two sets of vertex v1 and v2, we want to find 2 vertex belonging to different set by switch them we could optimize cut result.
+For given graph be divided into two sets of vertex v1 and v2, we want to find 2 vertex belonging to different set, by switch them we could optimize cut result.
 
-Let's say vertex a belonging to V1 and vertex b belonging to V2.  For current division, cut size is 5, by moving a to V2 and b to V1, we got worse cut size 6 which could not help to gain better cut.
+Let's say `vertex a` belonging to V1 and `vertex b` belonging to V2.  For current division, cut size is 5, by moving a to V2 and b to V1, we got worse cut size 6 which could not help to gain better cut.
 
 Basic algorithm
 
-<img src="../resource/pictures/kernighan_lin_basic.png" alt="kernighan_lin_basic" width="400"/>
+<img src="../resource/pictures/kernighan_lin_basic.png" alt="kernighan_lin_basic" width="600"/>
 
 Step1: calculate a sequence of gains
 
-<img src="../resource/pictures/kernighan_lin_step1.png" alt="kernighan_lin_step1" width="400"/>
+<img src="../resource/pictures/kernighan_lin_step1.png" alt="kernighan_lin_step1" width="600"/>
 
 Step2: accumulate gains
 
-<img src="../resource/pictures/kernighan_lin_step2.png" alt="kernighan_lin_step2" width="400"/>
+<img src="../resource/pictures/kernighan_lin_step2.png" alt="kernighan_lin_step2" width="600"/>
 
 
 ## Key points
@@ -60,7 +60,7 @@ Step2: accumulate gains
 
 The major issue for kernighan_lin is <span style="color:red"> **the cost of the algorithm is too high**</span>, which takes O(V^2*n) 
 
-2. <span>**Kernighan Lin alg is sensitive to initial partition's result, with good initial result could convergent quickly.  But in real case its hard to estimate that.**</span>
+2. <span>**Kernighan Lin alg is sensitive to initial partition's result, with good initial result could convergent quickly.  But in real case its hard to estimate that.**</span>
 
 ## Reference
 - [Original Paper from B.W.Kernighan and S.Lin](https://www.cs.utexas.edu/~pingali/CS395T/2009fa/papers/kl.pdf)
