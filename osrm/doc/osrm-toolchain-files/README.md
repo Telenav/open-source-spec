@@ -18,6 +18,7 @@ tar -tvf nevada-latest.osrm.nbg_nodes
 ## Files produced by `osrm-extract`
 
 - [.osrm](./map.osrm.md)
+- [.osrm.timestamp](./map.osrm.timestamp.md)
 
 ## Files produced by `osrm-partition`
 
