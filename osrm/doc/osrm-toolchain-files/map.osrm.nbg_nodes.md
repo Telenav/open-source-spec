@@ -29,7 +29,7 @@ osrm_fingerprint.meta
 
 ## /common/nbn_data/coordinates, /common/nbn_data/coordinates.meta
 Stores coordinates of all used **OSM Nodes**.     
-The coordinates are totally the same with coordinates stores in [.osrm - /extractor/nodes](./map.osrm.md#/extractor/nodes).     
+The coordinates are totally the same with coordinates stores in [.osrm - /extractor/nodes](./map.osrm.md#extractornodes-extractornodesmeta).     
 
 ### Layout
 ![](./graph/map.osrm.nbg_nodes.common.nbn_data.coordinates.png)
