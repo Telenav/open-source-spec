@@ -50,7 +50,7 @@ packed_array[index] == original_input_array[index]
 ```
 packed_array retrieve is the reverse way of set.  
 For index = 1, we know that it tooks 33 bits from inner array's first value, just use (inner_array[0] & `0000000000000000000000000000000111111111111111111111111111111111`) you could get original result<br/>
-For index = 2, we know that it tooks 31 bits from inner array's first value and 2 bits from second, so you could use (inner_array[1] & `0000000000000000000000000000000000000000000000000000000000000011`)<< 31 for the upper part, plus (inner_array[1] & `1111111111111111111111111111111000000000000000000000000000000000`)>>33 for the lower part.
+For index = 2, we know that it tooks 31 bits from inner array's first value and 2 bits from second, so you could use (inner_array[1] & `0000000000000000000000000000000000000000000000000000000000000011`)<< 31 for the upper part, plus (inner_array[0] & `1111111111111111111111111111111000000000000000000000000000000000`)>> 33 for the lower part.
 
 ### How to get random index
 osrm::packed_array grouped input into 64 elements(BLOCK_ELEMENTS = 64), when reach 64 then start to use new uint_64 to record new value.  
