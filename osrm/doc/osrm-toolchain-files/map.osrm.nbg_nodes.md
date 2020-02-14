@@ -76,6 +76,8 @@ Once [NodeBasedGraphFactory](https://github.com/Telenav/osrm-backend/blob/6283c6
 
 
 ## /common/nbn_data/osm_node_ids
+Stores original NodeIDs of all used **OSM Nodes**.     
+The NodeIDs are totally the same with OSM NodeIDs stores in [.osrm - /extractor/nodes](./map.osrm.md#extractornodes-extractornodesmeta). The only difference is they're packed(a.k.a compressed) in storage. Each 64 bits NodeID will be packed into smaller size, which is [33 bits in osrm/osrm-backend](https://github.com/Project-OSRM/osrm-backend/blob/15f0ca8ddaa35c5b4d93c25afa72e81e1fb40c3e/include/extractor/packed_osm_ids.hpp#L14) but [63 bits in telenav/osrm-backend](https://github.com/Telenav/osrm-backend/blob/70ce81b113ef53df715489b7419761c5db45bbee/include/extractor/packed_osm_ids.hpp#L14). The [`packed_vector`](https://github.com/Telenav/osrm-backend/blob/master-telenav/include/util/packed_vector.hpp) is designed for this **pack** action, refer to [osrm/doc/packed_vector.md](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/packed_vector.md) for more explaination. The `packed_vector` structure will be written to below 3 files.             
 
 - `/common/nbn_data/osm_node_ids/number_of_elements.meta`
 - `/common/nbn_data/osm_node_ids/packed` 
@@ -83,6 +85,8 @@ Once [NodeBasedGraphFactory](https://github.com/Telenav/osrm-backend/blob/6283c6
 
 
 ### Layout
+![](./graph/map.osrm.nbg_nodes.common.nbn_data.osm_node_ids.png)
 
 ### Implementation
+Both the `osm_node_ids` construction and written are the same with [/common/nbn_data/coordinates, /common/nbn_data/coordinates.meta](#commonnbndatacoordinates-commonnbndatacoordinatesmeta), refer to [/common/nbn_data/coordinates, /common/nbn_data/coordinates.meta - Implementation](#implementation) for details.     
 
