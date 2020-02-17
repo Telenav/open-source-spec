@@ -15,7 +15,7 @@ It contains original graph nodes (coordinates and OSM node IDs indexed by NBG No
 ## List
 
 ```bash
-tar -xvPf nevada-latest.osrm.nbg_nodes
+tar -tvf nevada-latest.osrm.nbg_nodes
 osrm_fingerprint.meta
 /common/nbn_data/coordinates.meta
 /common/nbn_data/coordinates
