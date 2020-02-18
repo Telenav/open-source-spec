@@ -18,5 +18,6 @@ tar -tvf nevada-latest.osrm.properties
 ## /common/properties, /common/properties.meta
 
 ### Layout
+![](./graph/map.osrm.properties.common.properties.png)
 
 ### Implementation
