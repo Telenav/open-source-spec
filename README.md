@@ -23,6 +23,7 @@ Documents about navigation related topic: Map matching, CRP, etc.
 - [Graph Preprocessing Strategy](./routing_basic/resource/presentations/route_preprocessing_overview_11302017.pptx)
 - [OSM Data Processing with OSMIUM](./osmium/resource/slides/osmium_20181201.pptx)
 - [Golang Practice on OSRM](./osrm/references/presentations/Golang%20practice%20on%20OSRM.pptx)
+- [OSRM Introduction and Demo - Jan 2020](./osrm/references/presentations/OSRM%20introduction%20and%20demo.pptx)
 
 
 ## Pages
