@@ -37,7 +37,7 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 ### Data structure
 - [packed_vector](./doc/packed_vector.md)
 
-## External links    
+### References    
 - [osrm-backend on Github](https://github.com/Project-OSRM/osrm-backend)
 - [osrm-backend Wiki Home on Github](https://github.com/Project-OSRM/osrm-backend/wiki)
 - [osrm Hosted Documentation](http://project-osrm.org/docs/v5.15.2/api)
