@@ -1,5 +1,6 @@
 # sum2bits - variable-precision SWAR algorithm
-When I read [.osrm.names](./osrm-toolchain-files/map.osrm.names.md) processing related codes, I found a function named [sum2bits()](https://github.com/Telenav/osrm-backend/blob/b24b8a085dc10bea279ffb352049330beae23791/include/util/indexed_data.hpp#L94) that looks a little strange to me. It's used for "summation of 16 2-bit values using SWAR" according to comment, but what I can see in codes are a lot of bitwise operations with some magic numbers. It looks no sense to me. What does it exactly do? Let's try to understand it step-by-step.          
+When I read [.osrm.names](./osrm-toolchain-files/map.osrm.names.md) processing related codes, I found a function named [sum2bits()](https://github.com/Telenav/osrm-backend/blob/b24b8a085dc10bea279ffb352049330beae23791/include/util/indexed_data.hpp#L94) that looks a little strange to me. It's used for "summation of 16 2-bit values using SWAR" according to comment, but what I can see in codes are a lot of bitwise operations with some magic numbers. It looks no sense to me.     
+What does it exactly do? Let's try to understand it step-by-step.          
 
 ```c++
     /// Summation of 16 2-bit values using SWAR
@@ -85,7 +86,7 @@ Now it's time to understand the magic.
 There're 4 lines in the `sum2bits()` function. Let's take a look on the line `(A)` first.     
 First of all, the significance of the constant `0x33333333` is that, written using the `Java`/`GCC` style [binary literal notation](https://gcc.gnu.org/onlinedocs/gcc/Binary-constants.html),     
 `0x33333333 = 0b00110011001100110011001100110011`     
-That is, 8 repeated `0011` block(per **4 bits**). Well, let's see what would happen if the `value` is only 1 **4 bits** block. 
+That is, 8 repeated `0011` block(per **4 bits**). Well, let's see what would happen if the `value` is only 1 block(**4 bits**). 
 
 | value_before | left(`v >> 2 & 0x3`) | right(`v & 0x3`) | value_after(left+right) | 
 | - | - | - | - |
@@ -106,7 +107,7 @@ That is, 8 repeated `0011` block(per **4 bits**). Well, let's see what would hap
 |`1111`|`0011`|`0011`|`1010` = 6|
 
 We exactly get sum of the two `2`-bits(e.g. `01+10=11=0011`)! And the result still in the original 4 bits!      
-Other 7 repeated 4-bits block will do the same thing, but please be aware that all the 8 repeated 4-bits block calculate at the same time, that's why this algorithm also known as "parallel". The algorithm calculates 8 blocks in parallel without any loop.          
+Other 7 repeated 4-bits blocks will do the same thing! But please be aware that all the 8 repeated 4-bits blocks calculate at the same time, that's why this algorithm also known as "parallel". The algorithm calculates 8 blocks in parallel without any loop.          
 
 ### Line (B),(C),(D) 
 After [Line (A)](#line-a) done, the problem becomes to sum 8 values(each one stores in `4`-bits) instead of orginal 16 values(each `2`-bits).     
