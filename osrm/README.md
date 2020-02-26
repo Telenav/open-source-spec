@@ -34,8 +34,9 @@ We're going to research deeply in OSRM([Open Source Routing Machine](https://git
 - [BasePlugin::GetPhantomNodes(const datafacade::BaseDataFacade &facade, const api::BaseParameters &parameters) Flow Chart](./graph/BasePlugin_GetPhantomNodes_flowchart.mmd.png)
 - [RoutingAlgorithms::ShortestPathSearch() Call Graph](./graph/routing_algorithms_shortestpathsearch_callgraph.mmd.png)    
 
-### Data structure
+### Data structures & Algorithms
 - [packed_vector](./doc/packed_vector.md)
+- [sum2bits - variable-precision SWAR algorithm](./doc/sum2bits-swar.md)
 
 ### References    
 - [osrm-backend on Github](https://github.com/Project-OSRM/osrm-backend)
