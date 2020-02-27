@@ -20,6 +20,7 @@ tar -tvf nevada-latest.osrm.names
 ## /common/names
 
 ### Layout
+![](./graph/map.osrm.names.common.names.png)
 
 ### Implementation
 
