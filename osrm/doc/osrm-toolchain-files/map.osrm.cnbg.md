@@ -15,5 +15,6 @@ tar -tvf nevada-latest.osrm.cnbg
 ## /extractor/cnbg, /extractor/cnbg.meta
 
 ### Layout
+![](./graph/map.osrm.cnbg.extractor.cnbg.png)
 
 ### Implementation
