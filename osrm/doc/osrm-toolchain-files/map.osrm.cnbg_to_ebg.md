@@ -16,5 +16,6 @@ tar -tvf nevada-latest.osrm.cnbg_to_ebg
 ## /common/cnbg_to_ebg, /common/cnbg_to_ebg.meta
 
 ### Layout
+![](./graph/map.osrm.cnbg_to_ebg.common.cnbg_to_ebg.png)
 
 ### Implementation
