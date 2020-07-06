@@ -24,6 +24,7 @@ tar -tvf nevada-latest.osrm.nbg_nodes
 - [.osrm.nbg_nodes](./map.osrm.nbg_nodes.md)
 - [.osrm.cnbg](./map.osrm.cnbg.md)
 - [.osrm.cnbg_to_ebg](./map.osrm.cnbg_to_ebg.md)
+- [.osrm.restrictions](./map.osrm.restrictions.md)
 
 ## Files produced by `osrm-partition`
 
