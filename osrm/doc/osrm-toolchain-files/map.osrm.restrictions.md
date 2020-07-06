@@ -17,7 +17,7 @@ osrm_fingerprint.meta
 ## /common/conditional_restrictions, /common/conditional_restrictions.meta
 
 ### Layout
-
+![](./graph/map.osrm.restrictions.common.conditional_restrictions.png)
 
 ### Implementation
 
