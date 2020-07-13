@@ -15,8 +15,8 @@ osrm_fingerprint.meta
 - [osrm_fingerprint.meta](./fingerprint.md)
 
 ## /common/conditional_restrictions, /common/conditional_restrictions.meta
-`/common/conditional_restrictions.meta` stores how many bytes totally used to store conditional restrictions in `/common/conditional_restrictions`, previously the `.meta` will used to store count of objects instead of bytes of data.    
-`/common/conditional_restrictions` stores parsed and penality calculated conditional restrictions. Only run `osrm-extract` with `--parse-conditional-restrictions` will generate such data.      
+- `/common/conditional_restrictions.meta` stores how many bytes totally used to store conditional restrictions in `/common/conditional_restrictions`, previously the `.meta` will used to store count of objects instead of bytes of data.    
+- `/common/conditional_restrictions` stores parsed and penality calculated conditional restrictions. Only run `osrm-extract` with `--parse-conditional-restrictions` will generate such data.      
 
 ### Layout
 ![](./graph/map.osrm.restrictions.common.conditional_restrictions.png)
