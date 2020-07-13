@@ -104,3 +104,13 @@ Eventually when dump to `.osrm.restrictions` file, the conditional restrictions 
     extractor::files::writeConditionalRestrictions(conditional_penalties_filename,
                                                    indexed_conditionals);
 ```
+
+## Conditional restrictions in OSM map data
+The [`restriction:conditional`](https://github.com/Telenav/osrm-backend/blob/f45ab75cf9eb57cb9c857ea564beb95be0523968/src/extractor/restriction_parser.cpp#L70) is the primary key that OSRM supports for conditional restrictions. However, it has a very small amount size in OSM data statistics: totally **7946** for worldwide([taginfo](https://taginfo.openstreetmap.org/keys) @20200713), which may explains why it's NOT a so important problem for open source projects.      
+See more in https://github.com/Telenav/osrm-backend/issues/90#issuecomment-657334486.         
+
+## Reference 
+- [Conditional restrictions](https://wiki.openstreetmap.org/wiki/Conditional_restrictions)
+- [Key:opening hours/specification](https://wiki.openstreetmap.org/wiki/Key:opening_hours/specification)
+- [taginfo](https://taginfo.openstreetmap.org/keys)
+- [Time/Conditional Restriction #90](https://github.com/Telenav/osrm-backend/issues/90)
