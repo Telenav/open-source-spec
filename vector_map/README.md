@@ -7,6 +7,7 @@
 
 
 ## Experiment Links
+- [Set up vector map service based on open source solution](https://github.com/Telenav/open-source-spec/issues/4)
 - [Tegola experiment](./doc/tegola_quick_experiment.md)
 
 ## Useful information
