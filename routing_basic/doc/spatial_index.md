@@ -20,8 +20,9 @@
 
 ## Comparison
 
-
 <img src="../resource/pictures/spatial_index_comparison_table.png" alt="spatial_index_comparison_table" width="400"/>
+(Table coming from [Uber H3 doc](https://uber.github.io/h3/#/documentation/overview/use-cases))
+
 
 ### GeoHash VS S2
 
