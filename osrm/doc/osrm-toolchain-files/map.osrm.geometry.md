@@ -45,6 +45,7 @@ tar -tvf nevada-latest.osrm.geometry
 ## /common/segment_data/*
 
 ### Layout
+![](./graph/map.osrm.geometry.common.segment_data.png)
 
 ### Implementation
 
