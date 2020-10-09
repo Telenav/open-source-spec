@@ -22,6 +22,7 @@ tar -tvf nevada-latest.osrm.enw
 ## /extractor/edge_based_node_*
 
 ### Layout
+![](./graph/map.osrm.enw.extractor.edge_based_node_weights.png)
 
 ### Implementation
 
