@@ -80,7 +80,7 @@ More specificly, the data will be constructed from compressed node based graph b
 
 One more special thing in `.osrm.enw` is that the `weight` value might be negative, which is a little counter-intuitive. It becauses the [MSB - Most significant bit](https://en.wikipedia.org/wiki/Bit_numbering#Most_significant_bit) of weight will be used to distinguish oneway street in [implementation](https://github.com/Telenav/osrm-backend/blob/6900e30070a4ed3f1ca59004d57010a344cc7c9b/src/extractor/edge_based_graph_factory.cpp#L149-L158).       
 
-```c+++
+```c++
     // ⚠ Use the sign bit of node weights to distinguish oneway streets:
     //  * MSB is set - a node corresponds to a one-way street
     //  * MSB is clear - a node corresponds to a bidirectional street
