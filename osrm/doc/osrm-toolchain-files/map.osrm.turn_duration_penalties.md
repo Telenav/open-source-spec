@@ -1,7 +1,7 @@
 
 
 # .osrm.turn_duration_penalties
-Contains turn duration.    
+Contains duration of turns, the corresponding turn can be find by [.osrm.turn_penalties_index](map.osrm.turn_penalties_index.md).          
 
 ## List
 
@@ -21,3 +21,4 @@ tar -tvf nevada-latest.osrm.turn_duration_penalties
 ![](./graph/map.osrm.turn_duration_penalties.png)
 
 ### Implementation
+Refer to [.osrm.turn_penalties_index - implementation](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/osrm-toolchain-files/map.osrm.turn_penalties_index.md#implementation).     
