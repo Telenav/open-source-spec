@@ -18,5 +18,6 @@ tar -tvf nevada-latest.osrm.turn_duration_penalties
 ## /common/turn_penalty
 
 ### Layout
+![](./graph/map.osrm.turn_duration_penalties.png)
 
 ### Implementation

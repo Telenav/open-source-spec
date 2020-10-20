@@ -17,5 +17,6 @@ tar -tvf nevada-latest.osrm.turn_penalties_index
 ## /extractor/turn_index
 
 ### Layout
+![](./graph/map.osrm.turn_penalties_index.png)
 
 ### Implementation

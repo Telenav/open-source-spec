@@ -18,5 +18,6 @@ tar -tvf nevada-latest.osrm.turn_weight_penalties
 ## /common/turn_penalty
 
 ### Layout
+![](./graph/map.osrm.turn_weight_penalties.png)
 
 ### Implementation
