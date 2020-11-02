@@ -24,6 +24,25 @@ Contains edge based nodes.
 
 ### Implementation
 
+```c++
+struct EdgeBasedNode
+{
+    GeometryID geometry_id;
+    ComponentID component_id;
+    std::uint32_t annotation_id : 31;
+    std::uint32_t segregated : 1;
+};
+```    
+
+As above, an [EdgeBasedNode](https://github.com/Telenav/osrm-backend/blob/038ddf0f72df7c55aa51f3d1d201289347007c36/include/extractor/edge_based_node.hpp#L11-L17) has 4 main parts:     
+- `geometry_id`: is the segment data index of [`.osrm.geometry`](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/osrm-toolchain-files/map.osrm.geometry.md#commonsegment_data).     
+- `component_id`: remember which [Strongly Connected Component](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/od_in_osrm.md#strongly-connected-component) it belongs to.   
+- `annotation_id`: index of annotation data in below `/common/ebg_node_data/annotations`.     
+- `segregated`: remember whether it can be skipped in turn instructions. See more in [findSegregatedNodes()](https://github.com/Telenav/osrm-backend/blob/038ddf0f72df7c55aa51f3d1d201289347007c36/include/guidance/segregated_intersection_classification.hpp#L16-L21).          
+
+Edge based nodes will be generated in [EdgeBasedGraphFactory::GenerateEdgeExpandedNodes](https://github.com/Telenav/osrm-backend/blob/038ddf0f72df7c55aa51f3d1d201289347007c36/src/extractor/edge_based_graph_factory.cpp#L328-L330), which creates the nodes in the edge expanded graph from edges in the node-based graph.        
+
+
 
 ## /common/ebg_node_data/annotations, /common/ebg_node_data/annotations.meta
 Stores annotation data that will be referenced by `edge_based_node`.      
