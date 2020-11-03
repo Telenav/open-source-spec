@@ -28,6 +28,7 @@ tar -tvf nevada-latest.osrm.ebg
 ## /common/edge_based_edge_list, /common/edge_based_edge_list.meta
 
 ### Layout
+![](./graph/map.osrm.ebg.common.edge_based_edge_list.png)
 
 ### Implementation
 
