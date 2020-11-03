@@ -20,6 +20,7 @@ tar -tvf nevada-latest.osrm.ebg
 ## /common/number_of_edge_based_nodes, /common/number_of_edge_based_nodes.meta
 
 ### Layout
+![](./graph/map.osrm.ebg.common.number_of_edge_based_nodes.png)
 
 ### Implementation
 
@@ -33,6 +34,7 @@ tar -tvf nevada-latest.osrm.ebg
 ## /common/connectivity_checksum, /common/connectivity_checksum.meta
 
 ### Layout
+![](./graph/map.osrm.ebg.common.connectivity_checksum.png)
 
 ### Implementation
 
