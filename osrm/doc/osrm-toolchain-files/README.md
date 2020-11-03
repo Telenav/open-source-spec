@@ -31,6 +31,7 @@ tar -tvf nevada-latest.osrm.nbg_nodes
 - [.osrm.geometry](./map.osrm.geometry.md)
 - [.osrm.enw](./map.osrm.enw.md)
 - [.osrm.ebg_nodes](./map.osrm.ebg_nodes.md)
+- [.osrm.ebg](./map.osrm.ebg.md)
 
 ## Files produced by `osrm-partition`
 
