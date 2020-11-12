@@ -39,6 +39,7 @@ tar -tvf nevada-latest.osrm.cell_metrics
 ## /mld/metrics/routability/*
 
 ### Layout
+![](./graph/map.osrm.cell_metrics.png)
 
 ### Implementation
 
