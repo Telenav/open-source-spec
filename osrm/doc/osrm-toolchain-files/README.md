@@ -38,7 +38,7 @@ tar -tvf nevada-latest.osrm.nbg_nodes
 
 ## Files produced by `osrm-customize`
 - [.osrm.cell_metrics](./map.osrm.cell_metrics.md)
-
+- [.osrm.mldgr](./map.osrm.mldgr.md)
 
 ## References
 - [Toolchain-file-overview wiki](https://github.com/Project-OSRM/osrm-backend/wiki/Toolchain-file-overview)
