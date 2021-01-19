@@ -1,5 +1,5 @@
 - [C++ Futures at Instagram Notes](#c-futures-at-instagram-notes)
-  - [Instagram's story](#instagrams-story)
+  - [Instagram's  story](#instagrams--story)
     - [fbthrift](#fbthrift)
       - [Synchronous I/O](#synchronous-io)
         - [Disadvantage](#disadvantage)
@@ -425,6 +425,38 @@ select() and pselect() allow a program to monitor multiple file
        select() can monitor only file descriptors numbers that are less than
        FD_SETSIZE; poll(2) does not have this limitation.  See BUGS.
 
+```
+
+[Example](https://www.gnu.org/software/libc/manual/html_node/Server-Example.html)
+```C
+while (1)
+    {
+      /* Block until input arrives on one or more active sockets. */
+      read_fd_set = active_fd_set;
+      if (select (FD_SETSIZE, &read_fd_set, NULL, NULL, NULL) < 0)
+        {
+          perror ("select");
+          exit (EXIT_FAILURE);
+        }
+
+      /* Service all the sockets with input pending. */
+      for (i = 0; i < FD_SETSIZE; ++i)
+        if (FD_ISSET (i, &read_fd_set))
+          {
+            if (i == sock)
+              {
+                /* Connection request on original socket. */
+                int new;
+                size = sizeof (clientname);
+                new = accept (sock,
+                              (struct sockaddr *) &clientname,
+                              &size);
+
+                FD_SET (new, &active_fd_set);
+              }
+
+          }
+    }
 ```
 
 ### poll
