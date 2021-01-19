@@ -457,6 +457,9 @@ while (1)
 
           }
     }
+// Each time when calling select(), OS need to add current process to the waiting list
+// of all sockets he want to liston to
+// And when the process be waked up, it need a loop to check which sockets has data
 ```
 
 ### poll
