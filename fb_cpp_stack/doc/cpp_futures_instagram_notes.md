@@ -546,11 +546,12 @@ int s = socket(AF_INET, SOCK_STREAM, 0);
 bind(s, ...)
 listen(s, ...)
 int epfd = epoll_create(...);
-epoll_ctl(epfd, ...); //将所有需要监听的socket添加到epfd中
+epoll_ctl(epfd, ...); //Add all the sockets that need to be monitored to epfd
+
 while(1){
     int n = epoll_wait(...)
-    for(接收到数据的socket){
-        //处理
+    for(socket received data){  // rdlist
+        //processing
     }
 }
 
