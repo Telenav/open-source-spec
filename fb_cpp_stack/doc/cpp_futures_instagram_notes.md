@@ -565,8 +565,34 @@ while(1){
 - Ready list
   - When `select` has been triggered, application didn't know which port exactly recevied data but only iterate all of them
   - `epoll` manages a `rdlist` in the kernel.  For example, let's say `epoll` monitors `sock1`, `sock2` and `sock3`, and then `sock2` and `sock3` received data, if they be referenced by `rdlist`, then we just need to iterate content in `rdlist` to receive all the data
+- Inside epoll
+
+```c
+// let's assume in process A we write these code
+int epfd = epoll_create(...);
+```
+
+<img src="https://user-images.githubusercontent.com/16873751/104975121-9f7ec900-59ae-11eb-8428-26ebee43759d.png" alt="instagram_thread_performance.png" width="400"/>
 
 
+```c
+epoll_ctl(epfd, ...); //Add all the sockets that need to be monitored to epfd
+// let's say it will monitor sock1 and sock2
+```
+<img src="https://user-images.githubusercontent.com/16873751/104974908-1c5d7300-59ae-11eb-8d17-a669a80401f1.png" alt="instagram_thread_performance.png" width="400"/>
+
+```c
+// After calling
+int n = epoll_wait(...)
+```
+<img src="https://user-images.githubusercontent.com/16873751/104974914-23848100-59ae-11eb-9623-4f029e3daf56.png" alt="instagram_thread_performance.png" width="400"/>
+
+```c
+// when data comes
+// schedule process back
+```
+
+<img src="https://user-images.githubusercontent.com/16873751/104974925-2b442580-59ae-11eb-933d-b652bd881599.png" alt="instagram_thread_performance.png" width="400"/>
 
 
 ### Difference
