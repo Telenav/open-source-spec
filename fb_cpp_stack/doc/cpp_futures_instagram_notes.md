@@ -595,6 +595,13 @@ int n = epoll_wait(...)
 <img src="https://user-images.githubusercontent.com/16873751/104974925-2b442580-59ae-11eb-933d-b652bd881599.png" alt="instagram_thread_performance.png" width="400"/>
 
 
+Data structure inside `epoll`
+
+
+
+<img src="https://user-images.githubusercontent.com/16873751/104975619-0650b200-59b0-11eb-8fc3-0f01a939ff0e.png" alt="instagram_thread_performance.png" width="400"/>
+
+
 ### Difference
 
 
