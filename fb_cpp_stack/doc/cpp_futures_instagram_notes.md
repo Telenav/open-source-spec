@@ -559,7 +559,12 @@ while(1){
 
 #### Why epoll is fast
 
-#1. Separation of functionality
+- Separation of functionality
+   - `Select` need to manage "maintaining waiting list" and "blocking process".  Each time when you call `select` you need do both thing.
+   - `Epoll` separate this two operations, use `epoll_ctl` to manage waiting list, and then `epoll_wait` to block process
+- Ready list
+  - When `select` has been triggered, application didn't know which port exactly recevied data but only iterate all of them
+  - `epoll` manages a `rdlist` in the kernel.  For example, let's say `epoll` monitors `sock1`, `sock2` and `sock3`, and then `sock2` and `sock3` received data, if they be referenced by `rdlist`, then we just need to iterate content in `rdlist` to receive all the data
 
 
 
