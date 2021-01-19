@@ -46,6 +46,7 @@ This data structure allows decrease priority operations to be performed more qui
         - `pop`: `O(log(N)/log(d))`
 
 As above, `4-ary heap` of `QueryHeap` is very similar with `binary heap` of `std::priority_queue`, the only difference between them is `4-ary` vs `2-ary`. Both `push` and `pop` of them have logarithmic algorithm complexity.  
+[why 4-ary heap performs better than 2-ary heap for decrease() and extract-min()](https://stackoverflow.com/questions/29126428/binary-heaps-vs-d-ary-heaps/31015405#31015405)
 
 
 ### TODO

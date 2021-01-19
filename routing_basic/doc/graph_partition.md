@@ -15,6 +15,10 @@ The graph partitioning problem asks for a division of a graph's node set into k 
 
 Graph partition is the first step to distribute processing graph data.
 
+## Ideal partition result
+
+<img src="https://user-images.githubusercontent.com/16873751/104144707-39c08a80-5379-11eb-9e71-fbb180fadf25.png" alt="ideal_partition" width=300/>    <img src="https://user-images.githubusercontent.com/16873751/104144798-9d4ab800-5379-11eb-9471-1f28742aeea3.png" alt="ideal_partition" width=300/>
+
 ## Basic Algorithm
 - [Kernighan Lin Algorithm](./kernighan_lin_alg.md)
 

@@ -24,14 +24,21 @@ tar -tvf nevada-latest.osrm.nbg_nodes
 - [.osrm.nbg_nodes](./map.osrm.nbg_nodes.md)
 - [.osrm.cnbg](./map.osrm.cnbg.md)
 - [.osrm.cnbg_to_ebg](./map.osrm.cnbg_to_ebg.md)
+- [.osrm.turn_penalties_index](./map.osrm.turn_penalties_index.md)
+- [.osrm.turn_weight_penalties](./map.osrm.turn_weight_penalties.md)
+- [.osrm.turn_duration_penalties](./map.osrm.turn_duration_penalties.md)
 - [.osrm.restrictions](./map.osrm.restrictions.md)
+- [.osrm.geometry](./map.osrm.geometry.md)
+- [.osrm.enw](./map.osrm.enw.md)
+- [.osrm.ebg_nodes](./map.osrm.ebg_nodes.md)
+- [.osrm.ebg](./map.osrm.ebg.md)
 
 ## Files produced by `osrm-partition`
 
 
 ## Files produced by `osrm-customize`
-
-
+- [.osrm.cell_metrics](./map.osrm.cell_metrics.md)
+- [.osrm.mldgr](./map.osrm.mldgr.md)
 
 ## References
 - [Toolchain-file-overview wiki](https://github.com/Project-OSRM/osrm-backend/wiki/Toolchain-file-overview)
