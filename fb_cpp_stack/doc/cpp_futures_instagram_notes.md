@@ -22,6 +22,7 @@
     - [select](#select)
     - [poll](#poll)
     - [epoll](#epoll)
+      - [Why epoll is fast](#why-epoll-is-fast)
     - [Difference](#difference)
 
 # C++ Futures at Instagram Notes
@@ -537,6 +538,30 @@ One place need pay special attention to is the difference between the following 
                   return EAGAIN.
 
 ```
+
+Example
+
+```c
+int s = socket(AF_INET, SOCK_STREAM, 0);   
+bind(s, ...)
+listen(s, ...)
+int epfd = epoll_create(...);
+epoll_ctl(epfd, ...); //将所有需要监听的socket添加到epfd中
+while(1){
+    int n = epoll_wait(...)
+    for(接收到数据的socket){
+        //处理
+    }
+}
+
+```
+
+#### Why epoll is fast
+
+#1. Separation of functionality
+
+
+
 
 ### Difference
 
