@@ -158,4 +158,5 @@ Here is the logic related with [reader](https://github.com/qedus/osmpbf/blob/f94
 
 
 ## Reference
+- [Golang's scheduler - code review and discussion](https://github.com/Telenav/osrm-backend/pull/259#discussion_r403046506)
 - [Merging Huuuge CSV Files Using Golang Channels](https://danrl.com/blog/2018/merging-huuuge-csv-files-using-golang-channels/)
