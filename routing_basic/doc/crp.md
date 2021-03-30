@@ -8,7 +8,7 @@
     - [Step2 Metric custmization](#step2-metric-custmization)
     - [Step3 Real time query](#step3-real-time-query)
   - [CRP Core ideas](#crp-core-ideas)
-  - [CRP in OSRM](#crp_in_osrm)
+  - [CRP in OSRM](#crp-in-osrm)
   - [Reference](#reference)
 
 # Customizable Route Planning
@@ -106,6 +106,9 @@ Partition road network with balanced count and min-cut is the most important ste
 ## Reference
 - [Paper of CRP by Delling et al](../resource/papers/CustomizableRoutePlanningInRoadNetworks.pdf)
 - [Telenav Direction team's discussion in 2018](../resource/presentations/modern_routing_alg_09242018_reduced_size.pptx)
+- [OSRM's implementation about Partition](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/osrm_partition.md)
+- [OSRM's implementation about Customization](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/osrm_customization.md)
+- [OSRM's implaementation about MLD](https://github.com/Telenav/open-source-spec/blob/master/osrm/doc/table_service.md#one-to-manymld)
 - [C++ Implementation of Customizable Route Planning(CRP) from github](https://github.com/michaelwegner/CRP)
 
 
