@@ -34,7 +34,7 @@ We call GPS data collected from each of our user as GPS probe data.
 ## Different type of map matching
 
 ### Onboard map matching
-Real time map matching, always happened on embedded device for single user.  When user is driving, map matching component try to snap user's GPS trace to map data.  Onboard map matching always have richer information compare to offboard map matching, such as information from gyro(driving angle), information from vehicle(speed, gps accuracy).  
+Real time map matching, always happened on embedded device for single user.  When user is driving, map matching component try to snap user's GPS trace to map data.  Onboard map matching always have richer information compare to offboard map matching(when only gps gathered), such as information from gyro(driving angle), information from vehicle(speed, gps accuracy).  
 Onboard map matching always retrieve map data from local device.  During map matching, based on existing gps trace, map matching component recommends the most probable route for user.  It might maintain several route candidate during calculation and re-adjust probability based on coming gps points.  Its common that the probability of different candidate jump back and forth, but map matching system must avoid providing such experience for end user.
 
 During navigation, detect whether user is following the route now is the main purpose of onboard navigation.  We expect which to trigger re-routing when we find user is off suggested route(deviation).
