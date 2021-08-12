@@ -101,7 +101,7 @@ The from/to ids are OSM node IDs that are directly connected. To update the spee
 tbb::task_scheduler_init init(1);
 ```
 
-3. On Mac with XCode, I met issue related with osrm_update and osrm_store could not generate libosrm_store.a and libosrm_update.a, solve the issue by modifying CMakeLists.txt under osrm-backend
+3. On Mac with XCode, I met issue related with osrm_update and osrm_store could not generate libosrm_store.a and libosrm_update.a, solve the issue by modifying CMakeLists.txt under osrm-backend[Shanjun: while I build those two sub-projects separately, I can generate those .a files]
 ```diff
 -add_library(osrm_update $<TARGET_OBJECTS:UPDATER> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)
 -add_library(osrm_store $<TARGET_OBJECTS:STORAGE> $<TARGET_OBJECTS:MICROTAR> $<TARGET_OBJECTS:UTIL>)
